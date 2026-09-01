@@ -59,7 +59,7 @@
 
     <!-- Form Input Progres -->
     <div class="card shadow-sm mb-4">
-      <div class="card-header bg-white font-weight-bold">Form Progres Pekerjaan</div>
+      <div class="card-header bg-white fw-bold">Form Progres Pekerjaan</div>
       <div class="card-body">
         <form id="progresForm" onsubmit="submitProgres(event)">
           <div class="row g-3">
@@ -97,7 +97,7 @@
 
     <!-- Tabel Database -->
     <div class="card shadow-sm">
-      <div class="card-header bg-white font-weight-bold">Tabel Progres Real-Time</div>
+      <div class="card-header bg-white fw-bold">Tabel Progres Real-Time</div>
       <div class="card-body p-0">
         <div class="table-responsive">
           <table class="table table-hover table-striped mb-0">
@@ -125,8 +125,8 @@
   </div>
 
   <script>
-    // GANTI URL DI BAWAH DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycb.../exec"; 
+    // PENTING: Ganti nilai di bawah ini dengan URL Web App Google Apps Script Anda (berakhiran /exec)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx.../exec"; 
     let currentUser = null;
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -154,6 +154,7 @@
       }
     }
 
+    // PROSES LOGIN BEBAS CORS (GET request)
     async function processLogin(e) {
       e.preventDefault();
       const u = document.getElementById("username").value.trim();
@@ -164,17 +165,9 @@
 
       toggleLoading(true);
       try {
-        const dataPayload = new URLSearchParams();
-        dataPayload.append("action", "login");
-        dataPayload.append("username", u);
-        dataPayload.append("password", p);
-
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: dataPayload.toString()
-        });
+        const url = `${SCRIPT_URL}?action=login&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}`;
         
+        const res = await fetch(url);
         const result = await res.json();
 
         if (result.status === "success" && result.user) {
@@ -187,7 +180,7 @@
         }
       } catch (err) {
         console.error(err);
-        showAlert("Login gagal: Server menolak koneksi. Pastikan izin Web App diset ke Anyone.");
+        showAlert("Login gagal: Terjadi kesalahan koneksi. Pastikan URL SCRIPT_URL sudah benar.");
       } finally {
         toggleLoading(false);
       }
@@ -285,26 +278,32 @@
       }
     }
 
+    // PROSES SUBMIT BEBAS CORS (GET request)
     async function submitProgres(e) {
       e.preventDefault();
       
-      const payload = new URLSearchParams();
-      payload.append("action", "insertProgres");
-      payload.append("npsn", currentUser.username);
-      payload.append("namaSd", document.getElementById("namaSd").value);
-      payload.append("kecamatan", document.getElementById("kecamatan").value);
-      payload.append("namaMenu", document.getElementById("namaMenu").value);
-      payload.append("nilai", document.getElementById("nilai").value);
-      payload.append("volumeRuang", document.getElementById("volumeRuang").value);
-      payload.append("namaTim", document.getElementById("namaTim").value);
+      const npsn = currentUser.username;
+      const namaSd = document.getElementById("namaSd").value;
+      const kecamatan = document.getElementById("kecamatan").value;
+      const namaMenu = document.getElementById("namaMenu").value;
+      const nilai = document.getElementById("nilai").value;
+      const volumeRuang = document.getElementById("volumeRuang").value;
+      const namaTim = document.getElementById("namaTim").value;
 
       toggleLoading(true);
       try {
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: payload.toString()
+        const queryParams = new URLSearchParams({
+          action: "insertProgres",
+          npsn: npsn,
+          namaSd: namaSd,
+          kecamatan: kecamatan,
+          namaMenu: namaMenu,
+          nilai: nilai,
+          volumeRuang: volumeRuang,
+          namaTim: namaTim
         });
+
+        const res = await fetch(`${SCRIPT_URL}?${queryParams.toString()}`);
         const result = await res.json();
 
         if (result.status === "success") {
