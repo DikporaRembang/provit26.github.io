@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Monitoring Pembangunan Sekolah - PROVIT26</title>
+  <title>Sistem Monitoring Revitalisasi SD Kabupaten Rembang 2026 - PROVIT26</title>
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome Icons -->
@@ -43,15 +43,13 @@
 </head>
 <body>
 
-  <!-- Spinner Overlay for Loading -->
   <div id="loadingOverlay" class="spinner-overlay d-none">
     <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
       <span class="visually-hidden">Memproses...</span>
     </div>
   </div>
 
-  <!-- SECTION 1: FORM LOGIN -->
-  <div id="loginSection" class="container login-container">
+ <div id="loginSection" class="container login-container">
     <div class="card card-custom">
       <div class="brand-header">
         <i class="fa-solid fa-school-flag fa-3x mb-2"></i>
@@ -75,7 +73,6 @@
     </div>
   </div>
 
-  <!-- SECTION 2: DASHBOARD UTAMA -->
   <div id="dashboardSection" class="container py-4 d-none">
     <!-- Navbar Top -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary rounded-3 mb-4 px-3 shadow-sm">
@@ -88,7 +85,6 @@
       </div>
     </nav>
 
-    <!-- Konten Khusus Admin -->
     <div id="adminContent" class="d-none">
       <div class="row mb-4">
         <div class="col-md-12">
@@ -104,7 +100,6 @@
       </div>
     </div>
 
-    <!-- Konten Khusus User Sekolah / SD -->
     <div id="userSdContent" class="d-none">
       <div class="card card-custom mb-4">
         <div class="card-header bg-white fw-bold py-3">
@@ -144,15 +139,11 @@
 
   </div>
 
-  <!-- Bootstrap & JS Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- JAVASCRIPT LOGIKA KONEKSI -->
   <script>
-    // URL Web App Google Apps Script kamu yang berakhiran /exec
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbymQGfHDS8FdO9tI5GK9TTIn93Ri0dBp1Ef-6lBNdbO/exec";
 
-    // Cek Sesi Login saat Halaman Pertama Kali Dimuat
     document.addEventListener("DOMContentLoaded", function() {
       const savedUser = localStorage.getItem("provit_user");
       if (savedUser) {
@@ -160,21 +151,18 @@
       }
     });
 
-    // Helper: Toggle Loading Spinner
     function toggleLoading(show) {
       const overlay = document.getElementById("loadingOverlay");
       if (show) overlay.classList.remove("d-none");
       else overlay.classList.add("d-none");
     }
 
-    // Helper: Tampilkan Pesan Alert Login
     function showAlert(message) {
       const alertBox = document.getElementById("loginAlert");
       alertBox.textContent = message;
       alertBox.classList.remove("d-none");
     }
 
-    // Fungsi Utama: Proses Login
     async function processLogin(event) {
       if (event) event.preventDefault();
 
@@ -219,7 +207,6 @@
       }
     }
 
-    // Tampilkan Tampilan Dashboard berdasarkan Role User
     function showDashboard(user) {
       document.getElementById("loginSection").classList.add("d-none");
       document.getElementById("dashboardSection").classList.remove("d-none");
@@ -240,7 +227,6 @@
       }
     }
 
-    // Fungsi Submit Laporan Progres (Khusus User SD)
     async function submitProgres(event) {
       event.preventDefault();
       
@@ -280,7 +266,6 @@
       }
     }
 
-    // Fungsi Logout
     function logout() {
       localStorage.removeItem("provit_user");
       document.getElementById("dashboardSection").classList.add("d-none");
