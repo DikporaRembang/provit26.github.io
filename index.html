@@ -285,6 +285,8 @@
         const res = await fetch(url, { redirect: "follow", cache: "no-store" });
         const result = await res.json();
 
+        console.log("Hasil Respons Server:", result); // Untuk me-log hasil respons
+
         if (result.status === "success" && result.user) {
           currentUser = result.user;
           currentUser.username = u; 
@@ -292,11 +294,12 @@
           showToast("Login Berhasil! Selamat datang.");
           showDashboard(currentUser);
         } else {
+          // Menampilkan pesan error asli dari backend Google Sheets
           showAlert(result.message || "NPSN atau password Anda salah.");
         }
       } catch (err) {
         console.error("Login Error:", err);
-        showAlert("Login gagal: Terjadi gangguan koneksi ke Google Sheets server.");
+        showAlert("Login gagal: " + err.message);
       } finally {
         toggleLoading(false);
       }
