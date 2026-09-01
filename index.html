@@ -4,42 +4,66 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PROVIT26 - Sistem Informasi Progres</title>
+  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     .loading-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.5); z-index: 9999;
+      background: rgba(0, 0, 0, 0.6); z-index: 9999;
       display: flex; justify-content: center; align-items: center; color: #fff;
+      backdrop-filter: blur(3px);
     }
+    .card { border-radius: 12px; }
+    .table-responsive { max-height: 500px; }
+    .toast-container { z-index: 1060; }
   </style>
 </head>
 <body class="bg-light">
 
   <!-- Loading Overlay -->
   <div id="loadingOverlay" class="loading-overlay d-none">
-    <div class="spinner-border text-light" role="status">
-      <span class="visually-hidden">Memuat...</span>
+    <div class="text-center">
+      <div class="spinner-border text-light mb-2" style="width: 3rem; height: 3rem;" role="status"></div>
+      <div class="fw-bold">Memuat data, silakan tunggu...</div>
+    </div>
+  </div>
+
+  <!-- Toast Container untuk Notifikasi -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="appToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="toastMessage">Pesan Notifikasi</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
     </div>
   </div>
 
   <!-- SECTION LOGIN -->
   <div id="loginSection" class="container py-5">
     <div class="row justify-content-center">
-      <div class="col-md-4">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <h3 class="card-title text-center mb-4">Login PROVIT26</h3>
+      <div class="col-md-5 col-lg-4">
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-4">
+            <div class="text-center mb-4">
+              <i class="fa-solid fa-school-flag text-primary fa-3x mb-2"></i>
+              <h3 class="fw-bold m-0">PROVIT26</h3>
+              <small class="text-muted">Sistem Progres Revitalisasi SD Rembang</small>
+            </div>
+            
             <div id="loginAlert" class="alert alert-danger d-none" role="alert"></div>
+            
             <form id="loginForm" onsubmit="processLogin(event)">
               <div class="mb-3">
-                <label for="username" class="form-label">NPSN / Username</label>
-                <input type="text" class="form-control" id="username" required>
+                <label for="username" class="form-label fw-semibold"><i class="fa-solid fa-id-card me-1"></i> NPSN / Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Masukkan NPSN / Username" required autocomplete="username">
               </div>
               <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" required>
+                <label for="password" class="form-label fw-semibold"><i class="fa-solid fa-lock me-1"></i> Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Masukkan Password" required autocomplete="current-password">
               </div>
-              <button type="submit" class="btn btn-primary w-100">Masuk</button>
+              <button type="submit" class="btn btn-primary w-100 py-2 fw-bold"><i class="fa-solid fa-right-to-bracket me-1"></i> Masuk Aplikasi</button>
             </form>
           </div>
         </div>
@@ -49,46 +73,50 @@
 
   <!-- SECTION DASHBOARD -->
   <div id="dashboardSection" class="container py-4 d-none">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
-        <h2 class="h4 m-0" id="userDisplayName">Dinas Pendidikan</h2>
-        <span class="badge bg-primary" id="userRoleBadge">USER</span>
+    <!-- Header Dashboard -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded shadow-sm">
+      <div class="d-flex align-items-center">
+        <i class="fa-solid fa-building-columns text-primary fa-2x me-3"></i>
+        <div>
+          <h4 class="h5 fw-bold m-0" id="userDisplayName">Dinas Pendidikan</h4>
+          <span class="badge bg-primary" id="userRoleBadge">USER</span>
+        </div>
       </div>
-      <button class="btn btn-outline-danger btn-sm" onclick="logout()">Keluar</button>
+      <button class="btn btn-outline-danger btn-sm fw-semibold" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-1"></i> Keluar</button>
     </div>
 
     <!-- Form Input Progres -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-header bg-white fw-bold">Form Progres Pekerjaan</div>
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-white fw-bold py-3"><i class="fa-solid fa-pen-to-square me-2 text-primary"></i>Form Progres Pekerjaan</div>
       <div class="card-body">
         <form id="progresForm" onsubmit="submitProgres(event)">
           <div class="row g-3">
             <div class="col-md-4">
-              <label class="form-label">Nama SD</label>
+              <label class="form-label fw-semibold">Nama SD</label>
               <input type="text" id="namaSd" class="form-control" required>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Kecamatan</label>
+              <label class="form-label fw-semibold">Kecamatan</label>
               <input type="text" id="kecamatan" class="form-control" required>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Nama Tim</label>
+              <label class="form-label fw-semibold">Nama Tim</label>
               <input type="text" id="namaTim" class="form-control" required>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Pilih Menu Pekerjaan</label>
+              <label class="form-label fw-semibold">Pilih Menu Pekerjaan</label>
               <select id="namaMenu" class="form-select" required></select>
             </div>
             <div class="col-md-3">
-              <label class="form-label">Nilai Pekerjaan (Rp)</label>
-              <input type="number" id="nilai" class="form-control" min="0" required>
+              <label class="form-label fw-semibold">Nilai Pekerjaan (Rp)</label>
+              <input type="number" id="nilai" class="form-control" placeholder="0" min="0" required>
             </div>
             <div class="col-md-3">
-              <label class="form-label">Volume Ruang</label>
-              <input type="number" id="volumeRuang" class="form-control" min="0" required>
+              <label class="form-label fw-semibold">Volume Ruang</label>
+              <input type="number" id="volumeRuang" class="form-control" placeholder="0" min="0" required>
             </div>
             <div class="col-12 text-end">
-              <button type="submit" class="btn btn-success">Simpan Data Progres</button>
+              <button type="submit" class="btn btn-success px-4 fw-bold"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Data Progres</button>
             </div>
           </div>
         </form>
@@ -96,26 +124,32 @@
     </div>
 
     <!-- Tabel Database -->
-    <div class="card shadow-sm">
-      <div class="card-header bg-white fw-bold">Tabel Progres Real-Time</div>
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span><i class="fa-solid fa-table me-2 text-primary"></i>Tabel Progres Real-Time</span>
+        <div class="d-flex gap-2">
+          <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Cari data..." onkeyup="filterTable()">
+          <button class="btn btn-sm btn-outline-secondary text-nowrap" onclick="loadProgresTable()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+        </div>
+      </div>
       <div class="card-body p-0">
         <div class="table-responsive">
-          <table class="table table-hover table-striped mb-0">
-            <thead class="table-dark">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
               <tr>
                 <th>ID Input</th>
                 <th>NPSN</th>
                 <th>Nama SD</th>
                 <th>Kecamatan</th>
                 <th>Menu Pekerjaan</th>
-                <th>Nilai (Rp)</th>
-                <th>Volume</th>
+                <th class="text-end">Nilai (Rp)</th>
+                <th class="text-center">Volume</th>
                 <th>Nama Tim</th>
               </tr>
             </thead>
             <tbody id="progresTableBody">
               <tr>
-                <td colspan="8" class="text-center text-muted">Memuat data...</td>
+                <td colspan="8" class="text-center text-muted py-4">Memuat data...</td>
               </tr>
             </tbody>
           </table>
@@ -124,10 +158,15 @@
     </div>
   </div>
 
+  <!-- Bootstrap JS Bundle -->
+  <script href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
   <script>
-    // PENTING: Ganti nilai di bawah ini dengan URL Web App Google Apps Script Anda (berakhiran /exec)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx.../exec"; 
+    // PASTE URL DEPLOYMENT APPS SCRIPT KAMU DI SINI (BERAKHIRAN /exec)
+    const SCRIPT_URL = "https://dikporarembang.github.io/exec"; 
+    
     let currentUser = null;
+    let rawTableData = [];
 
     document.addEventListener("DOMContentLoaded", function() {
       const savedUser = localStorage.getItem("provit_user");
@@ -142,45 +181,49 @@
     });
 
     function toggleLoading(show) {
-      const overlay = document.getElementById("loadingOverlay");
-      if (overlay) overlay.classList.toggle("d-none", !show);
+      document.getElementById("loadingOverlay").classList.toggle("d-none", !show);
+    }
+
+    function showToast(message, isSuccess = true) {
+      const toastEl = document.getElementById('appToast');
+      const toastMsg = document.getElementById('toastMessage');
+      toastMsg.textContent = message;
+      toastEl.className = `toast align-items-center text-white border-0 ${isSuccess ? 'bg-success' : 'bg-danger'}`;
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
     }
 
     function showAlert(msg) {
       const alertBox = document.getElementById("loginAlert");
-      if (alertBox) {
-        alertBox.textContent = msg;
-        alertBox.classList.remove("d-none");
-      }
+      alertBox.textContent = msg;
+      alertBox.classList.remove("d-none");
     }
 
-    // PROSES LOGIN BEBAS CORS (GET request)
+    // PROSES LOGIN DENGAN HANDLING CORS & REDIRECT SAFE
     async function processLogin(e) {
       e.preventDefault();
       const u = document.getElementById("username").value.trim();
       const p = document.getElementById("password").value.trim();
-      
-      const alertBox = document.getElementById("loginAlert");
-      if (alertBox) alertBox.classList.add("d-none");
+      document.getElementById("loginAlert").classList.add("d-none");
 
       toggleLoading(true);
       try {
         const url = `${SCRIPT_URL}?action=login&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}`;
-        
-        const res = await fetch(url);
+        const res = await fetch(url, { redirect: "follow" });
         const result = await res.json();
 
         if (result.status === "success" && result.user) {
           currentUser = result.user;
           currentUser.username = u; 
           localStorage.setItem("provit_user", JSON.stringify(currentUser));
+          showToast("Login Berhasil! Selamat datang.");
           showDashboard(currentUser);
         } else {
           showAlert(result.message || "NPSN atau password Anda salah.");
         }
       } catch (err) {
-        console.error(err);
-        showAlert("Login gagal: Terjadi kesalahan koneksi. Pastikan URL SCRIPT_URL sudah benar.");
+        console.error("Login Error:", err);
+        showAlert("Login gagal: Terjadi gangguan koneksi ke Google Sheets server.");
       } finally {
         toggleLoading(false);
       }
@@ -200,15 +243,15 @@
         document.getElementById("namaSd").setAttribute("readonly", true);
         document.getElementById("kecamatan").setAttribute("readonly", true);
       } else {
+        document.getElementById("namaSd").value = "";
+        document.getElementById("kecamatan").value = "";
         document.getElementById("namaSd").removeAttribute("readonly");
         document.getElementById("kecamatan").removeAttribute("readonly");
-        document.getElementById("namaSd").style.backgroundColor = "#ffffff";
-        document.getElementById("kecamatan").style.backgroundColor = "#ffffff";
         document.getElementById("namaTim").value = "TIM DINAS";
       }
 
       loadMasterMenu();
-      loadProgresTable();
+      await loadProgresTable();
     }
 
     function loadMasterMenu() {
@@ -225,8 +268,6 @@
       ];
 
       const selectMenu = document.getElementById("namaMenu");
-      if (!selectMenu) return;
-
       selectMenu.innerHTML = '<option value="">-- Pilih Menu Pekerjaan --</option>';
       menuData.forEach(item => {
         const option = document.createElement("option");
@@ -238,99 +279,107 @@
 
     async function loadProgresTable() {
       const tableBody = document.getElementById("progresTableBody");
-      if (!tableBody) return;
-
       try {
-        const res = await fetch(`${SCRIPT_URL}?action=readData`);
+        const res = await fetch(`${SCRIPT_URL}?action=readData`, { redirect: "follow" });
         const result = await res.json();
 
         if (result.status === "success" && result.data) {
-          tableBody.innerHTML = "";
-          const filteredData = currentUser.role === "SEKOLAH" 
+          rawTableData = currentUser.role === "SEKOLAH" 
             ? result.data.filter(item => String(item.npsn) === String(currentUser.username))
             : result.data;
 
-          if (filteredData.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Belum ada data progres untuk akun ini.</td></tr>';
-            return;
-          }
-
-          filteredData.forEach(row => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td><span class="badge bg-secondary">${row.idInput || '-'}</span></td>
-              <td>${row.npsn || '-'}</td>
-              <td><strong>${row.namaSd || '-'}</strong></td>
-              <td>${row.kecamatan || '-'}</td>
-              <td>${row.namaMenu || '-'}</td>
-              <td class="text-end fw-bold text-success">Rp ${Number(row.nilai || 0).toLocaleString('id-ID')}</td>
-              <td class="text-center">${row.volumeRuang || 0}</td>
-              <td><small class="text-muted">${row.namaTim || '-'}</small></td>
-            `;
-            tableBody.appendChild(tr);
-          });
+          renderTable(rawTableData);
         } else {
-          tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Belum ada data progres.</td></tr>';
+          tableBody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">${result.message || "Belum ada data progres."}</td></tr>`;
         }
       } catch (err) {
-        console.error(err);
-        tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-danger">Gagal memuat tabel database real-time.</td></tr>';
+        console.error("Fetch Data Error:", err);
+        tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-danger py-4">Gagal memuat tabel database real-time.</td></tr>';
       }
     }
 
-    // PROSES SUBMIT BEBAS CORS (GET request)
+    function renderTable(data) {
+      const tableBody = document.getElementById("progresTableBody");
+      tableBody.innerHTML = "";
+
+      if (data.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Tidak ada data progres ditemukan.</td></tr>';
+        return;
+      }
+
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><span class="badge bg-secondary font-monospace">${row.idInput || '-'}</span></td>
+          <td>${row.npsn || '-'}</td>
+          <td><strong>${row.namaSd || '-'}</strong></td>
+          <td>${row.kecamatan || '-'}</td>
+          <td>${row.namaMenu || '-'}</td>
+          <td class="text-end fw-bold text-success">Rp ${Number(row.nilai || 0).toLocaleString('id-ID')}</td>
+          <td class="text-center"><span class="badge bg-info text-dark">${row.volumeRuang || 0}</span></td>
+          <td><small class="text-muted">${row.namaTim || '-'}</small></td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function filterTable() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = rawTableData.filter(item => 
+        (item.namaSd && item.namaSd.toLowerCase().includes(query)) ||
+        (item.namaMenu && item.namaMenu.toLowerCase().includes(query)) ||
+        (item.npsn && item.npsn.toString().includes(query)) ||
+        (item.kecamatan && item.kecamatan.toLowerCase().includes(query))
+      );
+      renderTable(filtered);
+    }
+
     async function submitProgres(e) {
       e.preventDefault();
       
-      const npsn = currentUser.username;
-      const namaSd = document.getElementById("namaSd").value;
-      const kecamatan = document.getElementById("kecamatan").value;
-      const namaMenu = document.getElementById("namaMenu").value;
-      const nilai = document.getElementById("nilai").value;
-      const volumeRuang = document.getElementById("volumeRuang").value;
-      const namaTim = document.getElementById("namaTim").value;
+      const payload = {
+        action: "insertProgres",
+        npsn: currentUser.username,
+        namaSd: document.getElementById("namaSd").value,
+        kecamatan: document.getElementById("kecamatan").value,
+        namaMenu: document.getElementById("namaMenu").value,
+        nilai: document.getElementById("nilai").value,
+        volumeRuang: document.getElementById("volumeRuang").value,
+        namaTim: document.getElementById("namaTim").value
+      };
 
       toggleLoading(true);
       try {
-        const queryParams = new URLSearchParams({
-          action: "insertProgres",
-          npsn: npsn,
-          namaSd: namaSd,
-          kecamatan: kecamatan,
-          namaMenu: namaMenu,
-          nilai: nilai,
-          volumeRuang: volumeRuang,
-          namaTim: namaTim
-        });
-
-        const res = await fetch(`${SCRIPT_URL}?${queryParams.toString()}`);
+        const queryParams = new URLSearchParams(payload);
+        const res = await fetch(`${SCRIPT_URL}?${queryParams.toString()}`, { redirect: "follow" });
         const result = await res.json();
 
         if (result.status === "success") {
-          alert("✓ Data sukses disimpan ke Google Sheets!");
+          showToast("Data progres berhasil tersimpan!");
           document.getElementById("nilai").value = "";
           document.getElementById("volumeRuang").value = "";
           document.getElementById("namaMenu").value = "";
           await loadProgresTable();
         } else {
-          alert("Gagal: " + result.message);
+          showToast("Gagal menyimpan: " + result.message, false);
         }
       } catch (err) {
-        console.error(err);
-        alert("Error jaringan saat menyimpan progres.");
+        console.error("Submit Error:", err);
+        showToast("Error jaringan saat mengirim data.", false);
       } finally {
         toggleLoading(false);
       }
     }
 
     function logout() {
-      if (confirm("Keluar dari aplikasi PROVIT26?")) {
+      if (confirm("Apakah Anda yakin ingin keluar?")) {
         localStorage.removeItem("provit_user");
         currentUser = null;
         document.getElementById("dashboardSection").classList.add("d-none");
         document.getElementById("loginSection").classList.remove("d-none");
         document.getElementById("username").value = "";
         document.getElementById("password").value = "";
+        showToast("Anda telah keluar.");
       }
     }
   </script>
