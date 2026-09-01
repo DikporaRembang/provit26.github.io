@@ -1,281 +1,60 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PROVIT26 - Revitalisasi SD Kabupaten Rembang 2026</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    .login-container { max-width: 420px; margin: 80px auto; }
-    .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-    .brand-header { background: linear-gradient(135deg, #0d6efd, #0a58ca); color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 25px; text-align: center; }
-    .spinner-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.7); display:flex; justify-content:center; align-items:center; z-index:9999; }
-  </style>
-</head>
-<body>
-
-  <!-- Loading Overlay -->
-  <div id="loadingOverlay" class="spinner-overlay d-none">
-    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
-  </div>
-
-  <!-- CONTAINER LOGIN -->
-  <div id="loginSection" class="container login-container">
-    <div class="card card-custom">
-      <div class="brand-header">
-        <i class="fa-solid fa-school-flag fa-3x mb-2"></i>
-        <h4 class="fw-bold m-0">PROVIT26</h4>
-        <small>Revitalisasi SD Kab. Rembang 2026</small>
-      </div>
-      <div class="card-body p-4">
-        <div id="loginAlert" class="alert alert-danger d-none" role="alert"></div>
-        <form onsubmit="processLogin(event)">
-          <div class="mb-3">
-            <label class="form-label fw-bold"><i class="fa-solid fa-id-card me-1"></i> NPSN / Username</label>
-            <input type="text" class="form-control" id="username" placeholder="Masukkan NPSN" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-bold"><i class="fa-solid fa-lock me-1"></i> Password</label>
-            <input type="password" class="form-control" id="password" placeholder="Masukkan Password" required>
-          </div>
-          <button type="submit" class="btn btn-primary w-100 py-2 fw-bold"><i class="fa-solid fa-right-to-bracket me-2"></i> Masuk Aplikasi</button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONTAINER DASHBOARD -->
-  <div id="dashboardSection" class="container py-4 d-none">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary rounded-3 mb-4 px-3 shadow-sm">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="#"><i class="fa-solid fa-school-flag me-2"></i>PROVIT26 REMBANG</a>
-        <div class="d-flex align-items-center text-white">
-          <span class="me-3"><i class="fa-solid fa-user-circle me-1"></i> <strong id="userDisplayName">-</strong> (<span id="userRoleBadge" class="badge bg-light text-primary">-</span>)</span>
-          <button class="btn btn-outline-light btn-sm" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-1"></i> Keluar</button>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Content SD / Sekolah -->
-    <div class="card card-custom p-4 mb-4">
-      <h5 class="fw-bold text-primary mb-3"><i class="fa-solid fa-pen-to-square me-2"></i>Input Progres Pekerjaan (`Database`)</h5>
-      <form onsubmit="submitProgres(event)">
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label font-weight-bold">Nama SD</label>
-            <input type="text" class="form-control" id="namaSd" readonly style="background-color: #e9ecef;">
-          </div>
-          <div class="col-md-6 mb-3">
-            <label class="form-label font-weight-bold">Kecamatan</label>
-            <input type="text" class="form-control" id="kecamatan" readonly style="background-color: #e9ecef;">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label font-weight-bold">Pilih Menu Pekerjaan (`Master Menu`)</label>
-            <select class="form-select" id="namaMenu" required>
-              <option value="">-- Pilih Menu Pekerjaan --</option>
-            </select>
-          </div>
-          <div class="col-md-3 mb-3">
-            <label class="form-label font-weight-bold">Nilai (Rp)</label>
-            <input type="number" class="form-control" id="nilai" placeholder="Contoh: 50000000" required>
-          </div>
-          <div class="col-md-3 mb-3">
-            <label class="form-label font-weight-bold">Volume Ruang</label>
-            <input type="number" class="form-control" id="volumeRuang" placeholder="Jumlah ruang" required>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label font-weight-bold">Nama Tim Pendamping</label>
-          <input type="text" class="form-control" id="namaTim" placeholder="Nama Tim / Pendamping">
-        </div>
-        <button type="submit" class="btn btn-success fw-bold px-4"><i class="fa-solid fa-paper-plane me-2"></i> Simpan Progres ke Database</button>
-      </form>
-    </div>
-
-    <!-- Tabel Monitoring Progres -->
-    <div class="card card-custom p-4">
-      <h5 class="fw-bold text-primary mb-3"><i class="fa-solid fa-table me-2"></i>Daftar Progres Terinput</h5>
-      <div class="table-responsive">
-        <table class="table table-striped table-hover align-middle">
-          <thead class="table-primary">
-            <tr>
-              <th>ID Input</th>
-              <th>NPSN</th>
-              <th>Nama SD</th>
-              <th>Kecamatan</th>
-              <th>Menu Pekerjaan</th>
-              <th>Nilai (Rp)</th>
-              <th>Vol</th>
-              <th>Tim</th>
-            </tr>
-          </thead>
-          <tbody id="progresTableBody">
-            <tr><td colspan="8" class="text-center text-muted">Belum ada data progres.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxaX7r8mqovQ3jOQUVu8ACJbz_TmWvlWCQAj-HrzX6OWmDfpT69kEeZ_2Ndwbg96cvUtw/exec";
-    let currentUser = null;
-
-    document.addEventListener("DOMContentLoaded", function() {
-      const savedUser = localStorage.getItem("provit_user");
-      if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        showDashboard(currentUser);
+function doPost(e) {
+  try {
+    // Membaca parameter yang dikirim lewat metode URLSearchParams
+    const requestData = e.parameter; 
+    const action = requestData.action;
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    if (action === "login") {
+      const sheet = ss.getSheetByName("Akun");
+      if (!sheet) return jsonResponse({ status: "error", message: "Sheet 'Akun' tidak ditemukan!" });
+      
+      const data = sheet.getDataRange().getValues();
+      const u = requestData.username ? requestData.username.toString().trim() : "";
+      const p = requestData.password ? requestData.password.toString().trim() : "";
+      
+      if (!u || !p) {
+        return jsonResponse({ status: "error", message: "Username dan password wajib diisi!" });
       }
-    });
 
-    function toggleLoading(show) {
-      document.getElementById("loadingOverlay").classList.toggle("d-none", !show);
-    }
-
-    function showAlert(msg) {
-      const alertBox = document.getElementById("loginAlert");
-      alertBox.textContent = msg;
-      alertBox.classList.remove("d-none");
-    }
-
-    async function processLogin(e) {
-      e.preventDefault();
-      const u = document.getElementById("username").value.trim();
-      const p = document.getElementById("password").value.trim();
-      document.getElementById("loginAlert").classList.add("d-none");
-
-      toggleLoading(true);
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "login", username: u, password: p })
-        });
-        const result = await res.json();
-
-        if (result.status === "success") {
-          currentUser = result.user;
-          localStorage.setItem("provit_user", JSON.stringify(currentUser));
-          showDashboard(currentUser);
-        } else {
-          showAlert(result.message || "Login gagal!");
-        }
-      } catch (err) {
-        showAlert("Gagal terhubung ke server. Pastikan dijalankan via hosting/GitHub Pages.");
-      } finally {
-        toggleLoading(false);
-      }
-    }
-
-    async function showDashboard(user) {
-      document.getElementById("loginSection").classList.add("d-none");
-      document.getElementById("dashboardSection").classList.remove("d-none");
-      document.getElementById("userDisplayName").textContent = user.sekolah || user.npsn;
-      document.getElementById("userRoleBadge").textContent = (user.role === "admin") ? "Dinas" : "Sekolah";
-
-      toggleLoading(true);
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "get_initial_data", npsn: user.npsn, role: user.role })
-        });
-        const data = await res.json();
-
-        if (data.status === "success") {
-          // Fill Form SD Info
-          if (data.sekolah) {
-            document.getElementById("namaSd").value = data.sekolah["Nama SD"] || user.sekolah;
-            document.getElementById("kecamatan").value = data.sekolah["Kecamatan"] || "";
-          } else {
-            document.getElementById("namaSd").value = user.sekolah;
-          }
-
-          // Fill Master Menu Options
-          const menuSelect = document.getElementById("namaMenu");
-          menuSelect.innerHTML = '<option value="">-- Pilih Menu Pekerjaan --</option>';
-          (data.menuList || []).forEach(m => {
-            menuSelect.innerHTML += `<option value="${m['Nama Menu']}">${m['ID Menu']} - ${m['Nama Menu']}</option>`;
+      for (let i = 1; i < data.length; i++) {
+        if (!data[i]) continue;
+        const dbNpsn = data[i][0].toString().trim();     
+        const dbPass = data[i][1].toString().trim();     
+        const dbSekolah = data[i][2].toString().trim();  
+        const dbRole = data[i][3].toString().trim();     
+        
+        if (u === dbNpsn && p === dbPass) {
+          return jsonResponse({
+            status: "success",
+            user: { sekolah: dbSekolah, role: dbRole, kecamatan: "Kab. Rembang", namaTim: "HARYANTO" }
           });
-
-          // Render Table Progres
-          renderTable(data.progresList || []);
         }
-      } catch (err) {
-        alert("Gagal memuat data awal dari Google Sheets.");
-      } finally {
-        toggleLoading(false);
       }
+      return jsonResponse({ status: "error", message: "NPSN atau password salah!" });
     }
-
-    function renderTable(list) {
-      const tbody = document.getElementById("progresTableBody");
-      if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Belum ada data progres terinput.</td></tr>';
-        return;
-      }
-      tbody.innerHTML = list.map(item => `
-        <tr>
-          <td><small class="text-monospace">${item.ID_INPUT || '-'}</small></td>
-          <td>${item.NPSN || '-'}</td>
-          <td>${item['NAMA SD'] || '-'}</td>
-          <td>${item.KECAMATAN || '-'}</td>
-          <td>${item['NAMA MENU'] || '-'}</td>
-          <td>${item.NILAI ? Number(item.NILAI).toLocaleString('id-ID') : '-'}</td>
-          <td>${item['Volume Ruang'] || '-'}</td>
-          <td>${item['NAMA TIM'] || '-'}</td>
-        </tr>
-      `).join('');
+    
+    if (action === "insertProgres") {
+      const sheet = ss.getSheetByName("Database");
+      if (!sheet) return jsonResponse({ status: "error", message: "Sheet 'Database' tidak ditemukan!" });
+      
+      const idInput = "PRG-" + Math.floor(1000 + Math.random() * 9000);
+      sheet.appendRow([
+        idInput, 
+        requestData.npsn || "", 
+        requestData.namaSd || "", 
+        requestData.kecamatan || "", 
+        requestData.namaMenu || "", 
+        Number(requestData.nilai) || 0, 
+        Number(requestData.volumeRuang) || 0, 
+        requestData.namaTim || ""
+      ]);
+      return jsonResponse({ status: "success", message: "Data progres berhasil disimpan." });
     }
-
-    async function submitProgres(e) {
-      e.preventDefault();
-      toggleLoading(true);
-
-      const payload = {
-        action: "save_progres",
-        npsn: currentUser.npsn,
-        nama_sd: document.getElementById("namaSd").value,
-        kecamatan: document.getElementById("kecamatan").value,
-        nama_menu: document.getElementById("namaMenu").value,
-        nilai: document.getElementById("nilai").value,
-        volume_ruang: document.getElementById("volumeRuang").value,
-        nama_tim: document.getElementById("namaTim").value
-      };
-
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-        const result = await res.json();
-
-        if (result.status === "success") {
-          alert("Laporan Progres Berhasil Disimpan!");
-          showDashboard(currentUser);
-        } else {
-          alert("Gagal menyimpan: " + result.message);
-        }
-      } catch (err) {
-        alert("Terjadi kesalahan saat mengirim data.");
-      } finally {
-        toggleLoading(false);
-      }
-    }
-
-    function logout() {
-      localStorage.removeItem("provit_user");
-      document.getElementById("dashboardSection").classList.add("d-none");
-      document.getElementById("loginSection").classList.remove("d-none");
-      currentUser = null;
-    }
-  </script>
-</body>
-</html>
+    
+    return jsonResponse({ status: "error", message: "Aksi POST tidak valid." });
+    
+  } catch (error) {
+    return jsonResponse({ status: "error", message: "Error sistem: " + error.toString() });
+  }
+}
