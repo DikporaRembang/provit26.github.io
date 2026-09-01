@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- TAG META ANTI-CACHE (Mencegah browser menyimpan cache lama) -->
+  <!-- TAG META ANTI-CACHE -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -26,6 +26,7 @@
     .card { border-radius: 12px; }
     .table-responsive { max-height: 500px; }
     .toast-container { z-index: 1060; }
+    .nav-pills .nav-link.active { background-color: #0d6efd; }
   </style>
 </head>
 <body class="bg-light">
@@ -34,11 +35,11 @@
   <div id="loadingOverlay" class="loading-overlay d-none">
     <div class="text-center">
       <div class="spinner-border text-light mb-2" style="width: 3rem; height: 3rem;" role="status"></div>
-      <div class="fw-bold">Memuat data, silakan tunggu...</div>
+      <div class="fw-bold">Memproses data, silakan tunggu...</div>
     </div>
   </div>
 
-  <!-- Toast Container Notifikasi -->
+  <!-- Toast Notifikasi -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="appToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="d-flex">
@@ -81,88 +82,151 @@
 
   <!-- SECTION DASHBOARD -->
   <div id="dashboardSection" class="container py-4 d-none">
+    
     <!-- Header Dashboard -->
     <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded shadow-sm">
       <div class="d-flex align-items-center">
         <i class="fa-solid fa-building-columns text-primary fa-2x me-3"></i>
         <div>
-          <h4 class="h5 fw-bold m-0" id="userDisplayName">Dinas Pendidikan</h4>
-          <span class="badge bg-primary" id="userRoleBadge">USER</span>
+          <h4 class="h5 fw-bold m-0" id="userDisplayName">SD NEGERI</h4>
+          <span class="badge bg-primary" id="userRoleBadge">SEKOLAH</span>
         </div>
       </div>
       <button class="btn btn-outline-danger btn-sm fw-semibold" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-1"></i> Keluar</button>
     </div>
 
-    <!-- Form Input Progres -->
-    <div class="card shadow-sm border-0 mb-4">
-      <div class="card-header bg-white fw-bold py-3"><i class="fa-solid fa-pen-to-square me-2 text-primary"></i>Form Progres Pekerjaan</div>
-      <div class="card-body">
-        <form id="progresForm" onsubmit="submitProgres(event)">
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Nama SD</label>
-              <input type="text" id="namaSd" class="form-control" required>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Kecamatan</label>
-              <input type="text" id="kecamatan" class="form-control" required>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Nama Tim</label>
-              <input type="text" id="namaTim" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Pilih Menu Pekerjaan</label>
-              <select id="namaMenu" class="form-select" required></select>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label fw-semibold">Nilai Pekerjaan (Rp)</label>
-              <input type="number" id="nilai" class="form-control" placeholder="0" min="0" required>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label fw-semibold">Volume Ruang</label>
-              <input type="number" id="volumeRuang" class="form-control" placeholder="0" min="0" required>
-            </div>
-            <div class="col-12 text-end">
-              <button type="submit" class="btn btn-success px-4 fw-bold"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Data Progres</button>
+    <!-- Navigasi Tab (Khusus Sekolah / Admin) -->
+    <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm" id="mainTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active fw-bold" id="tab-progres-tab" data-bs-toggle="pill" data-bs-target="#tab-progres" type="button" role="tab"><i class="fa-solid fa-pen-to-square me-2"></i>Input Progres</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold" id="tab-master-tab" data-bs-toggle="pill" data-bs-target="#tab-master" type="button" role="tab"><i class="fa-solid fa-school me-2"></i>Master Data SD</button>
+      </li>
+      <li class="nav-item d-none" id="adminTableTab" role="presentation">
+        <button class="nav-link fw-bold" id="tab-table-tab" data-bs-toggle="pill" data-bs-target="#tab-table" type="button" role="tab"><i class="fa-solid fa-table me-2"></i>Rekap Database</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="mainTabsContent">
+      
+      <!-- TAB 1: FORM INPUT PROGRES -->
+      <div class="tab-pane fade show active" id="tab-progres" role="tabpanel">
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-white fw-bold py-3"><i class="fa-solid fa-file-circle-plus me-2 text-primary"></i>Form Progres Pekerjaan Sekolah</div>
+          <div class="card-body">
+            <form id="progresForm">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Nama SD</label>
+                  <input type="text" id="namaSd" class="form-control" readonly>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Kecamatan</label>
+                  <input type="text" id="kecamatan" class="form-control" readonly>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Nama Tim</label>
+                  <input type="text" id="namaTim" class="form-control" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Pilih Menu Pekerjaan</label>
+                  <select id="namaMenu" class="form-select" required></select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold">Nilai Pekerjaan (Rp)</label>
+                  <input type="number" id="nilai" class="form-control" placeholder="0" min="0" required>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold">Volume Ruang</label>
+                  <input type="number" id="volumeRuang" class="form-control" placeholder="0" min="0" required>
+                </div>
+                
+                <!-- OPSI TOMBOL UNTUK USER SEKOLAH -->
+                <div class="col-12 text-end pt-3 border-top">
+                  <button type="button" class="btn btn-secondary me-2 fw-semibold" onclick="resetFormProgres()"><i class="fa-solid fa-xmark me-1"></i> Batal</button>
+                  <button type="button" class="btn btn-primary me-2 fw-bold" onclick="handleProgresSubmit(false)"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Data</button>
+                  <button type="button" class="btn btn-success fw-bold" onclick="handleProgresSubmit(true)"><i class="fa-solid fa-forward me-1"></i> Simpan & Lanjut Isi Data</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: FORM MASTER DATA SD -->
+      <div class="tab-pane fade" id="tab-master" role="tabpanel">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white fw-bold py-3"><i class="fa-solid fa-gears me-2 text-primary"></i>Update Master Data Sekolah</div>
+          <div class="card-body">
+            <form id="masterSdForm" onsubmit="submitMasterSd(event)">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">NPSN</label>
+                  <input type="text" id="masterNpsn" class="form-control bg-light" readonly>
+                </div>
+                <div class="col-md-8">
+                  <label class="form-label fw-semibold">Nama Sekolah</label>
+                  <input type="text" id="masterSekolah" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Kecamatan</label>
+                  <input type="text" id="masterKecamatan" class="form-control" placeholder="Masukkan nama kecamatan" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Nama Tim Pembangun/Penanggung Jawab</label>
+                  <input type="text" id="masterNamaTim" class="form-control" placeholder="Nama Ketua Tim" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Email Sekolah</label>
+                  <input type="email" id="masterEmail" class="form-control" placeholder="alamat@email.com">
+                </div>
+                <div class="col-12 text-end pt-3 border-top">
+                  <button type="button" class="btn btn-secondary me-2 fw-semibold" onclick="resetMasterSd()"><i class="fa-solid fa-rotate-left me-1"></i> Batalkan</button>
+                  <button type="submit" class="btn btn-warning text-white fw-bold"><i class="fa-solid fa-pen-to-square me-1"></i> Update & Simpan Data SD</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: TABEL DATABASE (KHUSUS DINAS/ADMIN) -->
+      <div class="tab-pane fade" id="tab-table" role="tabpanel">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span><i class="fa-solid fa-table me-2 text-primary"></i>Tabel Progres Real-Time Semua Sekolah</span>
+            <div class="d-flex gap-2">
+              <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Cari data..." onkeyup="filterTable()">
+              <button class="btn btn-sm btn-outline-secondary text-nowrap" onclick="loadProgresTable()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
             </div>
           </div>
-        </form>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>ID Input</th>
+                    <th>NPSN</th>
+                    <th>Nama SD</th>
+                    <th>Kecamatan</th>
+                    <th>Menu Pekerjaan</th>
+                    <th class="text-end">Nilai (Rp)</th>
+                    <th class="text-center">Volume</th>
+                    <th>Nama Tim</th>
+                  </tr>
+                </thead>
+                <tbody id="progresTableBody">
+                  <tr>
+                    <td colspan="8" class="text-center text-muted py-4">Memuat data...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- Tabel Database -->
-    <div class="card shadow-sm border-0">
-      <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <span><i class="fa-solid fa-table me-2 text-primary"></i>Tabel Progres Real-Time</span>
-        <div class="d-flex gap-2">
-          <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Cari data..." onkeyup="filterTable()">
-          <button class="btn btn-sm btn-outline-secondary text-nowrap" onclick="loadProgresTable()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
-        </div>
-      </div>
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-              <tr>
-                <th>ID Input</th>
-                <th>NPSN</th>
-                <th>Nama SD</th>
-                <th>Kecamatan</th>
-                <th>Menu Pekerjaan</th>
-                <th class="text-end">Nilai (Rp)</th>
-                <th class="text-center">Volume</th>
-                <th>Nama Tim</th>
-              </tr>
-            </thead>
-            <tbody id="progresTableBody">
-              <tr>
-                <td colspan="8" class="text-center text-muted py-4">Memuat data...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -170,8 +234,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   
   <script>
-    // PASTE URL DEPLOYMENT APPS SCRIPT KAMU DI SINI (BERAKHIRAN /exec)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzNx2gdKRNxoW2zHdAwXVqWKDAICu2Ntld6UcoMPyXND-rtyzB5kdYoS-sKg0JWaSCv/exec"; 
+    // GANTI SESUAI URL APPS SCRIPT BERAKHIRAN /exec
+    const SCRIPT_URL = "PASTE_URL_WEB_APP_KAMU_DI_SINI/exec"; 
     
     let currentUser = null;
     let rawTableData = [];
@@ -207,7 +271,6 @@
       alertBox.classList.remove("d-none");
     }
 
-    // PROSES LOGIN DENGAN PERLINDUNGAN CACHE DAN REDIRECT SAFE
     async function processLogin(e) {
       e.preventDefault();
       const u = document.getElementById("username").value.trim();
@@ -216,7 +279,6 @@
 
       toggleLoading(true);
       try {
-        // Menambahkan parameter timestamp (_t) agar request fetch selalu segar/tidak dicache browser
         const cacheBuster = new Date().getTime();
         const url = `${SCRIPT_URL}?action=login&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}&_t=${cacheBuster}`;
         
@@ -240,29 +302,30 @@
       }
     }
 
-    async function showDashboard(user) {
+    function showDashboard(user) {
       document.getElementById("loginSection").classList.add("d-none");
       document.getElementById("dashboardSection").classList.remove("d-none");
       
       document.getElementById("userDisplayName").textContent = user.sekolah || "Dinas Pendidikan";
-      document.getElementById("userRoleBadge").textContent = user.role || "USER";
+      document.getElementById("userRoleBadge").textContent = user.role || "SEKOLAH";
 
-      if (user.role === "SEKOLAH") {
-        document.getElementById("namaSd").value = user.sekolah || "";
-        document.getElementById("kecamatan").value = user.kecamatan || "Kab. Rembang";
-        document.getElementById("namaTim").value = user.namaTim || "HARYANTO";
-        document.getElementById("namaSd").setAttribute("readonly", true);
-        document.getElementById("kecamatan").setAttribute("readonly", true);
+      // Isi Data Form Progres
+      document.getElementById("namaSd").value = user.sekolah || "";
+      document.getElementById("kecamatan").value = user.kecamatan || "Kab. Rembang";
+      document.getElementById("namaTim").value = user.namaTim || "HARYANTO";
+
+      // Isi Data Master Form SD
+      resetMasterSd();
+
+      // Atur Tampilan Menu Berdasarkan Role
+      if (user.role === "DINAS") {
+        document.getElementById("adminTableTab").classList.remove("d-none");
+        loadProgresTable();
       } else {
-        document.getElementById("namaSd").value = "";
-        document.getElementById("kecamatan").value = "";
-        document.getElementById("namaSd").removeAttribute("readonly");
-        document.getElementById("kecamatan").removeAttribute("readonly");
-        document.getElementById("namaTim").value = "TIM DINAS";
+        document.getElementById("adminTableTab").classList.add("d-none");
       }
 
       loadMasterMenu();
-      await loadProgresTable();
     }
 
     function loadMasterMenu() {
@@ -288,6 +351,115 @@
       });
     }
 
+    // FUNGSI INPUT PROGRES: OPSI SIMPAN DAN LANJUT ISI DATA / BATAL
+    function resetFormProgres() {
+      document.getElementById("namaMenu").value = "";
+      document.getElementById("nilai").value = "";
+      document.getElementById("volumeRuang").value = "";
+      showToast("Form berhasil direset.", true);
+    }
+
+    async function handleProgresSubmit(continueInput = false) {
+      const namaMenu = document.getElementById("namaMenu").value;
+      const nilai = document.getElementById("nilai").value;
+      const volumeRuang = document.getElementById("volumeRuang").value;
+
+      if (!namaMenu || !nilai || !volumeRuang) {
+        showToast("Harap lengkapi semua kolom form progres!", false);
+        return;
+      }
+
+      const payload = {
+        action: "insertProgres",
+        npsn: currentUser.username,
+        namaSd: document.getElementById("namaSd").value,
+        kecamatan: document.getElementById("kecamatan").value,
+        namaMenu: namaMenu,
+        nilai: nilai,
+        volumeRuang: volumeRuang,
+        namaTim: document.getElementById("namaTim").value,
+        _t: new Date().getTime()
+      };
+
+      toggleLoading(true);
+      try {
+        const queryParams = new URLSearchParams(payload);
+        const res = await fetch(`${SCRIPT_URL}?${queryParams.toString()}`, { redirect: "follow", cache: "no-store" });
+        const result = await res.json();
+
+        if (result.status === "success") {
+          showToast("Data progres berhasil tersimpan!");
+          document.getElementById("nilai").value = "";
+          document.getElementById("volumeRuang").value = "";
+          
+          if (continueInput) {
+            document.getElementById("namaMenu").focus();
+          } else {
+            document.getElementById("namaMenu").value = "";
+          }
+        } else {
+          showToast("Gagal menyimpan: " + result.message, false);
+        }
+      } catch (err) {
+        console.error("Submit Error:", err);
+        showToast("Error jaringan saat mengirim data.", false);
+      } finally {
+        toggleLoading(false);
+      }
+    }
+
+    // FUNGSI MASTER DATA SD
+    function resetMasterSd() {
+      if (currentUser) {
+        document.getElementById("masterNpsn").value = currentUser.username || "";
+        document.getElementById("masterSekolah").value = currentUser.sekolah || "";
+        document.getElementById("masterKecamatan").value = currentUser.kecamatan || "";
+        document.getElementById("masterNamaTim").value = currentUser.namaTim || "";
+        document.getElementById("masterEmail").value = currentUser.email || "";
+      }
+    }
+
+    async function submitMasterSd(e) {
+      e.preventDefault();
+      
+      const payload = {
+        action: "updateMasterSd",
+        npsn: currentUser.username,
+        sekolah: document.getElementById("masterSekolah").value,
+        kecamatan: document.getElementById("masterKecamatan").value,
+        namaTim: document.getElementById("masterNamaTim").value,
+        email: document.getElementById("masterEmail").value,
+        _t: new Date().getTime()
+      };
+
+      toggleLoading(true);
+      try {
+        const queryParams = new URLSearchParams(payload);
+        const res = await fetch(`${SCRIPT_URL}?${queryParams.toString()}`, { redirect: "follow", cache: "no-store" });
+        const result = await res.json();
+
+        if (result.status === "success") {
+          showToast("Data Master SD berhasil diperbarui!");
+          // Update data di local session
+          currentUser.sekolah = payload.sekolah;
+          currentUser.kecamatan = payload.kecamatan;
+          currentUser.namaTim = payload.namaTim;
+          currentUser.email = payload.email;
+          localStorage.setItem("provit_user", JSON.stringify(currentUser));
+          
+          showDashboard(currentUser);
+        } else {
+          showToast("Gagal update Master SD: " + result.message, false);
+        }
+      } catch (err) {
+        console.error("Update Master SD Error:", err);
+        showToast("Error jaringan saat update Master SD.", false);
+      } finally {
+        toggleLoading(false);
+      }
+    }
+
+    // FUNGSI TABEL UNTUK ADMIN/DINAS
     async function loadProgresTable() {
       const tableBody = document.getElementById("progresTableBody");
       try {
@@ -296,17 +468,14 @@
         const result = await res.json();
 
         if (result.status === "success" && result.data) {
-          rawTableData = currentUser.role === "SEKOLAH" 
-            ? result.data.filter(item => String(item.npsn) === String(currentUser.username))
-            : result.data;
-
+          rawTableData = result.data;
           renderTable(rawTableData);
         } else {
           tableBody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">${result.message || "Belum ada data progres."}</td></tr>`;
         }
       } catch (err) {
         console.error("Fetch Data Error:", err);
-        tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-danger py-4">Gagal memuat tabel database real-time.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-danger py-4">Gagal memuat tabel database.</td></tr>';
       }
     }
 
@@ -344,44 +513,6 @@
         (item.kecamatan && item.kecamatan.toLowerCase().includes(query))
       );
       renderTable(filtered);
-    }
-
-    async function submitProgres(e) {
-      e.preventDefault();
-      
-      const payload = {
-        action: "insertProgres",
-        npsn: currentUser.username,
-        namaSd: document.getElementById("namaSd").value,
-        kecamatan: document.getElementById("kecamatan").value,
-        namaMenu: document.getElementById("namaMenu").value,
-        nilai: document.getElementById("nilai").value,
-        volumeRuang: document.getElementById("volumeRuang").value,
-        namaTim: document.getElementById("namaTim").value,
-        _t: new Date().getTime()
-      };
-
-      toggleLoading(true);
-      try {
-        const queryParams = new URLSearchParams(payload);
-        const res = await fetch(`${SCRIPT_URL}?${queryParams.toString()}`, { redirect: "follow", cache: "no-store" });
-        const result = await res.json();
-
-        if (result.status === "success") {
-          showToast("Data progres berhasil tersimpan!");
-          document.getElementById("nilai").value = "";
-          document.getElementById("volumeRuang").value = "";
-          document.getElementById("namaMenu").value = "";
-          await loadProgresTable();
-        } else {
-          showToast("Gagal menyimpan: " + result.message, false);
-        }
-      } catch (err) {
-        console.error("Submit Error:", err);
-        showToast("Error jaringan saat mengirim data.", false);
-      } finally {
-        toggleLoading(false);
-      }
     }
 
     function logout() {
