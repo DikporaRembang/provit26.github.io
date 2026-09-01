@@ -1,60 +1,201 @@
-function doPost(e) {
-  try {
-    // Membaca parameter yang dikirim lewat metode URLSearchParams
-    const requestData = e.parameter; 
-    const action = requestData.action;
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    
-    if (action === "login") {
-      const sheet = ss.getSheetByName("Akun");
-      if (!sheet) return jsonResponse({ status: "error", message: "Sheet 'Akun' tidak ditemukan!" });
-      
-      const data = sheet.getDataRange().getValues();
-      const u = requestData.username ? requestData.username.toString().trim() : "";
-      const p = requestData.password ? requestData.password.toString().trim() : "";
-      
-      if (!u || !p) {
-        return jsonResponse({ status: "error", message: "Username dan password wajib diisi!" });
-      }
+// URL Web App Google Apps Script Anda
+    const SCRIPT_URL = "https://google.com";
+    let currentUser = null;
 
-      for (let i = 1; i < data.length; i++) {
-        if (!data[i]) continue;
-        const dbNpsn = data[i][0].toString().trim();     
-        const dbPass = data[i][1].toString().trim();     
-        const dbSekolah = data[i][2].toString().trim();  
-        const dbRole = data[i][3].toString().trim();     
-        
-        if (u === dbNpsn && p === dbPass) {
-          return jsonResponse({
-            status: "success",
-            user: { sekolah: dbSekolah, role: dbRole, kecamatan: "Kab. Rembang", namaTim: "HARYANTO" }
-          });
+    document.addEventListener("DOMContentLoaded", function() {
+      const savedUser = localStorage.getItem("provit_user");
+      if (savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          showDashboard(currentUser);
+        } catch(e) {
+          localStorage.removeItem("provit_user");
         }
       }
-      return jsonResponse({ status: "error", message: "NPSN atau password salah!" });
+    });
+
+    function toggleLoading(show) {
+      document.getElementById("loadingOverlay").classList.toggle("d-none", !show);
     }
-    
-    if (action === "insertProgres") {
-      const sheet = ss.getSheetByName("Database");
-      if (!sheet) return jsonResponse({ status: "error", message: "Sheet 'Database' tidak ditemukan!" });
+
+    function showAlert(msg) {
+      const alertBox = document.getElementById("loginAlert");
+      alertBox.textContent = msg;
+      alertBox.classList.remove("d-none");
+    }
+
+    async function processLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById("username").value.trim();
+      const p = document.getElementById("password").value.trim();
+      document.getElementById("loginAlert").classList.add("d-none");
+
+      toggleLoading(true);
+      try {
+        const dataPayload = new URLSearchParams();
+        dataPayload.append("action", "login");
+        dataPayload.append("username", u);
+        dataPayload.append("password", p);
+
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: dataPayload.toString()
+        });
+        
+        const result = await res.json();
+
+        if (result.status === "success" && result.user) {
+          currentUser = result.user;
+          currentUser.username = u; 
+          localStorage.setItem("provit_user", JSON.stringify(currentUser));
+          showDashboard(currentUser);
+        } else {
+          showAlert(result.message || "NPSN atau password Anda salah.");
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert("Login gagal: Server menolak koneksi. Pastikan akun Google Sheet Anda telah mengaktifkan izin publik (Anyone).");
+      } finally {
+        toggleLoading(false);
+      }
+    }
+
+    async function showDashboard(user) {
+      document.getElementById("loginSection").classList.add("d-none");
+      document.getElementById("dashboardSection").classList.remove("d-none");
       
-      const idInput = "PRG-" + Math.floor(1000 + Math.random() * 9000);
-      sheet.appendRow([
-        idInput, 
-        requestData.npsn || "", 
-        requestData.namaSd || "", 
-        requestData.kecamatan || "", 
-        requestData.namaMenu || "", 
-        Number(requestData.nilai) || 0, 
-        Number(requestData.volumeRuang) || 0, 
-        requestData.namaTim || ""
-      ]);
-      return jsonResponse({ status: "success", message: "Data progres berhasil disimpan." });
+      document.getElementById("userDisplayName").textContent = user.sekolah || "Dinas Pendidikan";
+      document.getElementById("userRoleBadge").textContent = user.role || "USER";
+
+      if (user.role === "SEKOLAH") {
+        document.getElementById("namaSd").value = user.sekolah || "";
+        document.getElementById("kecamatan").value = user.kecamatan || "Kab. Rembang";
+        document.getElementById("namaTim").value = user.namaTim || "HARYANTO";
+        document.getElementById("namaSd").setAttribute("readonly", true);
+        document.getElementById("kecamatan").setAttribute("readonly", true);
+      } else {
+        document.getElementById("namaSd").removeAttribute("readonly");
+        document.getElementById("kecamatan").removeAttribute("readonly");
+        document.getElementById("namaSd").style.backgroundColor = "#ffffff";
+        document.getElementById("kecamatan").style.backgroundColor = "#ffffff";
+        document.getElementById("namaTim").value = "TIM DINAS";
+      }
+
+      loadMasterMenu();
+      loadProgresTable();
     }
-    
-    return jsonResponse({ status: "error", message: "Aksi POST tidak valid." });
-    
-  } catch (error) {
-    return jsonResponse({ status: "error", message: "Error sistem: " + error.toString() });
-  }
-}
+
+    function loadMasterMenu() {
+      const menuData = [
+        { id: "M01", nama: "Pembangunan ruang kelas baru" }, { id: "M02", nama: "Pembangunan perpustakaan" },
+        { id: "M03", nama: "Pembangunan kamar mandi" }, { id: "M04", nama: "Pembangunan ruang administrasi" },
+        { id: "M05", nama: "Pembangunan ruang UKS" }, { id: "M06", nama: "Pembangunan ruang laboratorium" },
+        { id: "M07", nama: "Pembangunan rumah dinas" }, { id: "M08", nama: "Rehab ruang kelas" },
+        { id: "M09", nama: "Rehab perpustakaan" }, { id: "M10", nama: "Rehab kamar mandi" },
+        { id: "M11", nama: "Rehab ruang administrasi" }, { id: "M12", nama: "Rehab ruang laboratorium" },
+        { id: "M13", nama: "Rehab rumah dinas" }, { id: "M14", nama: "Penataan lingkungan sekolah" },
+        { id: "M15", nama: "Perabot (meubelair)" }, { id: "M16", nama: "Perencanaan" },
+        { id: "M17", nama: "Pengawasan" }, { id: "M18", nama: "Pengelolaan" }
+      ];
+
+      const selectMenu = document.getElementById("namaMenu");
+      selectMenu.innerHTML = '<option value="">-- Pilih Menu Pekerjaan --</option>';
+      menuData.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.nama;
+        option.textContent = `${item.id} - ${item.nama}`;
+        selectMenu.appendChild(option);
+      });
+    }
+
+    async function loadProgresTable() {
+      const tableBody = document.getElementById("progresTableBody");
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=readData`);
+        const result = await res.json();
+
+        if (result.status === "success" && result.data) {
+          tableBody.innerHTML = "";
+          const filteredData = currentUser.role === "SEKOLAH" 
+            ? result.data.filter(item => String(item.npsn) === String(currentUser.username))
+            : result.data;
+
+          if (filteredData.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Belum ada data progres untuk akun ini.</td></tr>';
+            return;
+          }
+
+          filteredData.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td><span class="badge bg-secondary">\${row.idInput || '-'}</span></td>
+              <td>\${row.npsn || '-'}</td>
+              <td><strong>\${row.namaSd || '-'}</strong></td>
+              <td>\${row.kecamatan || '-'}</td>
+              <td>\${row.namaMenu || '-'}</td>
+              <td class="text-end fw-bold text-success">Rp \${Number(row.nilai || 0).toLocaleString('id-ID')}</td>
+              <td class="text-center">\${row.volumeRuang || 0}</td>
+              <td><small class="text-muted">\${row.namaTim || '-'}</small></td>
+            `;
+            tableBody.appendChild(tr);
+          });
+        } else {
+          tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Belum ada data progres.</td></tr>';
+        }
+      } catch (err) {
+        tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-danger">Gagal memuat tabel database real-time.</td></tr>';
+      }
+    }
+
+    async function submitProgres(e) {
+      e.preventDefault();
+      
+      const payload = new URLSearchParams();
+      payload.append("action", "insertProgres");
+      payload.append("npsn", currentUser.username);
+      payload.append("namaSd", document.getElementById("namaSd").value);
+      payload.append("kecamatan", document.getElementById("kecamatan").value);
+      payload.append("namaMenu", document.getElementById("namaMenu").value);
+      payload.append("nilai", document.getElementById("nilai").value);
+      payload.append("volumeRuang", document.getElementById("volumeRuang").value);
+      payload.append("namaTim", document.getElementById("namaTim").value);
+
+      toggleLoading(true);
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: payload.toString()
+        });
+        const result = await res.json();
+
+        if (result.status === "success") {
+          alert("✓ Data sukses disimpan ke Google Sheets!");
+          document.getElementById("nilai").value = "";
+          document.getElementById("volumeRuang").value = "";
+          document.getElementById("namaMenu").value = "";
+          await loadProgresTable();
+        } else {
+          alert("Gagal: " + result.message);
+        }
+      } catch (err) {
+        alert("Eror jaringan saat menyimpan progres.");
+      } finally {
+        toggleLoading(false);
+      }
+    }
+
+    function logout() {
+      if (confirm("Keluar dari aplikasi PROVIT26?")) {
+        localStorage.removeItem("provit_user");
+        currentUser = null;
+        document.getElementById("dashboardSection").classList.add("d-none");
+        document.getElementById("loginSection").classList.remove("d-none");
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+      }
+    }
+  </script>
+</body>
+</html>
