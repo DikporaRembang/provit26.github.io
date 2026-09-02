@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aplikasi Pelaporan Progres Kegiatan SD</title>
+  <title>Aplikasi Pelaporan & Progres Kegiatan SD</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
     @media print {
@@ -63,10 +63,10 @@
     <!-- Konten Utama -->
     <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
       
-      <!-- TAB 1: LAPORKAN PROGRES (USER SEKOLAH) -->
+      <!-- TAB: LAPORKAN PROGRES (DATABASE) -->
       <div id="tabLaporkan" class="tab-content hidden max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
-        <h3 class="text-xl font-bold text-slate-900 mb-1">Laporkan Progres Kegiatan</h3>
-        <p class="text-sm text-slate-500 mb-6">Input realisasi pelaksanaan fisik/non-fisik satuan pendidikan.</p>
+        <h3 class="text-xl font-bold text-slate-900 mb-1">Laporkan Kegiatan (Database)</h3>
+        <p class="text-sm text-slate-500 mb-6">Daftarkan rencana kegiatan fisik/non-fisik satuan pendidikan.</p>
         
         <div id="formAlert" class="hidden mb-4 p-3 text-sm rounded-xl"></div>
 
@@ -85,16 +85,49 @@
             <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Volume Ruang / Satuan</label>
             <input type="number" id="dataVolume" required placeholder="Contoh: 1" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
           </div>
-          <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl shadow-md transition">Kirim Laporan Progres</button>
+          <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl shadow-md transition">Simpan ke Database</button>
         </form>
       </div>
 
-      <!-- TAB 2: LIHAT PROGRES & CETAK -->
+      <!-- TAB: INPUT PROGRES (PROGRES PEKERJAAN) -->
+      <div id="tabInputProgres" class="tab-content hidden max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
+        <h3 class="text-xl font-bold text-slate-900 mb-1">Input Progres Pekerjaan</h3>
+        <p class="text-sm text-slate-500 mb-6">Pilih kegiatan dari Database untuk memperbarui capaian progres.</p>
+        
+        <div id="progresFormAlert" class="hidden mb-4 p-3 text-sm rounded-xl"></div>
+
+        <form onsubmit="submitProgres(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Pilih Kegiatan (ID Database)</label>
+            <select id="selectDbInput" required onchange="onDatabaseSelectChange()" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
+              <option value="">Memuat data database...</option>
+            </select>
+          </div>
+          <div id="dbDetailInfo" class="text-xs text-slate-500 bg-sky-50 p-3 rounded-xl hidden">
+            <!-- Info detail kegiatan terpilih -->
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Target Pekerjaan</label>
+            <input type="text" id="progTarget" required placeholder="Contoh: Pemasangan Rangka Atap 50%" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Capaian Fisik</label>
+            <input type="text" id="progCapaian" required placeholder="Contoh: Selesai 50%" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Realisasi Anggaran (Rp)</label>
+            <input type="number" id="progRealAnggaran" required placeholder="Contoh: 12500000" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
+          </div>
+          <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl shadow-md transition">Simpan Progres</button>
+        </form>
+      </div>
+
+      <!-- TAB: LIHAT PROGRES & CETAK -->
       <div id="tabLihatProgres" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100 no-print">
           <div>
             <h3 class="text-lg font-bold text-slate-900">Rekapitulasi Progres Kegiatan</h3>
-            <p class="text-sm text-slate-500">Data terkelompok berdasarkan rekam database sekolah.</p>
+            <p class="text-sm text-slate-500">Pemantauan data progres berdasarkan tarikan dari tabel database.</p>
           </div>
           <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition flex items-center space-x-2">
             <span>Cetak / Print Laporan</span>
@@ -103,21 +136,21 @@
 
         <div id="printArea" class="bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
           <div class="text-center mb-6 pb-4 border-b border-sky-100">
-            <h2 class="text-xl font-extrabold text-slate-900 uppercase">Laporan Progres Pelaksanaan Kegiatan SD</h2>
-            <p class="text-sm text-slate-600" id="printSubtitle">Rekapitulasi Data</p>
+            <h2 class="text-xl font-extrabold text-slate-900 uppercase">Laporan Rekapitulasi Progres Kegiatan SD</h2>
+            <p class="text-sm text-slate-600" id="printSubtitle">Data Progres Pekerjaan</p>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-sm">
               <thead>
                 <tr class="bg-sky-100/70 text-sky-900 border-b border-sky-200">
                   <th class="p-3">No</th>
-                  <th class="p-3">ID</th>
-                  <th class="p-3">NPSN</th>
+                  <th class="p-3">ID Progres</th>
+                  <th class="p-3">ID Input</th>
                   <th class="p-3">Nama Sekolah</th>
-                  <th class="p-3">Kecamatan</th>
-                  <th class="p-3">Nama Menu Kegiatan</th>
-                  <th class="p-3">Nilai (Rp)</th>
-                  <th class="p-3">Volume</th>
+                  <th class="p-3">Tanggal</th>
+                  <th class="p-3">Target</th>
+                  <th class="p-3">Capaian Fisik</th>
+                  <th class="p-3">Realisasi Anggaran (Rp)</th>
                 </tr>
               </thead>
               <tbody id="tableProgresBody">
@@ -128,42 +161,36 @@
         </div>
       </div>
 
-      <!-- TAB 3: KELOLA PENGGUNA (DINAS) -->
+      <!-- TAB: KELOLA PENGGUNA (DINAS) -->
       <div id="tabUsers" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
           <h3 class="text-lg font-bold text-slate-900">Manajemen Pengguna (USERS)</h3>
           <button onclick="openModalCrud('USERS', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah Pengguna</button>
         </div>
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
-          <table class="w-full text-left border-collapse text-sm" id="tableUsersGrid">
-            <!-- Dimuat dinamis -->
-          </table>
+          <table class="w-full text-left border-collapse text-sm" id="tableUsersGrid"></table>
         </div>
       </div>
 
-      <!-- TAB 4: EDIT MENU (MASTER_MENU) -->
+      <!-- TAB: EDIT MENU (MASTER_MENU) -->
       <div id="tabMasterMenu" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
           <h3 class="text-lg font-bold text-slate-900">Kelola Master Menu Kegiatan</h3>
           <button onclick="openModalCrud('Master_Menu', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah Menu</button>
         </div>
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
-          <table class="w-full text-left border-collapse text-sm" id="tableMenuGrid">
-            <!-- Dimuat dinamis -->
-          </table>
+          <table class="w-full text-left border-collapse text-sm" id="tableMenuGrid"></table>
         </div>
       </div>
 
-      <!-- TAB 5: EDIT SD (MASTER_SD) -->
+      <!-- TAB: EDIT SD (MASTER_SD) -->
       <div id="tabMasterSd" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
           <h3 class="text-lg font-bold text-slate-900">Kelola Master Data Sekolah (Master_SD)</h3>
           <button onclick="openModalCrud('Master_SD', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah SD</button>
         </div>
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
-          <table class="w-full text-left border-collapse text-sm" id="tableSdGrid">
-            <!-- Dimuat dinamis -->
-          </table>
+          <table class="w-full text-left border-collapse text-sm" id="tableSdGrid"></table>
         </div>
       </div>
 
@@ -175,9 +202,7 @@
     <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-lg border border-sky-100">
       <h3 id="modalTitle" class="text-lg font-bold text-slate-900 mb-4">Form Data</h3>
       <form id="crudForm" onsubmit="submitCrudForm(event)" class="space-y-4">
-        <div id="modalInputs" class="space-y-3">
-          <!-- Dinamis input kolom -->
-        </div>
+        <div id="modalInputs" class="space-y-3"></div>
         <div class="flex space-x-3 pt-2">
           <button type="submit" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl transition">Simpan</button>
           <button type="button" onclick="closeModalCrud()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition">Batal</button>
@@ -187,12 +212,12 @@
   </div>
 
   <script>
-    // Ganti URL Web App Google Apps Script Anda di sini setelah Deploy
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxW8ah1pYsZDGfokjuaZNIk8Hn2vBEsfs84zwtmLoDlS_qWvTYxXFu2P8jNoDbr2fsC/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrYJ54cLPxkSu0zZ1blio7uKvMPi4lKQGnPvIKtrTYS8vAfVVokmzLrIJ1qzTDyKYi/exec";
     let currentUser = null;
     let currentActiveSheet = "";
     let currentCrudAction = "";
     let sheetHeaders = {};
+    let databaseListCache = [];
 
     async function handleLogin(e) {
       e.preventDefault();
@@ -241,11 +266,13 @@
         switchTab('tabUsers');
       } else {
         nav.innerHTML += `
-          <button onclick="switchTab('tabLaporkan')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Laporkan Progres</button>
+          <button onclick="switchTab('tabLaporkan')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Laporkan Progres (Database)</button>
+          <button onclick="switchTab('tabInputProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Input Progres</button>
           <button onclick="switchTab('tabLihatProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Lihat Progres</button>
         `;
         switchTab('tabLaporkan');
         loadDropdownMenu();
+        loadDatabaseDropdownForProgres();
       }
     }
 
@@ -261,6 +288,7 @@
       event.target.classList.add("bg-sky-600", "text-white");
 
       if (tabId === 'tabLihatProgres') loadProgresData();
+      if (tabId === 'tabInputProgres') loadDatabaseDropdownForProgres();
       if (tabId === 'tabUsers') loadSheetGrid('USERS', 'tableUsersGrid');
       if (tabId === 'tabMasterMenu') loadSheetGrid('Master_Menu', 'tableMenuGrid');
       if (tabId === 'tabMasterSd') loadSheetGrid('Master_SD', 'tableSdGrid');
@@ -273,10 +301,42 @@
       if (json.status === "success") {
         select.innerHTML = '<option value="">-- Pilih Jenis Menu Kegiatan --</option>';
         json.data.forEach(m => {
-          const menuName = m["Nama Menu"] || m["Nama Menu"] || Object.values(m)[1];
+          const menuName = m["Nama Menu"] || Object.values(m)[1];
           const menuId = m["ID Menu"] || Object.values(m)[0];
           select.innerHTML += `<option value="${menuName}">${menuId} - ${menuName}</option>`;
         });
+      }
+    }
+
+    async function loadDatabaseDropdownForProgres() {
+      const res = await fetch(`${SCRIPT_URL}?action=getDatabase`);
+      const json = await res.json();
+      const select = document.getElementById("selectDbInput");
+      if (json.status === "success") {
+        databaseListCache = json.data;
+        let filtered = databaseListCache;
+        if (currentUser.role === "SEKOLAH") {
+          filtered = databaseListCache.filter(item => String(item.npsn).trim() === String(currentUser.npsn).trim());
+        }
+        
+        select.innerHTML = '<option value="">-- Pilih ID Database Kegiatan --</option>';
+        filtered.forEach(item => {
+          select.innerHTML += `<option value="${item.idInput}">${item.idInput} - ${item.namaMenu} (Nilai: Rp ${Number(item.nilai).toLocaleString('id-ID')})</option>`;
+        });
+      }
+    }
+
+    function onDatabaseSelectChange() {
+      const selectedId = document.getElementById("selectDbInput").value;
+      const infoBox = document.getElementById("dbDetailInfo");
+      if (!selectedId) {
+        infoBox.classList.add("hidden");
+        return;
+      }
+      const found = databaseListCache.find(x => x.idInput === selectedId);
+      if (found) {
+        infoBox.innerHTML = `<strong>Kegiatan:</strong> ${found.namaMenu}<br><strong>Nilai Anggaran:</strong> Rp ${Number(found.nilai).toLocaleString('id-ID')}<br><strong>Volume:</strong> ${found.volume}`;
+        infoBox.classList.remove("hidden");
       }
     }
 
@@ -298,16 +358,47 @@
         if(json.status === "success") {
           document.getElementById("dataNilai").value = "";
           document.getElementById("dataVolume").value = "";
+          loadDatabaseDropdownForProgres();
         }
       } catch (err) {
-        alertBox.innerText = "Gagal mengirim laporan.";
+        alertBox.innerText = "Gagal mengirim laporan database.";
+        alertBox.classList.remove("hidden");
+        alertBox.classList.add("bg-red-50", "text-red-700");
+      }
+    }
+
+    async function submitProgres(e) {
+      e.preventDefault();
+      const alertBox = document.getElementById("progresFormAlert");
+      const idInput = document.getElementById("selectDbInput").value;
+      const target = document.getElementById("progTarget").value;
+      const capaianFisik = document.getElementById("progCapaian").value;
+      const realAnggaran = document.getElementById("progRealAnggaran").value;
+
+      const url = `${SCRIPT_URL}?action=saveProgres&idInput=${encodeURIComponent(idInput)}&npsn=${encodeURIComponent(currentUser.npsn)}&namaSd=${encodeURIComponent(currentUser.sekolah)}&target=${encodeURIComponent(target)}&capaianFisik=${encodeURIComponent(capaianFisik)}&realAnggaran=${encodeURIComponent(realAnggaran)}`;
+
+      try {
+        const res = await fetch(url);
+        const json = await res.json();
+        alertBox.innerText = json.message;
+        alertBox.classList.remove("hidden", "bg-red-50", "text-red-700");
+        alertBox.classList.add("bg-emerald-50", "text-emerald-700");
+        if(json.status === "success") {
+          document.getElementById("progTarget").value = "";
+          document.getElementById("progCapaian").value = "";
+          document.getElementById("progRealAnggaran").value = "";
+          document.getElementById("selectDbInput").value = "";
+          document.getElementById("dbDetailInfo").classList.add("hidden");
+        }
+      } catch (err) {
+        alertBox.innerText = "Gagal menyimpan progres pekerjaan.";
         alertBox.classList.remove("hidden");
         alertBox.classList.add("bg-red-50", "text-red-700");
       }
     }
 
     async function loadProgresData() {
-      const res = await fetch(`${SCRIPT_URL}?action=getDatabase`);
+      const res = await fetch(`${SCRIPT_URL}?action=getProgres`);
       const json = await res.json();
       const tbody = document.getElementById("tableProgresBody");
       const subtitle = document.getElementById("printSubtitle");
@@ -317,9 +408,9 @@
         let filtered = json.data;
         if (currentUser.role === "SEKOLAH") {
           filtered = json.data.filter(row => String(row.npsn).trim() === String(currentUser.npsn).trim());
-          subtitle.innerText = `Rekapitulasi Data untuk Sekolah: ${currentUser.sekolah} (NPSN: ${currentUser.npsn})`;
+          subtitle.innerText = `Rekapitulasi Progres Sekolah: ${currentUser.sekolah} (NPSN: ${currentUser.npsn})`;
         } else {
-          subtitle.innerText = `Rekapitulasi Seluruh Data Progres Sekolah Kabupaten Rembang`;
+          subtitle.innerText = `Rekapitulasi Seluruh Progres Kegiatan Sekolah Kabupaten`;
         }
 
         if(filtered.length === 0) {
@@ -331,17 +422,17 @@
           tbody.innerHTML += `
             <tr class="border-b border-sky-100 hover:bg-sky-50/50">
               <td class="p-3">${idx + 1}</td>
-              <td class="p-3">${row.idInput}</td>
-              <td class="p-3">${row.npsn}</td>
-              <td class="p-3 font-semibold">${row.namaSd}</td>
-              <td class="p-3">${row.kecamatan}</td>
-              <td class="p-3">${row.namaMenu}</td>
-              <td class="p-3">Rp ${Number(row.nilai).toLocaleString('id-ID')}</td>
-              <td class="p-3">${row.volume}</td>
+              <td class="p-3 font-medium">${row.idProgres}</td>
+              <td class="p-3 font-semibold text-sky-700">${row.idInput}</td>
+              <td class="p-3">${row.namaSd}</td>
+              <td class="p-3">${row.tanggal}</td>
+              <td class="p-3">${row.target}</td>
+              <td class="p-3">${row.capaianFisik}</td>
+              <td class="p-3 font-semibold">Rp ${Number(row.realAnggaran).toLocaleString('id-ID')}</td>
             </tr>`;
         });
       } else {
-        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">Belum ada data laporan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">Belum ada data progres pekerjaan.</td></tr>`;
       }
     }
 
@@ -360,7 +451,7 @@
         if (json.data.length === 0) {
           html += `<tr><td colspan="10" class="p-4 text-center text-slate-400">Tidak ada data.</td></tr>`;
         } else {
-          json.data.forEach((row, idx) => {
+          json.data.forEach((row) => {
             html += `<tr class="border-b border-sky-100 hover:bg-sky-50/50">`;
             sheetHeaders[sheetName].forEach(h => html += `<td class="p-3">${row[h] || ''}</td>`);
             html += `<td class="p-3 text-center space-x-2">
