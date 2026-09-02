@@ -95,11 +95,11 @@
       <!-- TAB: INPUT PROGRES PEKERJAAN -->
       <div id="tabInputProgres" class="tab-content hidden max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
         <h3 class="text-xl font-bold text-slate-900 mb-1">Input Progres Pekerjaan</h3>
-        <p class="text-sm text-slate-500 mb-6">Pilih kegiatan dan laporkan capaian progres mingguan (berdasarkan kontrak).</p>
+        <p class="text-sm text-slate-500 mb-6">Pilih kegiatan dan laporkan capaian progres mingguan.</p>
         
         <!-- Info Master_SD -->
         <div id="sdInfoBox" class="mb-6 p-4 bg-sky-50 border border-sky-200 rounded-2xl text-xs space-y-1">
-          <h4 class="font-bold text-sky-900 text-sm mb-2">Informasi Kontrak Sekolah</h4>
+          <h4 class="font-bold text-sky-900 text-sm mb-2">Informasi Kontrak Sekolah (Master_SD)</h4>
           <div id="sdInfoContent">Memuat informasi sekolah...</div>
         </div>
 
@@ -113,23 +113,38 @@
             </select>
           </div>
           <div id="dbDetailInfo" class="text-xs text-slate-500 bg-sky-50 p-3 rounded-xl hidden"></div>
+          
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Rentang Tanggal (Mingguan)</label>
-            <input type="date" id="progMingguMulai" required class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none mb-2" placeholder="Tanggal Mulai Minggu">
-            <input type="date" id="progMingguSelesai" required class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none" placeholder="Tanggal Selesai Minggu">
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Rentang Tanggal Mingguan (Otomatis)</label>
+            <div class="flex gap-2">
+              <select id="selectMingguKe" onchange="generateWeeklyRange()" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
+                <option value="">-- Pilih Minggu Ke- --</option>
+              </select>
+            </div>
+            <input type="text" id="progRentangMinggu" readonly placeholder="Rentang tanggal mingguan otomatis..." class="mt-2 w-full px-4 py-2.5 bg-slate-100 border border-sky-200 rounded-xl text-slate-600 font-medium text-xs">
           </div>
+
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Target Pekerjaan (%)</label>
-            <input type="number" id="progTarget" min="0" max="100" step="0.1" required placeholder="Contoh: 50" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
+            <div class="relative">
+              <input type="number" id="progTarget" min="0" max="100" step="0.1" required placeholder="Contoh: 50" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none pr-8">
+              <span class="absolute right-3 top-2.5 text-slate-400 font-bold">%</span>
+            </div>
           </div>
+
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Capaian Fisik (%)</label>
-            <input type="number" id="progCapaian" min="0" max="100" step="0.1" required placeholder="Contoh: 45" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
+            <div class="relative">
+              <input type="number" id="progCapaian" min="0" max="100" step="0.1" required placeholder="Contoh: 45" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none pr-8">
+              <span class="absolute right-3 top-2.5 text-slate-400 font-bold">%</span>
+            </div>
           </div>
+
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Realisasi Anggaran (Rp)</label>
             <input type="number" id="progRealAnggaran" required placeholder="Contoh: 12500000" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
           </div>
+
           <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl shadow-md transition">Simpan Progres</button>
         </form>
       </div>
@@ -139,7 +154,7 @@
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100 no-print">
           <div>
             <h3 class="text-lg font-bold text-slate-900">Rekapitulasi Penyerapan Anggaran & Progres</h3>
-            <p class="text-sm text-slate-500">Pembandingan PAGU, Realisasi Anggaran, dan Persentase Penyerapan.</p>
+            <p class="text-sm text-slate-500">Pembandingan PAGU (dari Master_SD), Realisasi Anggaran, dan Persentase.</p>
           </div>
           <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">Cetak / Print Laporan</button>
         </div>
@@ -280,6 +295,7 @@
       buildNavigation();
       if (currentUser.role === "SEKOLAH") {
         renderSdInfoBox();
+        setupWeeklyDropdownOptions();
       }
     }
 
@@ -289,8 +305,49 @@
         <div><strong>Masa PKS:</strong> ${currentUser.masaPks || '-'}</div>
         <div><strong>Tanggal Mulai:</strong> ${currentUser.tanggalMulai || '-'}</div>
         <div><strong>Tanggal Selesai:</strong> ${currentUser.tanggalSelesai || '-'}</div>
-        <div><strong>Pagu Anggaran:</strong> Rp ${Number(currentUser.pagu || 0).toLocaleString('id-ID')}</div>
+        <div><strong>Pagu Anggaran:</strong> ${currentUser.paguFormatted || 'Rp 0'}</div>
       `;
+    }
+
+    function setupWeeklyDropdownOptions() {
+      const selectMinggu = document.getElementById("selectMingguKe");
+      selectMinggu.innerHTML = '<option value="">-- Pilih Minggu Ke- --</option>';
+      for (let i = 1; i <= 24; i++) {
+        selectMinggu.innerHTML += `<option value="${i}">Minggu Ke-${i}</option>`;
+      }
+    }
+
+    function generateWeeklyRange() {
+      const mingguKe = parseInt(document.getElementById("selectMingguKe").value);
+      const inputRentang = document.getElementById("progRentangMinggu");
+      
+      if (!mingguKe || !currentUser.rawMulai) {
+        inputRentang.value = "";
+        return;
+      }
+
+      const baseDate = new Date(currentUser.rawMulai);
+      if (isNaN(baseDate.getTime())) {
+        inputRentang.value = "Format tanggal mulai kontrak tidak valid.";
+        return;
+      }
+
+      // Hitung awal minggu berdasarkan tanggal mulai (Minggu ke-1 dimulai dari tanggal Mulai)
+      const startOfWeek = new Date(baseDate);
+      startOfWeek.setDate(baseDate.getDate() + (mingguKe - 1) * 7);
+
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+      inputRentang.value = `${formatDateStringIndo(startOfWeek)} s.d ${formatDateStringIndo(endOfWeek)}`;
+    }
+
+    function formatDateStringIndo(dateObj) {
+      const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const month = months[dateObj.getMonth()];
+      const year = dateObj.getFullYear();
+      return `${day} ${month} ${year}`;
     }
 
     function buildNavigation() {
@@ -403,8 +460,10 @@
         let maxTarget = 0;
         let maxCapaian = 0;
         prevProgres.forEach(p => {
-          if (Number(p.target) > maxTarget) maxTarget = Number(p.target);
-          if (Number(p.capaianFisik) > maxCapaian) maxCapaian = Number(p.capaianFisik);
+          let tVal = parseFloat(String(p.target).replace('%','')) || 0;
+          let cVal = parseFloat(String(p.capaianFisik).replace('%','')) || 0;
+          if (tVal > maxTarget) maxTarget = tVal;
+          if (cVal > maxCapaian) maxCapaian = cVal;
         });
 
         infoBox.innerHTML = `<strong>Kegiatan:</strong> ${found.namaMenu}<br><strong>Nilai Anggaran:</strong> Rp ${Number(found.nilai).toLocaleString('id-ID')}<br><strong>Volume:</strong> ${found.volume}<br><span class="text-sky-700 font-semibold">Catatan: Target & Capaian sebelumnya minimal: Target ${maxTarget}%, Capaian Fisik ${maxCapaian}%</span>`;
@@ -436,9 +495,7 @@
 
           setTimeout(() => {
             const lanjut = confirm("Menu kegiatan berhasil disimpan!\n\nKlik 'OK' untuk Tambah Data lagi, atau 'Cancel' untuk Selesai.");
-            if (!lanjut) {
-              switchTab('tabLihatProgres');
-            }
+            if (!lanjut) switchTab('tabLihatProgres');
           }, 200);
         }
       } catch (err) {
@@ -452,23 +509,17 @@
       event.preventDefault();
       const alertBox = document.getElementById("progresFormAlert");
       const idInput = document.getElementById("selectDbInput").value;
-      const tglMulai = document.getElementById("progMingguMulai").value;
-      const tglSelesai = document.getElementById("progMingguSelesai").value;
-      const rentangMinggu = `${tglMulai} s.d ${tglSelesai}`;
-      const target = Number(document.getElementById("progTarget").value);
-      const capaianFisik = Number(document.getElementById("progCapaian").value);
+      const rentangMinggu = document.getElementById("progRentangMinggu").value;
+      const targetVal = document.getElementById("progTarget").value;
+      const capaianVal = document.getElementById("progCapaian").value;
+      
+      // Target dan Capaian Fisik ditambah "%" di belakang angka
+      const target = targetVal + "%";
+      const capaianFisik = capaianVal + "%";
       const realAnggaran = document.getElementById("progRealAnggaran").value;
 
-      const prevProgres = existingProgresCache.filter(p => p.idInput === idInput);
-      let maxTarget = 0;
-      let maxCapaian = 0;
-      prevProgres.forEach(p => {
-        if (Number(p.target) > maxTarget) maxTarget = Number(p.target);
-        if (Number(p.capaianFisik) > maxCapaian) maxCapaian = Number(p.capaianFisik);
-      });
-
-      if (target < maxTarget || capaianFisik < maxCapaian) {
-        alertBox.innerText = `Validasi Gagal: Nilai Target (${target}%) atau Capaian Fisik (${capaianFisik}%) tidak boleh kurang dari rekam jejak sebelumnya (Target min: ${maxTarget}%, Capaian min: ${maxCapaian}%).`;
+      if (!rentangMinggu) {
+        alertBox.innerText = "Silakan pilih minggu ke- terlebih dahulu.";
         alertBox.classList.remove("hidden", "bg-emerald-50", "text-emerald-700");
         alertBox.classList.add("bg-red-50", "text-red-700");
         return;
@@ -487,17 +538,15 @@
           document.getElementById("progTarget").value = "";
           document.getElementById("progCapaian").value = "";
           document.getElementById("progRealAnggaran").value = "";
-          document.getElementById("progMingguMulai").value = "";
-          document.getElementById("progMingguSelesai").value = "";
+          document.getElementById("progRentangMinggu").value = "";
+          document.getElementById("selectMingguKe").value = "";
           document.getElementById("selectDbInput").value = "";
           document.getElementById("dbDetailInfo").classList.add("hidden");
           loadAllProgresData();
 
           setTimeout(() => {
             const lanjut = confirm("Progres pekerjaan berhasil disimpan!\n\nKlik 'OK' untuk Tambah Data lagi, atau 'Cancel' untuk Selesai.");
-            if (!lanjut) {
-              switchTab('tabLihatProgres');
-            }
+            if (!lanjut) switchTab('tabLihatProgres');
           }, 200);
         }
       } catch (err) {
@@ -534,8 +583,8 @@
               <td class="p-3">${idx + 1}</td>
               <td class="p-3 font-medium">${row.npsn}</td>
               <td class="p-3 font-semibold text-sky-700">${row.sekolah}</td>
-              <td class="p-3">Rp ${Number(row.pagu).toLocaleString('id-ID')}</td>
-              <td class="p-3 font-semibold">Rp ${Number(row.totalRealisasi).toLocaleString('id-ID')}</td>
+              <td class="p-3">${row.paguFormatted}</td>
+              <td class="p-3 font-semibold">${row.totalRealisasiFormatted}</td>
               <td class="p-3 font-bold text-emerald-600">${row.persentase}%</td>
             </tr>`;
         });
@@ -564,10 +613,6 @@
             html += `<tr class="border-b border-sky-100 hover:bg-sky-50/50">`;
             sheetHeaders[sheetName].forEach(h => {
               let val = row[h] || '';
-              // Format Currency di tabel Master_SD jika kolom pagu
-              if (sheetName === 'Master_SD' && typeof val === 'number' && h.toLowerCase().includes('pagu')) {
-                val = `Rp ${val.toLocaleString('id-ID')}`;
-              }
               html += `<td class="p-3">${val}</td>`;
             });
             html += `<td class="p-3 text-center space-x-2">
