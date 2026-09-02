@@ -112,7 +112,7 @@
       box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
     }
 
-    .form-control, .form-select {
+    .form-control, .form-select, .input-group-text {
       border-radius: 12px;
       border: 1px solid #cbd5e1;
       padding: 10px 14px;
@@ -218,7 +218,6 @@
               <label for="username"><i class="fa-solid fa-user text-muted me-1"></i> NPSN / Username</label>
             </div>
             
-            <!-- PASSWORD FIELD WITH EYE ICON TOGGLE -->
             <div class="form-floating mb-4 password-wrapper">
               <input type="password" class="form-control pe-5" id="password" placeholder="Password" required>
               <label for="password"><i class="fa-solid fa-lock text-muted me-1"></i> Password</label>
@@ -382,8 +381,6 @@
 
           <!-- [DINAS] TAB 4: REKAP DATABASE DINAS -->
           <div class="tab-pane fade role-dinas-pane" id="tab-rekap-dinas">
-            
-            <!-- KPI STATS OVERVIEW -->
             <div class="row g-3 mb-4">
               <div class="col-md-4">
                 <div class="kpi-card-glow p-3 d-flex align-items-center">
@@ -476,7 +473,7 @@
 
   <div id="printArea" class="d-none"></div>
 
-  <!-- MODALS -->
+  <!-- MODAL MASTER SD -->
   <div class="modal fade no-print" id="modalSd" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 rounded-4 shadow-lg">
@@ -496,11 +493,28 @@
             </div>
             <div class="mb-2"><label class="form-label fw-semibold small">Nama SD</label><input type="text" id="sdNama" class="form-control" required></div>
             <div class="mb-2"><label class="form-label fw-semibold small">Kecamatan</label><input type="text" id="sdKecamatan" class="form-control" required></div>
-            <div class="mb-2"><label class="form-label fw-semibold small">Masa PKS</label><input type="text" id="sdMasaPks" class="form-control" placeholder="Contoh: 120 Hari" required></div>
-            <div class="row g-2 mb-2">
-              <div class="col-6"><label class="form-label fw-semibold small">Mulai</label><input type="date" id="sdMulai" class="form-control" required></div>
-              <div class="col-6"><label class="form-label fw-semibold small">Selesai</label><input type="date" id="sdSelesai" class="form-control" required></div>
+            
+            <!-- ISIAN MASA PKS DENGAN SUFIKS HARI -->
+            <div class="mb-2">
+              <label class="form-label fw-semibold small">Masa PKS</label>
+              <div class="input-group">
+                <input type="number" id="sdMasaPks" class="form-control" placeholder="Contoh: 120" min="1" oninput="calculateTanggalSelesai()" required>
+                <span class="input-group-text bg-light text-muted fw-semibold">Hari</span>
+              </div>
             </div>
+
+            <!-- TANGGAL MULAI DAN SELESAI (OTOMATIS) -->
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <label class="form-label fw-semibold small">Mulai</label>
+                <input type="date" id="sdMulai" class="form-control" onchange="calculateTanggalSelesai()" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-semibold small">Selesai (Otomatis)</label>
+                <input type="date" id="sdSelesai" class="form-control bg-light" readonly required>
+              </div>
+            </div>
+
             <div class="mb-3"><label class="form-label fw-semibold small">Role</label>
               <select id="sdRole" class="form-select"><option value="SEKOLAH">SEKOLAH</option><option value="DINAS">DINAS</option></select>
             </div>
@@ -511,6 +525,7 @@
     </div>
   </div>
 
+  <!-- MODAL MENU -->
   <div class="modal fade no-print" id="modalMenu" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 rounded-4 shadow-lg">
@@ -527,6 +542,7 @@
     </div>
   </div>
 
+  <!-- MODAL USER -->
   <div class="modal fade no-print" id="modalUser" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 rounded-4 shadow-lg">
@@ -580,6 +596,25 @@
         } catch(e) { localStorage.removeItem("provit_user"); }
       }
     });
+
+    /* FUNCTION CALCULATE TANGGAL SELESAI OTOMATIS */
+    function calculateTanggalSelesai() {
+      const tglMulaiStr = document.getElementById("sdMulai").value;
+      const masaPksHari = parseInt(document.getElementById("sdMasaPks").value, 10);
+
+      if (tglMulaiStr && !isNaN(masaPksHari) && masaPksHari > 0) {
+        const tglMulai = new Date(tglMulaiStr);
+        tglMulai.setDate(tglMulai.getDate() + masaPksHari);
+        
+        const year = tglMulai.getFullYear();
+        const month = String(tglMulai.getMonth() + 1).padStart(2, '0');
+        const day = String(tglMulai.getDate()).padStart(2, '0');
+        
+        document.getElementById("sdSelesai").value = `${year}-${month}-${day}`;
+      } else {
+        document.getElementById("sdSelesai").value = "";
+      }
+    }
 
     /* FUNCTION TOGGLE PASSWORD VISIBILITY */
     function togglePasswordVisibility(inputId, iconId) {
@@ -739,7 +774,7 @@
                 <td><span class="badge bg-light text-dark font-monospace">${sd.npsn}</span></td>
                 <td><strong>${sd.sekolah}</strong></td>
                 <td>${sd.kecamatan}</td>
-                <td>${sd.masaPks}</td>
+                <td>${sd.masaPks} ${String(sd.masaPks).toLowerCase().includes('hari') ? '' : 'Hari'}</td>
                 <td>${sd.mulai}</td>
                 <td>${sd.selesai}</td>
                 <td><span class="badge ${sd.role === 'DINAS' ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary'} fw-bold">${sd.role}</span></td>
@@ -762,15 +797,25 @@
       document.getElementById("sdPass").value = pass;
       document.getElementById("sdNama").value = sekolah;
       document.getElementById("sdKecamatan").value = kec;
-      document.getElementById("sdMasaPks").value = masaPks;
+      
+      // Ambil angka dari string masaPks (misal '120 Hari' -> 120)
+      const numMasaPks = masaPks ? parseInt(masaPks, 10) : "";
+      document.getElementById("sdMasaPks").value = isNaN(numMasaPks) ? "" : numMasaPks;
+      
       document.getElementById("sdMulai").value = mulai;
       document.getElementById("sdSelesai").value = selesai;
       document.getElementById("sdRole").value = role;
+
+      if(mulai && numMasaPks) {
+        calculateTanggalSelesai();
+      }
+
       modalSdObj.show();
     }
 
     document.getElementById("formSd").onsubmit = async function(e) {
       e.preventDefault();
+      const masaPksVal = document.getElementById("sdMasaPks").value;
       const payload = {
         action: "manageMasterSd", 
         subAction: document.getElementById("sdSubAction").value,
@@ -778,7 +823,7 @@
         password: document.getElementById("sdPass").value,
         sekolah: document.getElementById("sdNama").value, 
         kecamatan: document.getElementById("sdKecamatan").value,
-        masaPks: document.getElementById("sdMasaPks").value, 
+        masaPks: `${masaPksVal} Hari`, 
         mulai: document.getElementById("sdMulai").value,
         selesai: document.getElementById("sdSelesai").value, 
         role: document.getElementById("sdRole").value, 
