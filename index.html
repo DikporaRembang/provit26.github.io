@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Master Data SD - Sistem PKS</title>
+  <title>Sistem Master Data SD & PKS</title>
   
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -12,7 +12,7 @@
   
   <style>
     body {
-      background-color: #f8f9fa;
+      background-color: #f4f6f9;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     .btn-ultra {
@@ -24,6 +24,13 @@
     .btn-ultra:hover {
       background: linear-gradient(135deg, #0b5ed7, #0a3880);
       color: #fff;
+    }
+    .card-login {
+      max-width: 400px;
+      margin: 80px auto;
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
     .password-wrapper {
       position: relative;
@@ -38,7 +45,7 @@
       color: #6c757d;
       cursor: pointer;
     }
-    /* Loading Spinner Overlay */
+    /* Loading Overlay */
     #loadingOverlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -52,23 +59,66 @@
 </head>
 <body>
 
-  <!-- Loading Overlay -->
+  <!-- Loading Spinner -->
   <div id="loadingOverlay" class="d-none">
     <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
 
-  <div class="container py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
-        <h3 class="fw-bold text-dark mb-0"><i class="fa-solid fa-school text-primary me-2"></i>Master Data SD</h3>
-        <p class="text-muted small mb-0">Kelola data sekolah, PKS, dan anggaran pagu</p>
+  <!-- ========================================== -->
+  <!-- 1. HALAMAN LOGIN                           -->
+  <!-- ========================================== -->
+  <div id="loginSection" class="container">
+    <div class="card card-login p-4 bg-white">
+      <div class="text-center mb-4">
+        <i class="fa-solid fa-school-flag text-primary fa-3x mb-2"></i>
+        <h4 class="fw-bold">Masuk Sistem</h4>
+        <p class="text-muted small">Silakan login menggunakan NPSN & Password</p>
       </div>
-      <button class="btn btn-ultra rounded-3 px-3 py-2" onclick="openModalSd('add')">
-        <i class="fa-solid fa-plus me-1"></i> Tambah SD Baru
-      </button>
+      <form id="formLogin">
+        <div class="mb-3">
+          <label class="form-label fw-semibold small">NPSN</label>
+          <input type="text" id="loginNpsn" class="form-control" placeholder="Masukkan NPSN" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-semibold small">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="loginPass" class="form-control pe-5" placeholder="Masukkan Password" required>
+            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPass', 'loginPassEye')">
+              <i class="fa-solid fa-eye" id="loginPassEye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-ultra w-100 py-2 rounded-3">
+          <i class="fa-solid fa-right-to-bracket me-1"></i> Login
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 2. DASHBOARD / DASHBOARD MASTER SD         -->
+  <!-- ========================================== -->
+  <div id="dashboardSection" class="container py-4 d-none">
+    <!-- Navbar / User Info Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm">
+      <div class="d-flex align-items-center">
+        <i class="fa-solid fa-school text-primary fa-2x me-3"></i>
+        <div>
+          <h5 class="fw-bold text-dark mb-0">Master Data SD & Anggaran</h5>
+          <span class="badge bg-primary-subtle text-primary fw-semibold" id="userRoleBadge">User</span>
+          <span class="text-muted small ms-2" id="userNameLabel"></span>
+        </div>
+      </div>
+      <div>
+        <button class="btn btn-ultra btn-sm me-2 rounded-3" onclick="openModalSd('add')">
+          <i class="fa-solid fa-plus me-1"></i> Tambah SD Baru
+        </button>
+        <button class="btn btn-outline-danger btn-sm rounded-3" onclick="logout()">
+          <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+        </button>
+      </div>
     </div>
 
     <!-- Tabel Master SD -->
@@ -89,14 +139,16 @@
             </tr>
           </thead>
           <tbody id="masterSdTableBody">
-            <!-- Data akan dimuat otomatis oleh JavaScript -->
+            <!-- Data dimasukkan oleh JS -->
           </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- MODAL FORM MASTER SD -->
+  <!-- ========================================== -->
+  <!-- 3. MODAL FORM DATA SD                      -->
+  <!-- ========================================== -->
   <div class="modal fade" id="modalSd" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 rounded-4 shadow-lg">
@@ -136,7 +188,7 @@
             <div class="mb-2">
               <label class="form-label fw-semibold small">Masa PKS</label>
               <div class="input-group">
-                <input type="number" id="sdMasaPks" class="form-control" placeholder="Contoh: 120" min="1" oninput="calculateTanggalSelesai()" required>
+                <input type="number" id="sdMasaPks" class="form-control" placeholder="120" min="1" oninput="calculateTanggalSelesai()" required>
                 <span class="input-group-text bg-light text-muted fw-semibold">Hari</span>
               </div>
             </div>
@@ -172,7 +224,7 @@
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
+  <!-- Notification Toast Container -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="d-flex">
@@ -187,10 +239,9 @@
 
   <script>
     // ==========================================
-    // KONFIGURASI URL GOOGLE APPS SCRIPT
-    // Ganti dengan Executable URL Web App Anda
+    // PASTEKAN URL WEB APP APPS SCRIPT ANDA DI SINI
     // ==========================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtLU0t_yRti46VCjSCXzPFpEi_ufebnlDLBFkTVy-tjax-n0KgwLJfj9D6LqfmmbGA/exec";
+    const SCRIPT_URL = "GANTI_DENGAN_URL_WEB_APP_GOOGLE_APPS_SCRIPT_ANDA";
 
     let modalSdObj;
     let toastObj;
@@ -198,17 +249,17 @@
     document.addEventListener("DOMContentLoaded", function () {
       modalSdObj = new bootstrap.Modal(document.getElementById('modalSd'));
       toastObj = new bootstrap.Toast(document.getElementById('liveToast'));
-      loadMasterSd();
+      
+      // Cek apakah user sudah login sebelumnya
+      checkSession();
     });
 
-    // Helper: Loading Overlay Toggle
     function toggleLoading(show) {
       const overlay = document.getElementById("loadingOverlay");
       if (show) overlay.classList.remove("d-none");
       else overlay.classList.add("d-none");
     }
 
-    // Helper: Show Toast Notification
     function showToast(message, isSuccess = true) {
       const toastEl = document.getElementById("liveToast");
       const toastMsg = document.getElementById("toastMessage");
@@ -217,7 +268,6 @@
       toastObj.show();
     }
 
-    // Toggle Visibility Password Field
     function togglePasswordVisibility(inputId, iconId) {
       const input = document.getElementById(inputId);
       const icon = document.getElementById(iconId);
@@ -230,7 +280,60 @@
       }
     }
 
-    // Hitung Otomatis Tanggal Selesai = Mulai + Masa PKS (Hari)
+    // ==========================================
+    // LOGIKA LOGIN & SESSION
+    // ==========================================
+    document.getElementById("formLogin").onsubmit = async function(e) {
+      e.preventDefault();
+      const npsn = document.getElementById("loginNpsn").value.trim();
+      const pass = document.getElementById("loginPass").value;
+
+      toggleLoading(true);
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=login&npsn=${encodeURIComponent(npsn)}&password=${encodeURIComponent(pass)}`);
+        const r = await res.json();
+
+        if (r.status === "success") {
+          // Simpan session ke localStorage
+          localStorage.setItem("userSession", JSON.stringify(r.data));
+          showToast("Login berhasil!", true);
+          checkSession();
+        } else {
+          showToast(r.message || "NPSN atau Password salah", false);
+        }
+      } catch (err) {
+        showToast("Gagal melakukan login. Periksa koneksi internet.", false);
+      } finally {
+        toggleLoading(false);
+      }
+    };
+
+    function checkSession() {
+      const sessionData = localStorage.getItem("userSession");
+      if (sessionData) {
+        const user = JSON.parse(sessionData);
+        document.getElementById("loginSection").classList.add("d-none");
+        document.getElementById("dashboardSection").classList.remove("d-none");
+        
+        document.getElementById("userNameLabel").textContent = user.sekolah || user.npsn;
+        document.getElementById("userRoleBadge").textContent = user.role || "USER";
+
+        loadMasterSd();
+      } else {
+        document.getElementById("loginSection").classList.remove("d-none");
+        document.getElementById("dashboardSection").classList.add("d-none");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("userSession");
+      checkSession();
+      showToast("Berhasil logout", true);
+    }
+
+    // ==========================================
+    // LOGIKA MASTER SD (READ, ADD, EDIT, DELETE)
+    // ==========================================
     function calculateTanggalSelesai() {
       const tglMulaiVal = document.getElementById("sdMulai").value;
       const masaPksVal = parseInt(document.getElementById("sdMasaPks").value, 10);
@@ -249,7 +352,6 @@
       }
     }
 
-    // BACA DATA MASTER SD
     async function loadMasterSd() {
       toggleLoading(true);
       try {
@@ -300,13 +402,12 @@
           showToast(result.message || "Gagal memuat data Master SD", false);
         }
       } catch(e) { 
-        showToast("Gagal memuat SD, periksa URL Script atau koneksi internet.", false); 
+        showToast("Gagal memuat SD. Periksa URL Apps Script.", false); 
       } finally { 
         toggleLoading(false); 
       }
     }
 
-    // BUKA MODAL DIALOG (TAMBAH / EDIT)
     function openModalSd(subAction, npsn="", pass="", sekolah="", kec="", masaPks="", mulai="", selesai="", pagu="0", role="SEKOLAH") {
       document.getElementById("sdSubAction").value = subAction;
       document.getElementById("sdNpsn").value = npsn;
@@ -332,7 +433,6 @@
       modalSdObj.show();
     }
 
-    // SIMPAN DATA (SUBMIT FORM)
     document.getElementById("formSd").onsubmit = async function(e) {
       e.preventDefault();
       
@@ -366,7 +466,7 @@
         
         if (r.status === "success") {
           showToast(r.message, true); 
-          loadMasterSd(); // Auto refresh tabel
+          loadMasterSd();
         } else {
           showToast(r.message || "Gagal memperbarui data", false);
         }
@@ -377,7 +477,6 @@
       }
     };
 
-    // HAPUS DATA SD
     async function deleteSd(npsn) {
       if (!confirm(`Apakah Anda yakin ingin menghapus data SD dengan NPSN ${npsn}?`)) return;
 
