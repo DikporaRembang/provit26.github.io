@@ -4,78 +4,148 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>PROVIT26 - Executive Dashboard</title>
+  <title>PROVIT26 - Executive Dashboard Next-Gen</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
   <style>
     :root {
-      --primary-grad: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
-      --accent-grad: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      --bg-light: #f8fafc;
-      --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      --bg-main: #0f172a;
+      --bg-body: #f1f5f9;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #3b82f6 50%, #06b6d4 100%);
+      --emerald-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(255, 255, 255, 0.6);
+      --card-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
     }
 
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg-light);
-      color: #1e293b;
+      background: var(--bg-body);
+      color: #334155;
+      min-height: 100vh;
     }
 
-    /* Glassmorphism & UI Enhancements */
+    /* Glassmorphism Cards */
     .glass-card {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(226, 232, 240, 0.8);
-      border-radius: 16px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
       box-shadow: var(--card-shadow);
+      transition: all 0.3s ease;
     }
 
-    .kpi-card {
-      border-radius: 16px;
-      border: none;
-      transition: transform 0.2s ease;
+    /* KPI Summary Cards */
+    .kpi-card-glow {
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .kpi-card:hover { transform: translateY(-3px); }
+    .kpi-card-glow:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px -5px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Custom Navigation Sidebar */
+    .sidebar-wrapper {
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      padding: 1rem;
+    }
 
     .nav-pills .nav-link {
       color: #64748b;
       font-weight: 600;
       border-radius: 12px;
-      padding: 10px 18px;
-      transition: all 0.2s ease;
+      padding: 12px 18px;
+      margin-bottom: 6px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
     }
+
+    .nav-pills .nav-link i {
+      font-size: 1.1rem;
+      width: 24px;
+      margin-right: 10px;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-pills .nav-link:hover {
+      background: #f8fafc;
+      color: #4f46e5;
+    }
+
+    .nav-pills .nav-link:hover i {
+      transform: translateX(3px);
+    }
+
     .nav-pills .nav-link.active {
-      background: var(--primary-grad);
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      background: var(--accent-gradient);
+      color: #ffffff;
+      box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
     }
 
-    .btn-gradient-primary {
-      background: var(--primary-grad);
+    /* Buttons & Form Inputs */
+    .btn-ultra {
+      background: var(--accent-gradient);
+      color: #fff;
       border: none;
-      color: #fff;
-    }
-    .btn-gradient-primary:hover { color: #fff; opacity: 0.95; }
-
-    .table { color: #334155; }
-    .table thead th {
-      background-color: #f1f5f9;
-      color: #475569;
       font-weight: 700;
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      letter-spacing: 0.05em;
-      border-bottom: none;
+      border-radius: 12px;
+      padding: 10px 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    }
+    .btn-ultra:hover {
+      color: #fff;
+      opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
     }
 
+    .form-control, .form-select {
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      padding: 10px 14px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    /* Modern Table Styling */
+    .table {
+      vertical-align: middle;
+    }
+    .table thead th {
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 12px 16px;
+    }
+    .table tbody td {
+      padding: 14px 16px;
+    }
+
+    /* Toast & Loading */
     .loading-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15, 23, 42, 0.6); z-index: 9999;
+      background: rgba(15, 23, 42, 0.7); z-index: 9999;
       display: flex; justify-content: center; align-items: center; color: #fff;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(8px);
     }
 
     @media print {
@@ -88,17 +158,19 @@
 </head>
 <body>
 
+  <!-- LOADING OVERLAY -->
   <div id="loadingOverlay" class="loading-overlay d-none">
     <div class="text-center">
-      <div class="spinner-border text-light mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
-      <div class="fw-bold fs-5">Memproses Data...</div>
+      <div class="spinner-grow text-primary mb-3" style="width: 3.5rem; height: 3.5rem;" role="status"></div>
+      <div class="fw-bold fs-5 tracking-wide text-white">MEMPROSES DATA...</div>
     </div>
   </div>
 
+  <!-- TOAST NOTIFICATION -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3 no-print" style="z-index: 1060;">
-    <div id="appToast" class="toast align-items-center text-white border-0 rounded-3 shadow-lg" role="alert">
+    <div id="appToast" class="toast align-items-center text-white border-0 rounded-4 shadow-lg" role="alert">
       <div class="d-flex">
-        <div class="toast-body fw-semibold" id="toastMessage">Pesan Notifikasi</div>
+        <div class="toast-body fw-semibold" id="toastMessage">Notifikasi</div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
       </div>
     </div>
@@ -110,25 +182,25 @@
       <div class="col-md-5 col-lg-4">
         <div class="glass-card p-4 p-md-5">
           <div class="text-center mb-4">
-            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; background: var(--primary-grad) !important;">
-              <i class="fa-solid fa-school-flag fa-xl"></i>
+            <div class="rounded-4 text-white d-inline-flex align-items-center justify-content-center mb-3 shadow-lg" style="width: 70px; height: 70px; background: var(--accent-gradient);">
+              <i class="fa-solid fa-school-flag fa-2x"></i>
             </div>
-            <h3 class="fw-bold m-0 tracking-tight">PROVIT26</h3>
-            <p class="text-muted small mt-1">Sistem Informasi Progres Revitalisasi SD</p>
+            <h3 class="fw-extrabold text-slate-800 m-0">PROVIT26</h3>
+            <span class="badge bg-indigo-subtle text-primary fw-bold text-uppercase px-3 py-1 rounded-pill mt-2" style="background:#e0e7ff; color:#4338ca;">Executive Portal</span>
           </div>
           
-          <div id="loginAlert" class="alert alert-danger d-none rounded-3 small"></div>
+          <div id="loginAlert" class="alert alert-danger d-none rounded-3 small border-0 shadow-sm"></div>
           
           <form onsubmit="processLogin(event)">
             <div class="form-floating mb-3">
-              <input type="text" class="form-control rounded-3" id="username" placeholder="NPSN / Username" required>
-              <label for="username"><i class="fa-solid fa-id-card me-1 text-muted"></i> NPSN / Username</label>
+              <input type="text" class="form-control" id="username" placeholder="Username" required>
+              <label for="username"><i class="fa-solid fa-user text-muted me-1"></i> NPSN / Username</label>
             </div>
             <div class="form-floating mb-4">
-              <input type="password" class="form-control rounded-3" id="password" placeholder="Password" required>
-              <label for="password"><i class="fa-solid fa-lock me-1 text-muted"></i> Password</label>
+              <input type="password" class="form-control" id="password" placeholder="Password" required>
+              <label for="password"><i class="fa-solid fa-lock text-muted me-1"></i> Password</label>
             </div>
-            <button type="submit" class="btn btn-gradient-primary w-100 py-3 fw-bold rounded-3 shadow"><i class="fa-solid fa-right-to-bracket me-2"></i> Masuk Aplikasi</button>
+            <button type="submit" class="btn btn-ultra w-100 py-3 fw-bold rounded-4 shadow"><i class="fa-solid fa-right-to-bracket me-2"></i> Masuk Sistem</button>
           </form>
         </div>
       </div>
@@ -138,74 +210,78 @@
   <!-- DASHBOARD SECTION -->
   <div id="dashboardSection" class="container-fluid px-4 py-4 d-none no-print">
     
-    <!-- TOPBAR -->
+    <!-- TOP EXECUTIVE HEADER -->
     <div class="glass-card p-3 mb-4 d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center">
-        <div class="bg-primary text-white rounded-3 p-3 me-3 d-flex align-items-center justify-content-center" style="background: var(--primary-grad) !important; width: 48px; height: 48px;">
+        <div class="rounded-4 text-white p-3 me-3 d-flex align-items-center justify-content-center shadow" style="background: var(--accent-gradient); width: 52px; height: 52px;">
           <i class="fa-solid fa-building-columns fa-lg"></i>
         </div>
         <div>
-          <h5 class="fw-bold m-0" id="userDisplayName">SD NEGERI</h5>
-          <span class="badge bg-primary-subtle text-primary fw-bold" id="userRoleBadge">SEKOLAH</span>
+          <h5 class="fw-bold m-0 text-slate-800" id="userDisplayName">SD NEGERI</h5>
+          <span class="badge bg-primary-subtle text-primary fw-bold rounded-pill px-3 py-1" id="userRoleBadge">SEKOLAH</span>
         </div>
       </div>
-      <button class="btn btn-outline-danger btn-sm fw-bold px-3 py-2 rounded-3" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-1"></i> Keluar</button>
+      <button class="btn btn-outline-danger btn-sm fw-bold px-3 py-2 rounded-3" onclick="logout()"><i class="fa-solid fa-power-off me-1"></i> Keluar</button>
     </div>
 
-    <!-- MAIN NAVIGATION LAYOUT -->
+    <!-- MAIN DASHBOARD CONTENT -->
     <div class="row g-4">
-      <!-- SIDEBAR TAB MENU -->
+      
+      <!-- SIDEBAR NAVIGATION -->
       <div class="col-lg-3 col-xl-2">
-        <div class="glass-card p-3">
-          <div class="text-muted fw-bold small text-uppercase px-3 mb-2">Navigasi Utama</div>
-          <ul class="nav nav-pills flex-column gap-1" id="mainTabs" role="tablist">
+        <div class="sidebar-wrapper shadow-sm">
+          <div class="text-xs text-uppercase fw-bold text-muted px-3 mb-3">Menu Utama</div>
+          <ul class="nav nav-pills flex-column" id="mainTabs" role="tablist">
             <!-- Role SEKOLAH -->
             <li class="nav-item role-sekolah d-none">
-              <button class="nav-link w-100 text-start" id="t-progres" data-bs-toggle="pill" data-bs-target="#tab-progres"><i class="fa-solid fa-pen-to-square me-2"></i>Input Progres</button>
+              <button class="nav-link w-100" id="t-progres" data-bs-toggle="pill" data-bs-target="#tab-progres"><i class="fa-solid fa-pen-to-square"></i>Input Progres</button>
             </li>
             <li class="nav-item role-sekolah d-none">
-              <button class="nav-link w-100 text-start" id="t-rekap-sekolah" data-bs-toggle="pill" data-bs-target="#tab-rekap-sekolah" onclick="loadRekapSekolah()"><i class="fa-solid fa-clock-rotate-left me-2"></i>Rekap Saya</button>
+              <button class="nav-link w-100" id="t-rekap-sekolah" data-bs-toggle="pill" data-bs-target="#tab-rekap-sekolah" onclick="loadRekapSekolah()"><i class="fa-solid fa-clock-rotate-left"></i>Rekap Saya</button>
             </li>
 
             <!-- Role DINAS / ADMIN -->
             <li class="nav-item role-dinas d-none">
-              <button class="nav-link w-100 text-start" id="t-master-sd" data-bs-toggle="pill" data-bs-target="#tab-master-sd" onclick="loadMasterSd()"><i class="fa-solid fa-school me-2"></i>Master SD</button>
+              <button class="nav-link w-100" id="t-master-sd" data-bs-toggle="pill" data-bs-target="#tab-master-sd" onclick="loadMasterSd()"><i class="fa-solid fa-school"></i>Master SD</button>
             </li>
             <li class="nav-item role-dinas d-none">
-              <button class="nav-link w-100 text-start" id="t-menu-pekerjaan" data-bs-toggle="pill" data-bs-target="#tab-menu-pekerjaan" onclick="loadMasterMenu()"><i class="fa-solid fa-list-check me-2"></i>Menu Pekerjaan</button>
+              <button class="nav-link w-100" id="t-menu-pekerjaan" data-bs-toggle="pill" data-bs-target="#tab-menu-pekerjaan" onclick="loadMasterMenu()"><i class="fa-solid fa-list-check"></i>Menu Pekerjaan</button>
             </li>
             <li class="nav-item role-dinas d-none">
-              <button class="nav-link w-100 text-start" id="t-kelola-pengguna" data-bs-toggle="pill" data-bs-target="#tab-kelola-pengguna" onclick="loadMasterUsers()"><i class="fa-solid fa-users-gear me-2"></i>Kelola Pengguna</button>
+              <button class="nav-link w-100" id="t-kelola-pengguna" data-bs-toggle="pill" data-bs-target="#tab-kelola-pengguna" onclick="loadMasterUsers()"><i class="fa-solid fa-users-gear"></i>Kelola Pengguna</button>
             </li>
             <li class="nav-item role-dinas d-none">
-              <button class="nav-link w-100 text-start" id="t-rekap-dinas" data-bs-toggle="pill" data-bs-target="#tab-rekap-dinas" onclick="loadRekapDinas()"><i class="fa-solid fa-chart-pie me-2"></i>Rekap Database</button>
+              <button class="nav-link w-100" id="t-rekap-dinas" data-bs-toggle="pill" data-bs-target="#tab-rekap-dinas" onclick="loadRekapDinas()"><i class="fa-solid fa-chart-pie"></i>Rekap Database</button>
             </li>
             <li class="nav-item role-dinas d-none">
-              <button class="nav-link w-100 text-start" id="t-cetak-laporan" data-bs-toggle="pill" data-bs-target="#tab-cetak-laporan"><i class="fa-solid fa-print me-2"></i>Cetak Laporan</button>
+              <button class="nav-link w-100" id="t-cetak-laporan" data-bs-toggle="pill" data-bs-target="#tab-cetak-laporan"><i class="fa-solid fa-print"></i>Cetak Laporan</button>
             </li>
           </ul>
         </div>
       </div>
 
-      <!-- MAIN CONTENT -->
+      <!-- MAIN PANEL -->
       <div class="col-lg-9 col-xl-10">
         <div class="tab-content">
           
           <!-- [SEKOLAH] TAB 1: FORM INPUT PROGRES -->
           <div class="tab-pane fade role-sekolah-pane" id="tab-progres">
             <div class="glass-card p-4">
-              <h5 class="fw-bold mb-4 text-primary"><i class="fa-solid fa-file-circle-plus me-2"></i>Form Progres Pekerjaan</h5>
+              <div class="d-flex align-items-center mb-4">
+                <div class="p-2 bg-primary-subtle text-primary rounded-3 me-3"><i class="fa-solid fa-pen-to-square fa-lg"></i></div>
+                <h5 class="fw-bold m-0">Form Input Progres Revitalisasi</h5>
+              </div>
               <form id="progresForm">
                 <div class="row g-3">
-                  <div class="col-md-6"><label class="form-label fw-semibold">Nama SD</label><input type="text" id="namaSd" class="form-control rounded-3 bg-light" readonly></div>
-                  <div class="col-md-6"><label class="form-label fw-semibold">Kecamatan</label><input type="text" id="kecamatan" class="form-control rounded-3 bg-light" readonly></div>
-                  <div class="col-md-6"><label class="form-label fw-semibold">Pilih Menu Pekerjaan</label><select id="namaMenu" class="form-select rounded-3" required></select></div>
-                  <div class="col-md-3"><label class="form-label fw-semibold">Nilai Pekerjaan (Rp)</label><input type="number" id="nilai" class="form-control rounded-3" placeholder="0" min="0" required></div>
-                  <div class="col-md-3"><label class="form-label fw-semibold">Volume Ruang</label><input type="number" id="volumeRuang" class="form-control rounded-3" placeholder="0" min="0" required></div>
+                  <div class="col-md-6"><label class="form-label fw-semibold small">Nama Sekolah Dasar</label><input type="text" id="namaSd" class="form-control bg-light" readonly></div>
+                  <div class="col-md-6"><label class="form-label fw-semibold small">Kecamatan</label><input type="text" id="kecamatan" class="form-control bg-light" readonly></div>
+                  <div class="col-md-6"><label class="form-label fw-semibold small">Pilih Menu Pekerjaan</label><select id="namaMenu" class="form-select" required></select></div>
+                  <div class="col-md-3"><label class="form-label fw-semibold small">Nilai Realisasi (Rp)</label><input type="number" id="nilai" class="form-control" placeholder="0" min="0" required></div>
+                  <div class="col-md-3"><label class="form-label fw-semibold small">Volume Ruang</label><input type="number" id="volumeRuang" class="form-control" placeholder="0" min="0" required></div>
                   <div class="col-12 text-end pt-3 mt-4 border-top">
-                    <button type="button" class="btn btn-light me-2 fw-semibold rounded-3" onclick="resetFormProgres()"><i class="fa-solid fa-xmark me-1"></i> Batal</button>
-                    <button type="button" class="btn btn-gradient-primary me-2 fw-bold rounded-3" onclick="handleProgresSubmit(false)"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Data</button>
-                    <button type="button" class="btn btn-success fw-bold rounded-3" onclick="handleProgresSubmit(true)"><i class="fa-solid fa-forward me-1"></i> Simpan & Lanjut</button>
+                    <button type="button" class="btn btn-light me-2 fw-semibold rounded-3" onclick="resetFormProgres()"><i class="fa-solid fa-rotate-left me-1"></i> Reset</button>
+                    <button type="button" class="btn btn-ultra me-2 fw-bold" onclick="handleProgresSubmit(false)"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Data</button>
+                    <button type="button" class="btn btn-success fw-bold rounded-3 py-2 px-3 shadow-sm" onclick="handleProgresSubmit(true)"><i class="fa-solid fa-forward me-1"></i> Simpan & Lanjut</button>
                   </div>
                 </div>
               </form>
@@ -215,10 +291,10 @@
           <!-- [SEKOLAH] TAB 2: REKAP USER SEKOLAH -->
           <div class="tab-pane fade role-sekolah-pane" id="tab-rekap-sekolah">
             <div class="glass-card p-4">
-              <h5 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-clock-rotate-left me-2"></i>Riwayat Input Progres</h5>
+              <h5 class="fw-bold mb-3"><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Riwayat Input Progres Saya</h5>
               <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                  <thead><tr><th>ID Input</th><th>Menu Pekerjaan</th><th class="text-end">Nilai (Rp)</th><th class="text-center">Volume</th></tr></thead>
+                  <thead><tr><th>ID Input</th><th>Menu Pekerjaan</th><th class="text-end">Nilai Realisasi</th><th class="text-center">Volume Ruang</th></tr></thead>
                   <tbody id="rekapSekolahTableBody"></tbody>
                 </table>
               </div>
@@ -228,9 +304,9 @@
           <!-- [DINAS] TAB 1: MASTER DATA SD -->
           <div class="tab-pane fade role-dinas-pane" id="tab-master-sd">
             <div class="glass-card p-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-primary m-0"><i class="fa-solid fa-school me-2"></i>Master Data Sekolah</h5>
-                <button class="btn btn-gradient-primary rounded-3 btn-sm fw-bold" onclick="openModalSd('add')"><i class="fa-solid fa-plus me-1"></i>Tambah SD Baru</button>
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold m-0"><i class="fa-solid fa-school text-primary me-2"></i>Master Data SD</h5>
+                <button class="btn btn-ultra btn-sm" onclick="openModalSd('add')"><i class="fa-solid fa-plus me-1"></i>Tambah SD Baru</button>
               </div>
               <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -246,9 +322,9 @@
           <!-- [DINAS] TAB 2: MENU PEKERJAAN -->
           <div class="tab-pane fade role-dinas-pane" id="tab-menu-pekerjaan">
             <div class="glass-card p-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-primary m-0"><i class="fa-solid fa-list-check me-2"></i>Menu Pekerjaan</h5>
-                <button class="btn btn-gradient-primary rounded-3 btn-sm fw-bold" onclick="openModalMenu('add')"><i class="fa-solid fa-plus me-1"></i>Tambah Menu Baru</button>
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold m-0"><i class="fa-solid fa-list-check text-primary me-2"></i>Menu Pekerjaan</h5>
+                <button class="btn btn-ultra btn-sm" onclick="openModalMenu('add')"><i class="fa-solid fa-plus me-1"></i>Tambah Menu Baru</button>
               </div>
               <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -262,9 +338,9 @@
           <!-- [DINAS] TAB 3: KELOLA PENGGUNA -->
           <div class="tab-pane fade role-dinas-pane" id="tab-kelola-pengguna">
             <div class="glass-card p-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-primary m-0"><i class="fa-solid fa-users-gear me-2"></i>Kelola Akun Pengguna</h5>
-                <button class="btn btn-gradient-primary rounded-3 btn-sm fw-bold" onclick="openModalUser('add')"><i class="fa-solid fa-user-plus me-1"></i>Tambah Pengguna</button>
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold m-0"><i class="fa-solid fa-users-gear text-primary me-2"></i>Kelola Akun Pengguna</h5>
+                <button class="btn btn-ultra btn-sm" onclick="openModalUser('add')"><i class="fa-solid fa-user-plus me-1"></i>Tambah Pengguna</button>
               </div>
               <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -279,10 +355,42 @@
 
           <!-- [DINAS] TAB 4: REKAP DATABASE DINAS -->
           <div class="tab-pane fade role-dinas-pane" id="tab-rekap-dinas">
+            
+            <!-- KPI STATS OVERVIEW -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-4">
+                <div class="kpi-card-glow p-3 d-flex align-items-center">
+                  <div class="rounded-3 p-3 bg-primary-subtle text-primary me-3"><i class="fa-solid fa-school fa-xl"></i></div>
+                  <div>
+                    <span class="text-muted small fw-bold text-uppercase">Sekolah Terdaftar</span>
+                    <h4 class="fw-extrabold m-0" id="statTotalSd">0</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="kpi-card-glow p-3 d-flex align-items-center">
+                  <div class="rounded-3 p-3 bg-success-subtle text-success me-3"><i class="fa-solid fa-money-bill-wave fa-xl"></i></div>
+                  <div>
+                    <span class="text-muted small fw-bold text-uppercase">Total Realisasi</span>
+                    <h4 class="fw-extrabold m-0 text-success" id="statTotalBiaya">Rp 0</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="kpi-card-glow p-3 d-flex align-items-center">
+                  <div class="rounded-3 p-3 bg-warning-subtle text-warning me-3"><i class="fa-solid fa-cubes fa-xl"></i></div>
+                  <div>
+                    <span class="text-muted small fw-bold text-uppercase">Total Volume Ruang</span>
+                    <h4 class="fw-extrabold m-0 text-warning" id="statTotalVol">0</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="glass-card p-4">
               <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold text-primary m-0"><i class="fa-solid fa-chart-pie me-2"></i>Rekap Real-Time Database</h5>
-                <input type="text" id="searchInput" class="form-control rounded-3 w-auto" placeholder="Cari sekolah..." onkeyup="filterTableDinas()">
+                <h5 class="fw-bold m-0"><i class="fa-solid fa-chart-pie text-primary me-2"></i>Rekap Database Real-Time</h5>
+                <input type="text" id="searchInput" class="form-control rounded-3 w-auto" placeholder="🔍 Cari Sekolah / Kecamatan..." onkeyup="filterTableDinas()">
               </div>
               <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -298,30 +406,36 @@
           <!-- [DINAS] TAB 5: CETAK LAPORAN -->
           <div class="tab-pane fade role-dinas-pane" id="tab-cetak-laporan">
             <div class="glass-card p-4">
-              <h5 class="fw-bold text-primary mb-4"><i class="fa-solid fa-print me-2"></i>Cetak Laporan</h5>
+              <h5 class="fw-bold mb-4"><i class="fa-solid fa-print text-primary me-2"></i>Cetak Laporan Resmi</h5>
               <div class="row g-4">
                 <div class="col-md-4">
-                  <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-4">
-                    <i class="fa-solid fa-school text-primary fa-3x mb-3"></i>
-                    <h6 class="fw-bold">Laporan Master SD</h6>
-                    <p class="text-muted small">Daftar seluruh Sekolah Dasar dan informasi PKS.</p>
-                    <button class="btn btn-gradient-primary w-100 mt-auto rounded-3 fw-bold" onclick="generateReport('master_sd')"><i class="fa-solid fa-print me-1"></i> Cetak Master SD</button>
+                  <div class="glass-card p-4 text-center h-100 d-flex flex-column justify-content-between">
+                    <div>
+                      <i class="fa-solid fa-file-invoice text-primary fa-3x mb-3"></i>
+                      <h6 class="fw-bold">Laporan Master SD</h6>
+                      <p class="text-muted small">Cetak daftar sekolah beserta data PKS lengkap.</p>
+                    </div>
+                    <button class="btn btn-ultra w-100 rounded-3 mt-3" onclick="generateReport('master_sd')"><i class="fa-solid fa-print me-1"></i> Cetak Master SD</button>
                   </div>
                 </div>
                 <div class="col-md-4">
-                  <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-4">
-                    <i class="fa-solid fa-table text-success fa-3x mb-3"></i>
-                    <h6 class="fw-bold">Laporan Rekap Database</h6>
-                    <p class="text-muted small">Total realisasi biaya dan volume per sekolah.</p>
-                    <button class="btn btn-success w-100 mt-auto rounded-3 fw-bold" onclick="generateReport('rekap_database')"><i class="fa-solid fa-print me-1"></i> Cetak Rekap</button>
+                  <div class="glass-card p-4 text-center h-100 d-flex flex-column justify-content-between">
+                    <div>
+                      <i class="fa-solid fa-table text-success fa-3x mb-3"></i>
+                      <h6 class="fw-bold">Laporan Rekap Database</h6>
+                      <p class="text-muted small">Cetak rincian akumulasi realisasi anggaran per SD.</p>
+                    </div>
+                    <button class="btn btn-success w-100 rounded-3 fw-bold mt-3" style="background: var(--emerald-gradient); border:none;" onclick="generateReport('rekap_database')"><i class="fa-solid fa-print me-1"></i> Cetak Rekap</button>
                   </div>
                 </div>
                 <div class="col-md-4">
-                  <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-4">
-                    <i class="fa-solid fa-file-invoice text-dark fa-3x mb-3"></i>
-                    <h6 class="fw-bold">Laporan Gabungan</h6>
-                    <p class="text-muted small">Gabungan data Master SD & Rekap Progres Pekerjaan.</p>
-                    <button class="btn btn-dark w-100 mt-auto rounded-3 fw-bold" onclick="generateReport('gabungan')"><i class="fa-solid fa-print me-1"></i> Cetak Gabungan</button>
+                  <div class="glass-card p-4 text-center h-100 d-flex flex-column justify-content-between">
+                    <div>
+                      <i class="fa-solid fa-folder-tree text-dark fa-3x mb-3"></i>
+                      <h6 class="fw-bold">Laporan Gabungan</h6>
+                      <p class="text-muted small">Cetak kompilasi Master SD & Rekap Pekerjaan.</p>
+                    </div>
+                    <button class="btn btn-dark w-100 rounded-3 fw-bold mt-3" onclick="generateReport('gabungan')"><i class="fa-solid fa-print me-1"></i> Cetak Gabungan</button>
                   </div>
                 </div>
               </div>
@@ -335,7 +449,7 @@
 
   <div id="printArea" class="d-none"></div>
 
-  <!-- MODALS WITH FLOATING DESIGN -->
+  <!-- MODALS -->
   <div class="modal fade no-print" id="modalSd" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 rounded-4 shadow-lg">
@@ -343,19 +457,19 @@
         <div class="modal-body pt-0">
           <form id="formSd">
             <input type="hidden" id="sdSubAction">
-            <div class="mb-2"><label class="form-label fw-semibold small">NPSN</label><input type="text" id="sdNpsn" class="form-control rounded-3" required></div>
-            <div class="mb-2"><label class="form-label fw-semibold small">Password</label><input type="text" id="sdPass" class="form-control rounded-3" required></div>
-            <div class="mb-2"><label class="form-label fw-semibold small">Nama SD</label><input type="text" id="sdNama" class="form-control rounded-3" required></div>
-            <div class="mb-2"><label class="form-label fw-semibold small">Kecamatan</label><input type="text" id="sdKecamatan" class="form-control rounded-3" required></div>
-            <div class="mb-2"><label class="form-label fw-semibold small">Masa PKS</label><input type="text" id="sdMasaPks" class="form-control rounded-3" placeholder="Contoh: 120 Hari" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold small">NPSN</label><input type="text" id="sdNpsn" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold small">Password</label><input type="text" id="sdPass" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold small">Nama SD</label><input type="text" id="sdNama" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold small">Kecamatan</label><input type="text" id="sdKecamatan" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold small">Masa PKS</label><input type="text" id="sdMasaPks" class="form-control" placeholder="Contoh: 120 Hari" required></div>
             <div class="row g-2 mb-2">
-              <div class="col-6"><label class="form-label fw-semibold small">Mulai</label><input type="date" id="sdMulai" class="form-control rounded-3" required></div>
-              <div class="col-6"><label class="form-label fw-semibold small">Selesai</label><input type="date" id="sdSelesai" class="form-control rounded-3" required></div>
+              <div class="col-6"><label class="form-label fw-semibold small">Mulai</label><input type="date" id="sdMulai" class="form-control" required></div>
+              <div class="col-6"><label class="form-label fw-semibold small">Selesai</label><input type="date" id="sdSelesai" class="form-control" required></div>
             </div>
             <div class="mb-3"><label class="form-label fw-semibold small">Role</label>
-              <select id="sdRole" class="form-select rounded-3"><option value="SEKOLAH">SEKOLAH</option><option value="DINAS">DINAS</option></select>
+              <select id="sdRole" class="form-select"><option value="SEKOLAH">SEKOLAH</option><option value="DINAS">DINAS</option></select>
             </div>
-            <button type="submit" class="btn btn-gradient-primary w-100 rounded-3 fw-bold py-2">Simpan</button>
+            <button type="submit" class="btn btn-ultra w-100 rounded-3 py-2">Simpan Data SD</button>
           </form>
         </div>
       </div>
@@ -370,8 +484,8 @@
           <form id="formMenu">
             <input type="hidden" id="menuSubAction">
             <input type="hidden" id="menuId">
-            <div class="mb-3"><label class="form-label fw-semibold small">Nama Menu Pekerjaan</label><input type="text" id="menuNama" class="form-control rounded-3" required></div>
-            <button type="submit" class="btn btn-gradient-primary w-100 rounded-3 fw-bold py-2">Simpan Menu</button>
+            <div class="mb-3"><label class="form-label fw-semibold small">Nama Menu Pekerjaan</label><input type="text" id="menuNama" class="form-control" required></div>
+            <button type="submit" class="btn btn-ultra w-100 rounded-3 py-2">Simpan Menu</button>
           </form>
         </div>
       </div>
@@ -385,17 +499,17 @@
         <div class="modal-body pt-0">
           <form id="formUser">
             <input type="hidden" id="userSubAction">
-            <div class="mb-2"><label class="form-label fw-semibold small">NPSN / Username</label><input type="text" id="userNpsn" class="form-control rounded-3" required></div>
-            <div class="mb-2"><label class="form-label fw-semibold small">Password</label><input type="text" id="userPass" class="form-control rounded-3" required></div>
-            <div class="mb-2"><label class="form-label fw-semibold small">Nama Instansi / SD</label><input type="text" id="userNama" class="form-control rounded-3" required></div>
-            <div class="mb-2"><label class="form-label fw-semibold small">Kecamatan</label><input type="text" id="userKecamatan" class="form-control rounded-3" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold small">NPSN / Username</label><input type="text" id="userNpsn" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold small">Password</label><input type="text" id="userPass" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold small">Nama Instansi / SD</label><input type="text" id="userNama" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold small">Kecamatan</label><input type="text" id="userKecamatan" class="form-control" required></div>
             <div class="mb-3"><label class="form-label fw-semibold small">Role Access</label>
-              <select id="userRole" class="form-select rounded-3">
+              <select id="userRole" class="form-select">
                 <option value="SEKOLAH">SEKOLAH</option>
                 <option value="DINAS">DINAS (ADMIN)</option>
               </select>
             </div>
-            <button type="submit" class="btn btn-gradient-primary w-100 rounded-3 fw-bold py-2">Simpan Akun</button>
+            <button type="submit" class="btn btn-ultra w-100 rounded-3 py-2">Simpan Akun</button>
           </form>
         </div>
       </div>
@@ -446,13 +560,13 @@
         if (result.status === "success" && result.user) {
           currentUser = result.user;
           localStorage.setItem("provit_user", JSON.stringify(currentUser));
-          showToast("Login Berhasil!");
+          showToast("Selamat Datang kembali!");
           showDashboard(currentUser);
         } else {
           document.getElementById("loginAlert").textContent = result.message || "Login gagal";
           document.getElementById("loginAlert").classList.remove("d-none");
         }
-      } catch (err) { showToast("Gagal terhubung ke server", false); } 
+      } catch (err) { showToast("Koneksi gagal", false); } 
       finally { toggleLoading(false); }
     }
 
@@ -511,14 +625,14 @@
         volumeRuang: document.getElementById("volumeRuang").value,
         _t: Date.now()
       };
-      if(!payload.namaMenu || !payload.nilai || !payload.volumeRuang) return showToast("Lengkapi semua field!", false);
+      if(!payload.namaMenu || !payload.nilai || !payload.volumeRuang) return showToast("Isi semua kolom!", false);
       
       toggleLoading(true);
       try {
         const res = await fetch(`${SCRIPT_URL}?${new URLSearchParams(payload)}`);
         const result = await res.json();
         if(result.status === "success") {
-          showToast("Data progres berhasil disimpan!");
+          showToast("Progres berhasil disimpan!");
           document.getElementById("nilai").value = "";
           document.getElementById("volumeRuang").value = "";
           if(!continueInput) document.getElementById("namaMenu").value = "";
@@ -537,10 +651,10 @@
         if (result.status === "success") {
           const myData = result.data.filter(d => String(d.npsn) === String(currentUser.username));
           if(myData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-3 text-muted">Belum ada data progres tersimpan.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">Belum ada riwayat progres.</td></tr>`;
           } else {
             myData.forEach(r => {
-              tbody.innerHTML += `<tr><td><span class="badge bg-light text-dark fw-bold font-monospace">${r.idInput}</span></td><td>${r.namaMenu}</td><td class="text-end fw-bold text-success">Rp ${Number(r.nilai).toLocaleString('id-ID')}</td><td class="text-center">${r.volumeRuang}</td></tr>`;
+              tbody.innerHTML += `<tr><td><span class="badge bg-slate-100 text-dark font-monospace">${r.idInput}</span></td><td>${r.namaMenu}</td><td class="text-end fw-bold text-success">Rp ${Number(r.nilai).toLocaleString('id-ID')}</td><td class="text-center">${r.volumeRuang}</td></tr>`;
             });
           }
         }
@@ -559,7 +673,7 @@
 
         if (result.status === "success") {
           if (result.data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-3 text-muted">Belum ada data sekolah.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">Tidak ada data SD.</td></tr>`;
           } else {
             result.data.forEach(sd => {
               tbody.innerHTML += `<tr>
@@ -578,7 +692,7 @@
             });
           }
         }
-      } catch(e) { showToast("Gagal memuat data SD", false); }
+      } catch(e) { showToast("Gagal memuat SD", false); }
       finally { toggleLoading(false); }
     }
 
@@ -623,14 +737,14 @@
     };
 
     async function deleteSd(npsn) {
-      if(!confirm("Yakin ingin menghapus data SD ini?")) return;
+      if(!confirm("Hapus data SD ini?")) return;
       toggleLoading(true);
       try {
         const res = await fetch(`${SCRIPT_URL}?action=manageMasterSd&subAction=delete&npsn=${npsn}&_t=${Date.now()}`);
         const r = await res.json();
         showToast(r.message); 
         loadMasterSd();
-      } catch(e) { showToast("Gagal menghapus SD", false); }
+      } catch(e) { showToast("Gagal menghapus", false); }
       finally { toggleLoading(false); }
     }
 
@@ -644,7 +758,7 @@
         tbody.innerHTML = "";
         if (result.status === "success") {
           if(result.data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="3" class="text-center py-3 text-muted">Belum ada menu pekerjaan.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-muted">Belum ada menu.</td></tr>`;
           } else {
             result.data.forEach(m => {
               tbody.innerHTML += `<tr>
@@ -658,7 +772,7 @@
             });
           }
         }
-      } catch(e) { showToast("Gagal memuat menu pekerjaan", false); }
+      } catch(e) { showToast("Gagal memuat menu", false); }
       finally { toggleLoading(false); }
     }
 
@@ -690,7 +804,7 @@
     };
 
     async function deleteMenu(idMenu) {
-      if(!confirm("Yakin ingin menghapus menu pekerjaan ini?")) return;
+      if(!confirm("Hapus menu pekerjaan ini?")) return;
       toggleLoading(true);
       try {
         const res = await fetch(`${SCRIPT_URL}?action=manageMenu&subAction=delete&idMenu=${idMenu}&_t=${Date.now()}`);
@@ -712,7 +826,7 @@
 
         if (result.status === "success") {
           if (result.data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-muted">Belum ada akun pengguna.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Belum ada pengguna.</td></tr>`;
           } else {
             result.data.forEach(user => {
               tbody.innerHTML += `<tr>
@@ -729,7 +843,7 @@
             });
           }
         }
-      } catch(e) { showToast("Gagal memuat data pengguna", false); }
+      } catch(e) { showToast("Gagal memuat pengguna", false); }
       finally { toggleLoading(false); }
     }
 
@@ -771,19 +885,19 @@
         const r = await res.json();
         showToast(r.message); 
         loadMasterUsers();
-      } catch(err) { showToast("Gagal menyimpan akun pengguna", false); }
+      } catch(err) { showToast("Gagal menyimpan pengguna", false); }
       finally { toggleLoading(false); }
     };
 
     async function deleteUser(npsn) {
-      if(!confirm(`Yakin ingin menghapus akun pengguna dengan ID ${npsn}?`)) return;
+      if(!confirm(`Hapus akun pengguna ${npsn}?`)) return;
       toggleLoading(true);
       try {
         const res = await fetch(`${SCRIPT_URL}?action=manageMasterSd&subAction=delete&npsn=${npsn}&_t=${Date.now()}`);
         const r = await res.json();
         showToast(r.message); 
         loadMasterUsers();
-      } catch(e) { showToast("Gagal menghapus akun pengguna", false); }
+      } catch(e) { showToast("Gagal menghapus pengguna", false); }
       finally { toggleLoading(false); }
     }
 
@@ -805,11 +919,14 @@
       const tbody = document.getElementById("rekapDinasTableBody");
       if (!tbody) return;
       tbody.innerHTML = "";
-      
+
       if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-3 text-muted">Belum ada data progres tersimpan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">Belum ada data tersimpan.</td></tr>`;
         return;
       }
+
+      let grandTotalBiaya = 0;
+      let grandTotalVol = 0;
 
       const groupedData = data.reduce((acc, curr) => {
         const key = String(curr.npsn).trim();
@@ -818,8 +935,16 @@
         }
         acc[key].totalNilai += Number(curr.nilai || 0);
         acc[key].totalVolume += Number(curr.volumeRuang || 0);
+        grandTotalBiaya += Number(curr.nilai || 0);
+        grandTotalVol += Number(curr.volumeRuang || 0);
         return acc;
       }, {});
+
+      const uniqueSdCount = Object.keys(groupedData).length;
+
+      document.getElementById("statTotalSd").textContent = uniqueSdCount;
+      document.getElementById("statTotalBiaya").textContent = `Rp ${grandTotalBiaya.toLocaleString('id-ID')}`;
+      document.getElementById("statTotalVol").textContent = grandTotalVol;
 
       Object.values(groupedData).forEach(r => {
         tbody.innerHTML += `<tr>
