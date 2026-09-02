@@ -123,6 +123,27 @@
       box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
     }
 
+    /* Password Toggle Styling */
+    .password-wrapper {
+      position: relative;
+    }
+    .password-toggle-btn {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      z-index: 10;
+      padding: 4px;
+      transition: color 0.2s ease;
+    }
+    .password-toggle-btn:hover {
+      color: #4f46e5;
+    }
+
     /* Modern Table Styling */
     .table {
       vertical-align: middle;
@@ -196,10 +217,16 @@
               <input type="text" class="form-control" id="username" placeholder="Username" required>
               <label for="username"><i class="fa-solid fa-user text-muted me-1"></i> NPSN / Username</label>
             </div>
-            <div class="form-floating mb-4">
-              <input type="password" class="form-control" id="password" placeholder="Password" required>
+            
+            <!-- PASSWORD FIELD WITH EYE ICON TOGGLE -->
+            <div class="form-floating mb-4 password-wrapper">
+              <input type="password" class="form-control pe-5" id="password" placeholder="Password" required>
               <label for="password"><i class="fa-solid fa-lock text-muted me-1"></i> Password</label>
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('password', 'loginEyeIcon')" title="Lihat Password">
+                <i class="fa-solid fa-eye" id="loginEyeIcon"></i>
+              </button>
             </div>
+
             <button type="submit" class="btn btn-ultra w-100 py-3 fw-bold rounded-4 shadow"><i class="fa-solid fa-right-to-bracket me-2"></i> Masuk Sistem</button>
           </form>
         </div>
@@ -458,7 +485,15 @@
           <form id="formSd">
             <input type="hidden" id="sdSubAction">
             <div class="mb-2"><label class="form-label fw-semibold small">NPSN</label><input type="text" id="sdNpsn" class="form-control" required></div>
-            <div class="mb-2"><label class="form-label fw-semibold small">Password</label><input type="text" id="sdPass" class="form-control" required></div>
+            <div class="mb-2">
+              <label class="form-label fw-semibold small">Password</label>
+              <div class="password-wrapper">
+                <input type="password" id="sdPass" class="form-control pe-5" required>
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('sdPass', 'sdPassEyeIcon')">
+                  <i class="fa-solid fa-eye" id="sdPassEyeIcon"></i>
+                </button>
+              </div>
+            </div>
             <div class="mb-2"><label class="form-label fw-semibold small">Nama SD</label><input type="text" id="sdNama" class="form-control" required></div>
             <div class="mb-2"><label class="form-label fw-semibold small">Kecamatan</label><input type="text" id="sdKecamatan" class="form-control" required></div>
             <div class="mb-2"><label class="form-label fw-semibold small">Masa PKS</label><input type="text" id="sdMasaPks" class="form-control" placeholder="Contoh: 120 Hari" required></div>
@@ -500,7 +535,15 @@
           <form id="formUser">
             <input type="hidden" id="userSubAction">
             <div class="mb-2"><label class="form-label fw-semibold small">NPSN / Username</label><input type="text" id="userNpsn" class="form-control" required></div>
-            <div class="mb-2"><label class="form-label fw-semibold small">Password</label><input type="text" id="userPass" class="form-control" required></div>
+            <div class="mb-2">
+              <label class="form-label fw-semibold small">Password</label>
+              <div class="password-wrapper">
+                <input type="password" id="userPass" class="form-control pe-5" required>
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('userPass', 'userPassEyeIcon')">
+                  <i class="fa-solid fa-eye" id="userPassEyeIcon"></i>
+                </button>
+              </div>
+            </div>
             <div class="mb-2"><label class="form-label fw-semibold small">Nama Instansi / SD</label><input type="text" id="userNama" class="form-control" required></div>
             <div class="mb-2"><label class="form-label fw-semibold small">Kecamatan</label><input type="text" id="userKecamatan" class="form-control" required></div>
             <div class="mb-3"><label class="form-label fw-semibold small">Role Access</label>
@@ -537,6 +580,22 @@
         } catch(e) { localStorage.removeItem("provit_user"); }
       }
     });
+
+    /* FUNCTION TOGGLE PASSWORD VISIBILITY */
+    function togglePasswordVisibility(inputId, iconId) {
+      const passwordInput = document.getElementById(inputId);
+      const eyeIcon = document.getElementById(iconId);
+      
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        eyeIcon.classList.remove("fa-eye");
+        eyeIcon.classList.add("fa-eye-slash");
+      } else {
+        passwordInput.type = "password";
+        eyeIcon.classList.remove("fa-eye-slash");
+        eyeIcon.classList.add("fa-eye");
+      }
+    }
 
     function toggleLoading(show) { document.getElementById("loadingOverlay").classList.toggle("d-none", !show); }
     
