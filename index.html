@@ -95,8 +95,14 @@
       <!-- TAB: INPUT PROGRES PEKERJAAN -->
       <div id="tabInputProgres" class="tab-content hidden max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
         <h3 class="text-xl font-bold text-slate-900 mb-1">Input Progres Pekerjaan</h3>
-        <p class="text-sm text-slate-500 mb-6">Pilih kegiatan dan laporkan capaian progres mingguan.</p>
+        <p class="text-sm text-slate-500 mb-6">Pilih kegiatan dan laporkan capaian progres mingguan (berdasarkan kontrak).</p>
         
+        <!-- Info Master_SD -->
+        <div id="sdInfoBox" class="mb-6 p-4 bg-sky-50 border border-sky-200 rounded-2xl text-xs space-y-1">
+          <h4 class="font-bold text-sky-900 text-sm mb-2">Informasi Kontrak Sekolah</h4>
+          <div id="sdInfoContent">Memuat informasi sekolah...</div>
+        </div>
+
         <div id="progresFormAlert" class="hidden mb-4 p-3 text-sm rounded-xl"></div>
 
         <form onsubmit="submitProgres(event)" class="space-y-4">
@@ -109,7 +115,8 @@
           <div id="dbDetailInfo" class="text-xs text-slate-500 bg-sky-50 p-3 rounded-xl hidden"></div>
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Rentang Tanggal (Mingguan)</label>
-            <input type="week" id="progMinggu" required class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
+            <input type="date" id="progMingguMulai" required class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none mb-2" placeholder="Tanggal Mulai Minggu">
+            <input type="date" id="progMingguSelesai" required class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none" placeholder="Tanggal Selesai Minggu">
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Target Pekerjaan (%)</label>
@@ -271,6 +278,19 @@
       document.getElementById("userSubtitle").innerText = `Role: ${currentUser.role} | Wilayah: ${currentUser.kecamatan || '-'}`;
 
       buildNavigation();
+      if (currentUser.role === "SEKOLAH") {
+        renderSdInfoBox();
+      }
+    }
+
+    function renderSdInfoBox() {
+      const infoContent = document.getElementById("sdInfoContent");
+      infoContent.innerHTML = `
+        <div><strong>Masa PKS:</strong> ${currentUser.masaPks || '-'}</div>
+        <div><strong>Tanggal Mulai:</strong> ${currentUser.tanggalMulai || '-'}</div>
+        <div><strong>Tanggal Selesai:</strong> ${currentUser.tanggalSelesai || '-'}</div>
+        <div><strong>Pagu Anggaran:</strong> Rp ${Number(currentUser.pagu || 0).toLocaleString('id-ID')}</div>
+      `;
     }
 
     function buildNavigation() {
@@ -379,7 +399,6 @@
       }
       const found = databaseListCache.find(x => x.idInput === selectedId);
       if (found) {
-        // Cari nilai maksimum dari progres sebelumnya untuk kegiatan ini
         const prevProgres = existingProgresCache.filter(p => p.idInput === selectedId);
         let maxTarget = 0;
         let maxCapaian = 0;
@@ -415,7 +434,6 @@
           document.getElementById("dataMenu").value = "";
           loadDatabaseDropdownForProgres();
 
-          // Dialog interaktif: OK = Tambah Data (lanjut), Cancel = Selesai
           setTimeout(() => {
             const lanjut = confirm("Menu kegiatan berhasil disimpan!\n\nKlik 'OK' untuk Tambah Data lagi, atau 'Cancel' untuk Selesai.");
             if (!lanjut) {
@@ -434,12 +452,13 @@
       event.preventDefault();
       const alertBox = document.getElementById("progresFormAlert");
       const idInput = document.getElementById("selectDbInput").value;
-      const rentangMinggu = document.getElementById("progMinggu").value;
+      const tglMulai = document.getElementById("progMingguMulai").value;
+      const tglSelesai = document.getElementById("progMingguSelesai").value;
+      const rentangMinggu = `${tglMulai} s.d ${tglSelesai}`;
       const target = Number(document.getElementById("progTarget").value);
       const capaianFisik = Number(document.getElementById("progCapaian").value);
       const realAnggaran = document.getElementById("progRealAnggaran").value;
 
-      // Validasi: Target dan Capaian tidak boleh kurang dari input sebelumnya
       const prevProgres = existingProgresCache.filter(p => p.idInput === idInput);
       let maxTarget = 0;
       let maxCapaian = 0;
@@ -468,11 +487,12 @@
           document.getElementById("progTarget").value = "";
           document.getElementById("progCapaian").value = "";
           document.getElementById("progRealAnggaran").value = "";
+          document.getElementById("progMingguMulai").value = "";
+          document.getElementById("progMingguSelesai").value = "";
           document.getElementById("selectDbInput").value = "";
           document.getElementById("dbDetailInfo").classList.add("hidden");
           loadAllProgresData();
 
-          // Dialog interaktif: OK = Tambah Data (lanjut), Cancel = Selesai
           setTimeout(() => {
             const lanjut = confirm("Progres pekerjaan berhasil disimpan!\n\nKlik 'OK' untuk Tambah Data lagi, atau 'Cancel' untuk Selesai.");
             if (!lanjut) {
@@ -542,7 +562,14 @@
         } else {
           json.data.forEach((row) => {
             html += `<tr class="border-b border-sky-100 hover:bg-sky-50/50">`;
-            sheetHeaders[sheetName].forEach(h => html += `<td class="p-3">${row[h] || ''}</td>`);
+            sheetHeaders[sheetName].forEach(h => {
+              let val = row[h] || '';
+              // Format Currency di tabel Master_SD jika kolom pagu
+              if (sheetName === 'Master_SD' && typeof val === 'number' && h.toLowerCase().includes('pagu')) {
+                val = `Rp ${val.toLocaleString('id-ID')}`;
+              }
+              html += `<td class="p-3">${val}</td>`;
+            });
             html += `<td class="p-3 text-center space-x-2">
               <button onclick='openModalCrud("${sheetName}", "edit", ${JSON.stringify(row)})' class="text-sky-600 hover:underline font-semibold text-xs">Edit</button>
               <button onclick='deleteData("${sheetName}", "${row[sheetHeaders[sheetName][0]]}")' class="text-red-500 hover:underline font-semibold text-xs">Hapus</button>
