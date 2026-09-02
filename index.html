@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aplikasi Progres Revitalisasi SD 2026</title>
+  <title>Aplikasi Pelaporan & Progres Kegiatan SD</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
     @media print {
@@ -56,9 +56,7 @@
     </header>
 
     <!-- Navigasi Tab Menu -->
-    <nav class="bg-white border-b border-sky-100 px-6 py-3 shadow-xs flex space-x-3 overflow-x-auto no-print" id="navTabs">
-      <!-- Dihasilkan dinamis berdasarkan Role -->
-    </nav>
+    <nav class="bg-white border-b border-sky-100 px-6 py-3 shadow-xs flex space-x-3 overflow-x-auto no-print" id="navTabs"></nav>
 
     <!-- Konten Utama -->
     <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
@@ -127,9 +125,7 @@
             <h3 class="text-lg font-bold text-slate-900">Rekapitulasi Progres Kegiatan</h3>
             <p class="text-sm text-slate-500">Pemantauan data progres berdasarkan tarikan dari tabel database.</p>
           </div>
-          <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition flex items-center space-x-2">
-            <span>Cetak / Print Laporan</span>
-          </button>
+          <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">Cetak / Print Laporan</button>
         </div>
 
         <div id="printArea" class="bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
@@ -208,14 +204,14 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1CYtDDAaOR9u0zCus4p2a3H_6_2zZbteU2gGwSp1-HwE_GntWHlGG5PzG11Wu5Sdj/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtC5KeIC_HsEC_OHcxe8gx_3NChOAZZiCTuJ_K2XiUXp7SOZCViIj5n-fAOn4QLI_C/exec";
     let currentUser = null;
     let currentActiveSheet = "";
     let currentCrudAction = "";
     let sheetHeaders = {};
     let databaseListCache = [];
 
-    // Cek sesi login saat halaman dimuat (mencegah logout saat refresh)
+    // Persistent login check saat halaman direfresh
     window.addEventListener("DOMContentLoaded", () => {
       const savedUser = localStorage.getItem("currentUser");
       if (savedUser) {
@@ -263,7 +259,7 @@
       nav.innerHTML = "";
 
       if (currentUser.role === "DINAS") {
-        nav.innerHTML += `
+        nav.innerHTML = `
           <button onclick="switchTab('tabUsers')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Kelola Pengguna</button>
           <button onclick="switchTab('tabMasterMenu')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Edit Menu</button>
           <button onclick="switchTab('tabMasterSd')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Edit SD</button>
@@ -271,7 +267,7 @@
         `;
         switchTab('tabUsers');
       } else {
-        nav.innerHTML += `
+        nav.innerHTML = `
           <button onclick="switchTab('tabLaporkan')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Laporkan Progres (Database)</button>
           <button onclick="switchTab('tabInputProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Input Progres</button>
           <button onclick="switchTab('tabLihatProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Lihat Progres</button>
@@ -290,16 +286,20 @@
       });
 
       document.getElementById(tabId).classList.remove("hidden");
-      event.target.classList.remove("bg-sky-100", "text-sky-800");
-      event.target.classList.add("bg-sky-600", "text-white");
+      if(event && event.target) {
+        event.target.classList.remove("bg-sky-100", "text-sky-800");
+        event.target.classList.add("bg-sky-600", "text-white");
+      }
 
       if (tabId === 'tabLihatProgres') loadProgresData();
       if (tabId === 'tabInputProgres') loadDatabaseDropdownForProgres();
+      if (tabId === 'tabLaporkan') loadDropdownMenu();
       if (tabId === 'tabUsers') loadSheetGrid('USERS', 'tableUsersGrid');
       if (tabId === 'tabMasterMenu') loadSheetGrid('Master_Menu', 'tableMenuGrid');
       if (tabId === 'tabMasterSd') loadSheetGrid('Master_SD', 'tableSdGrid');
     }
 
+    // Pemuatan dropdown menu yang robust & fleksibel terhadap variasi header sheet
     async function loadDropdownMenu() {
       const res = await fetch(`${SCRIPT_URL}?action=getMasterMenu`);
       const json = await res.json();
@@ -307,11 +307,20 @@
       if (json.status === "success") {
         select.innerHTML = '<option value="">-- Pilih Jenis Menu Kegiatan --</option>';
         json.data.forEach(m => {
-          // Pencarian properti fleksibel (case-insensitive & fallback indeks)
           const keys = Object.keys(m);
           const menuId = m[keys[0]] || "";
-          const menuName = m[keys[1]] || m["Nama Menu"] || m["nama menu"] || "";
-          if(menuName) {
+          let menuName = "";
+          for (let key of keys) {
+            if (key.toLowerCase().includes("nama") || key.toLowerCase().includes("menu")) {
+              if (m[key] && m[key] !== menuId) {
+                menuName = m[key];
+                break;
+              }
+            }
+          }
+          if (!menuName && keys.length > 1) menuName = m[keys[1]] || "";
+
+          if (menuName) {
             select.innerHTML += `<option value="${menuName}">${menuId} - ${menuName}</option>`;
           }
         });
@@ -448,7 +457,8 @@
 
     async function loadSheetGrid(sheetName, tableId) {
       currentActiveSheet = sheetName;
-      const res = await fetch(`${SCRIPT_URL}?action=get${sheetName === 'Master_Menu' ? 'MasterMenu' : sheetName === 'Master_SD' ? 'MasterSd' : 'Users'}`);
+      const actionName = sheetName === 'Master_Menu' ? 'MasterMenu' : sheetName === 'Master_SD' ? 'MasterSd' : 'Users';
+      const res = await fetch(`${SCRIPT_URL}?action=get${actionName}`);
       const json = await res.json();
       const table = document.getElementById(tableId);
       
@@ -503,7 +513,8 @@
     async function submitCrudForm(e) {
       e.preventDefault();
       const headers = sheetHeaders[currentActiveSheet];
-      let params = `action=manage${currentActiveSheet === 'Master_Menu' ? 'MasterMenu' : currentActiveSheet === 'Master_SD' ? 'MasterSd' : 'Users'}&subAction=${currentCrudAction}&pk=${document.getElementById("modalField0").value}`;
+      const actionName = currentActiveSheet === 'Master_Menu' ? 'MasterMenu' : currentActiveSheet === 'Master_SD' ? 'MasterSd' : 'Users';
+      let params = `action=manage${actionName}&subAction=${currentCrudAction}&pk=${document.getElementById("modalField0").value}`;
       
       headers.forEach((h, i) => {
         const val = document.getElementById(`modalField${i}`).value;
