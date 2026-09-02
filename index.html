@@ -86,7 +86,7 @@
 
     <!-- TAB DYNAMIC ACCESS -->
     <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm" id="mainTabs" role="tablist">
-      <!-- Tampilan Role SEKOLAH -->
+      <!-- Role SEKOLAH -->
       <li class="nav-item role-sekolah d-none">
         <button class="nav-link active fw-bold" id="t-progres" data-bs-toggle="pill" data-bs-target="#tab-progres"><i class="fa-solid fa-pen-to-square me-2"></i>Input Progres</button>
       </li>
@@ -94,7 +94,7 @@
         <button class="nav-link fw-bold" id="t-rekap-sekolah" data-bs-toggle="pill" data-bs-target="#tab-rekap-sekolah" onclick="loadRekapSekolah()"><i class="fa-solid fa-clock-rotate-left me-2"></i>Rekap Laporan Saya</button>
       </li>
 
-      <!-- Tampilan Role DINAS -->
+      <!-- Role DINAS -->
       <li class="nav-item role-dinas d-none">
         <button class="nav-link active fw-bold" id="t-master-sd" data-bs-toggle="pill" data-bs-target="#tab-master-sd" onclick="loadMasterSd()"><i class="fa-solid fa-school me-2"></i>Master Data SD</button>
       </li>
@@ -115,9 +115,8 @@
           <div class="card-body">
             <form id="progresForm">
               <div class="row g-3">
-                <div class="col-md-4"><label class="form-label fw-semibold">Nama SD</label><input type="text" id="namaSd" class="form-control" readonly></div>
-                <div class="col-md-4"><label class="form-label fw-semibold">Kecamatan</label><input type="text" id="kecamatan" class="form-control" readonly></div>
-                <div class="col-md-4"><label class="form-label fw-semibold">Nama Tim</label><input type="text" id="namaTim" class="form-control" readonly></div>
+                <div class="col-md-6"><label class="form-label fw-semibold">Nama SD</label><input type="text" id="namaSd" class="form-control" readonly></div>
+                <div class="col-md-6"><label class="form-label fw-semibold">Kecamatan</label><input type="text" id="kecamatan" class="form-control" readonly></div>
                 <div class="col-md-6"><label class="form-label fw-semibold">Pilih Menu Pekerjaan</label><select id="namaMenu" class="form-select" required></select></div>
                 <div class="col-md-3"><label class="form-label fw-semibold">Nilai Pekerjaan (Rp)</label><input type="number" id="nilai" class="form-control" placeholder="0" min="0" required></div>
                 <div class="col-md-3"><label class="form-label fw-semibold">Volume Ruang</label><input type="number" id="volumeRuang" class="form-control" placeholder="0" min="0" required></div>
@@ -149,7 +148,7 @@
         </div>
       </div>
 
-      <!-- [DINAS] SUB MENU 1: MASTER DATA SD -->
+      <!-- [DINAS] SUB MENU 1: MASTER DATA SD (KOLOM BARU) -->
       <div class="tab-pane fade role-dinas-pane" id="tab-master-sd">
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
@@ -160,7 +159,16 @@
             <div class="table-responsive">
               <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
-                  <tr><th>NPSN</th><th>Nama Sekolah</th><th>Kecamatan</th><th>Tim Pembangun</th><th>Role</th><th>Aksi</th></tr>
+                  <tr>
+                    <th>NPSN</th>
+                    <th>Nama SD</th>
+                    <th>Kecamatan</th>
+                    <th>Masa PKS</th>
+                    <th>Mulai</th>
+                    <th>Selesai</th>
+                    <th>Role</th>
+                    <th>Aksi</th>
+                  </tr>
                 </thead>
                 <tbody id="masterSdTableBody"></tbody>
               </table>
@@ -194,13 +202,13 @@
         <div class="card shadow-sm border-0">
           <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <span><i class="fa-solid fa-table me-2 text-primary"></i>Rekap Real-Time Seluruh Sekolah</span>
-            <input type="text" id="searchInput" class="form-control form-control-sm style-width-200" placeholder="Cari data..." onkeyup="filterTableDinas()">
+            <input type="text" id="searchInput" class="form-control form-control-sm" style="width: 200px;" placeholder="Cari data..." onkeyup="filterTableDinas()">
           </div>
           <div class="card-body p-0">
             <div class="table-responsive">
               <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
-                  <tr><th>ID Input</th><th>NPSN</th><th>Nama SD</th><th>Kecamatan</th><th>Menu Pekerjaan</th><th class="text-end">Nilai (Rp)</th><th class="text-center">Volume</th><th>Nama Tim</th></tr>
+                  <tr><th>ID Input</th><th>NPSN</th><th>Nama SD</th><th>Kecamatan</th><th>Menu Pekerjaan</th><th class="text-end">Nilai (Rp)</th><th class="text-center">Volume</th></tr>
                 </thead>
                 <tbody id="rekapDinasTableBody"></tbody>
               </table>
@@ -220,13 +228,16 @@
         <div class="modal-body">
           <form id="formSd">
             <input type="hidden" id="sdSubAction">
-            <div class="mb-2"><label class="form-label">NPSN</label><input type="text" id="sdNpsn" class="form-control" required></div>
-            <div class="mb-2"><label class="form-label">Password</label><input type="text" id="sdPass" class="form-control" required></div>
-            <div class="mb-2"><label class="form-label">Nama Sekolah</label><input type="text" id="sdNama" class="form-control" required></div>
-            <div class="mb-2"><label class="form-label">Kecamatan</label><input type="text" id="sdKecamatan" class="form-control" required></div>
-            <div class="mb-2"><label class="form-label">Nama Tim</label><input type="text" id="sdTim" class="form-control" required></div>
-            <div class="mb-2"><label class="form-label">Email</label><input type="email" id="sdEmail" class="form-control"></div>
-            <div class="mb-2"><label class="form-label">Role</label>
+            <div class="mb-2"><label class="form-label fw-semibold">NPSN</label><input type="text" id="sdNpsn" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold">Password</label><input type="text" id="sdPass" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold">Nama SD</label><input type="text" id="sdNama" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold">Kecamatan</label><input type="text" id="sdKecamatan" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold">Masa PKS (Hari)</label><input type="text" id="sdMasaPks" class="form-control" placeholder="Contoh: 120 Hari" required></div>
+            <div class="row g-2 mb-2">
+              <div class="col-6"><label class="form-label fw-semibold">Mulai</label><input type="date" id="sdMulai" class="form-control" required></div>
+              <div class="col-6"><label class="form-label fw-semibold">Selesai</label><input type="date" id="sdSelesai" class="form-control" required></div>
+            </div>
+            <div class="mb-2"><label class="form-label fw-semibold">Role</label>
               <select id="sdRole" class="form-select"><option value="SEKOLAH">SEKOLAH</option><option value="DINAS">DINAS</option></select>
             </div>
             <div class="text-end mt-3"><button type="submit" class="btn btn-primary">Simpan</button></div>
@@ -240,12 +251,12 @@
   <div class="modal fade" id="modalMenu" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header"><h5 class="modal-title" id="modalMenuTitle">Form Menu Pekerjaan</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-header"><h5 class="modal-title">Form Menu Pekerjaan</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">
           <form id="formMenu">
             <input type="hidden" id="menuSubAction">
             <input type="hidden" id="menuId">
-            <div class="mb-3"><label class="form-label">Nama Menu Pekerjaan</label><input type="text" id="menuNama" class="form-control" required></div>
+            <div class="mb-3"><label class="form-label fw-semibold">Nama Menu Pekerjaan</label><input type="text" id="menuNama" class="form-control" required></div>
             <div class="text-end"><button type="submit" class="btn btn-primary">Simpan Menu</button></div>
           </form>
         </div>
@@ -309,7 +320,6 @@
       document.getElementById("userDisplayName").textContent = user.sekolah || "Pengguna";
       document.getElementById("userRoleBadge").textContent = user.role;
 
-      // Render Hak Akses Navigasi Tab
       document.querySelectorAll('.role-sekolah, .role-dinas').forEach(el => el.classList.add('d-none'));
       document.querySelectorAll('.role-sekolah-pane, .role-dinas-pane').forEach(el => el.classList.remove('show', 'active'));
 
@@ -325,12 +335,10 @@
         
         document.getElementById("namaSd").value = user.sekolah;
         document.getElementById("kecamatan").value = user.kecamatan;
-        document.getElementById("namaTim").value = user.namaTim;
         populateMenuDropdown();
       }
     }
 
-    // --- LOGIK MENU PEKERJAAN DROPDOWN FOR SEKOLAH ---
     async function populateMenuDropdown() {
       try {
         const res = await fetch(`${SCRIPT_URL}?action=getMenu&_t=${Date.now()}`);
@@ -353,7 +361,6 @@
         namaMenu: document.getElementById("namaMenu").value,
         nilai: document.getElementById("nilai").value,
         volumeRuang: document.getElementById("volumeRuang").value,
-        namaTim: document.getElementById("namaTim").value,
         _t: Date.now()
       };
       if(!payload.namaMenu || !payload.nilai || !payload.volumeRuang) return showToast("Lengkapi form!", false);
@@ -389,7 +396,7 @@
       finally { toggleLoading(false); }
     }
 
-    // --- SUB MENU DINAS 1: MASTER SD ---
+    // --- MASTER SD (KOLOM BARU) ---
     async function loadMasterSd() {
       toggleLoading(true);
       try {
@@ -400,9 +407,15 @@
         if (result.status === "success") {
           result.data.forEach(sd => {
             tbody.innerHTML += `<tr>
-              <td>${sd.npsn}</td><td>${sd.sekolah}</td><td>${sd.kecamatan}</td><td>${sd.namaTim}</td><td><span class="badge bg-secondary">${sd.role}</span></td>
+              <td>${sd.npsn}</td>
+              <td>${sd.sekolah}</td>
+              <td>${sd.kecamatan}</td>
+              <td>${sd.masaPks}</td>
+              <td>${sd.mulai}</td>
+              <td>${sd.selesai}</td>
+              <td><span class="badge bg-secondary">${sd.role}</span></td>
               <td>
-                <button class="btn btn-sm btn-warning me-1" onclick="openModalSd('edit', '${sd.npsn}', '${sd.password}', '${sd.sekolah}', '${sd.kecamatan}', '${sd.namaTim}', '${sd.email}', '${sd.role}')"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn btn-sm btn-warning me-1" onclick="openModalSd('edit', '${sd.npsn}', '${sd.password}', '${sd.sekolah}', '${sd.kecamatan}', '${sd.masaPks}', '${sd.mulai}', '${sd.selesai}', '${sd.role}')"><i class="fa-solid fa-pen"></i></button>
                 <button class="btn btn-sm btn-danger" onclick="deleteSd('${sd.npsn}')"><i class="fa-solid fa-trash"></i></button>
               </td>
             </tr>`;
@@ -412,15 +425,16 @@
       finally { toggleLoading(false); }
     }
 
-    function openModalSd(subAction, npsn="", pass="", sekolah="", kec="", tim="", email="", role="SEKOLAH") {
+    function openModalSd(subAction, npsn="", pass="", sekolah="", kec="", masaPks="", mulai="", selesai="", role="SEKOLAH") {
       document.getElementById("sdSubAction").value = subAction;
       document.getElementById("sdNpsn").value = npsn;
       document.getElementById("sdNpsn").readOnly = (subAction === 'edit');
       document.getElementById("sdPass").value = pass;
       document.getElementById("sdNama").value = sekolah;
       document.getElementById("sdKecamatan").value = kec;
-      document.getElementById("sdTim").value = tim;
-      document.getElementById("sdEmail").value = email;
+      document.getElementById("sdMasaPks").value = masaPks;
+      document.getElementById("sdMulai").value = mulai;
+      document.getElementById("sdSelesai").value = selesai;
       document.getElementById("sdRole").value = role;
       modalSdObj.show();
     }
@@ -431,8 +445,9 @@
         action: "manageMasterSd", subAction: document.getElementById("sdSubAction").value,
         npsn: document.getElementById("sdNpsn").value, password: document.getElementById("sdPass").value,
         sekolah: document.getElementById("sdNama").value, kecamatan: document.getElementById("sdKecamatan").value,
-        namaTim: document.getElementById("sdTim").value, email: document.getElementById("sdEmail").value,
-        role: document.getElementById("sdRole").value, _t: Date.now()
+        masaPks: document.getElementById("sdMasaPks").value, mulai: document.getElementById("sdMulai").value,
+        selesai: document.getElementById("sdSelesai").value, role: document.getElementById("sdRole").value, 
+        _t: Date.now()
       };
       toggleLoading(true); modalSdObj.hide();
       try {
@@ -454,7 +469,7 @@
       finally { toggleLoading(false); }
     }
 
-    // --- SUB MENU DINAS 2: MENU PEKERJAAN ---
+    // --- MENU PEKERJAAN ---
     async function loadMasterMenu() {
       toggleLoading(true);
       try {
@@ -511,7 +526,7 @@
       finally { toggleLoading(false); }
     }
 
-    // --- SUB MENU DINAS 3: REKAP DATABASE DINAS ---
+    // --- REKAP DATABASE DINAS ---
     async function loadRekapDinas() {
       toggleLoading(true);
       try {
@@ -533,7 +548,7 @@
           <td><span class="badge bg-secondary font-monospace">${r.idInput}</span></td>
           <td>${r.npsn}</td><td><strong>${r.namaSd}</strong></td><td>${r.kecamatan}</td>
           <td>${r.namaMenu}</td><td class="text-end fw-bold text-success">Rp ${Number(r.nilai).toLocaleString('id-ID')}</td>
-          <td class="text-center">${r.volumeRuang}</td><td><small class="text-muted">${r.namaTim}</small></td>
+          <td class="text-center">${r.volumeRuang}</td>
         </tr>`;
       });
     }
