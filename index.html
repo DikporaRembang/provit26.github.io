@@ -3,163 +3,407 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Master Data SD Minimalis</title>
+  <title>Sistem Master Data SD & PKS</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
   <style>
-    * { box-sizing: border-box; font-family: sans-serif; }
-    body { background-color: #f0f2f5; margin: 0; padding: 20px; }
-    .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .hidden { display: none !important; }
-    input, select, button { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; }
-    button { background: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
-    button:hover { background: #0056b3; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-    th { background: #f8f9fa; }
-    .btn-danger { background: #dc3545; }
-    .btn-danger:hover { background: #bd2130; }
+    body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .btn-ultra { background: linear-gradient(135deg, #0d6efd, #0d47a1); color: #fff; border: none; font-weight: 600; }
+    .btn-ultra:hover { background: linear-gradient(135deg, #0b5ed7, #0a3880); color: #fff; }
+    .card-login { max-width: 400px; margin: 80px auto; border: none; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+    .password-wrapper { position: relative; }
+    .password-toggle-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #6c757d; cursor: pointer; }
+    #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.7); display: flex; justify-content: center; align-items: center; z-index: 9999; }
   </style>
 </head>
 <body>
 
-  <!-- LOGIN FORM -->
-  <div id="loginBox" class="container" style="max-width: 400px;">
-    <h2>Login Sistem</h2>
-    <input type="text" id="npsn" placeholder="NPSN">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Masuk</button>
+  <!-- LOADING SPINNER -->
+  <div id="loadingOverlay" class="d-none">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Loading...</span>
+    </div>
   </div>
 
-  <!-- DASHBOARD -->
-  <div id="dashboardBox" class="container hidden">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>Master Data SD</h2>
-      <button class="btn-danger" style="width: auto;" onclick="logout()">Logout</button>
+  <!-- HALAMAN LOGIN -->
+  <div id="loginSection" class="container">
+    <div class="card card-login p-4 bg-white">
+      <div class="text-center mb-4">
+        <i class="fa-solid fa-school-flag text-primary fa-3x mb-2"></i>
+        <h4 class="fw-bold">Masuk Sistem</h4>
+        <p class="text-muted small">Silakan login menggunakan NPSN & Password</p>
+      </div>
+      <form id="formLogin">
+        <div class="mb-3">
+          <label class="form-label fw-semibold small">NPSN</label>
+          <input type="text" id="loginNpsn" class="form-control" placeholder="Masukkan NPSN" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-semibold small">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="loginPass" class="form-control pe-5" placeholder="Masukkan Password" required>
+            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPass', 'loginPassEye')">
+              <i class="fa-solid fa-eye" id="loginPassEye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-ultra w-100 py-2 rounded-3">
+          <i class="fa-solid fa-right-to-bracket me-1"></i> Login
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- DASHBOARD MASTER SD -->
+  <div id="dashboardSection" class="container py-4 d-none">
+    <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm">
+      <div class="d-flex align-items-center">
+        <i class="fa-solid fa-school text-primary fa-2x me-3"></i>
+        <div>
+          <h5 class="fw-bold text-dark mb-0">Master Data SD & Anggaran</h5>
+          <span class="badge bg-primary-subtle text-primary fw-semibold" id="userRoleBadge">User</span>
+          <span class="text-muted small ms-2" id="userNameLabel"></span>
+        </div>
+      </div>
+      <div>
+        <button class="btn btn-ultra btn-sm me-2 rounded-3" onclick="openModalSd('add')">
+          <i class="fa-solid fa-plus me-1"></i> Tambah SD Baru
+        </button>
+        <button class="btn btn-outline-danger btn-sm rounded-3" onclick="logout()">
+          <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+        </button>
+      </div>
     </div>
 
-    <h3>Tambah / Edit Data SD</h3>
-    <form id="sdForm" onsubmit="saveSd(event)">
-      <input type="hidden" id="subAction" value="add">
-      <input type="text" id="sdNpsn" placeholder="NPSN" required>
-      <input type="password" id="sdPass" placeholder="Password" required>
-      <input type="text" id="sdNama" placeholder="Nama Sekolah" required>
-      <input type="text" id="sdKecamatan" placeholder="Kecamatan" required>
-      <input type="number" id="sdMasaPks" placeholder="Masa PKS (Hari)" required>
-      <input type="date" id="sdMulai" placeholder="Mulai" required>
-      <input type="date" id="sdSelesai" placeholder="Selesai" required>
-      <input type="number" id="sdPagu" placeholder="Pagu (Rp)" required>
-      <select id="sdRole">
-        <option value="SEKOLAH">SEKOLAH</option>
-        <option value="DINAS">DINAS</option>
-      </select>
-      <button type="submit">Simpan Data</button>
-    </form>
-
-    <hr>
-
-    <table>
-      <thead>
-        <tr>
-          <th>NPSN</th>
-          <th>Sekolah</th>
-          <th>Kecamatan</th>
-          <th>Pagu (Rp)</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>NPSN</th>
+              <th>Nama SD</th>
+              <th>Kecamatan</th>
+              <th>Masa PKS</th>
+              <th>Mulai</th>
+              <th>Selesai</th>
+              <th class="text-end">Pagu (Rp)</th>
+              <th>Role</th>
+              <th class="text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="masterSdTableBody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
+  <!-- MODAL FORM SD -->
+  <div class="modal fade" id="modalSd" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 shadow-lg">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="fw-bold modal-title" id="modalSdTitle">Form Data SD</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formSd">
+            <input type="hidden" id="sdSubAction">
+
+            <div class="mb-2">
+              <label class="form-label fw-semibold small">NPSN</label>
+              <input type="text" id="sdNpsn" class="form-control" placeholder="Contoh: 20300001" required>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label fw-semibold small">Password</label>
+              <div class="password-wrapper">
+                <input type="password" id="sdPass" class="form-control pe-5" placeholder="Password akun" required>
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('sdPass', 'sdPassEyeIcon')">
+                  <i class="fa-solid fa-eye" id="sdPassEyeIcon"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label fw-semibold small">Nama SD</label>
+              <input type="text" id="sdNama" class="form-control" placeholder="Nama Sekolah" required>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label fw-semibold small">Kecamatan</label>
+              <input type="text" id="sdKecamatan" class="form-control" placeholder="Nama Kecamatan" required>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label fw-semibold small">Masa PKS</label>
+              <div class="input-group">
+                <input type="number" id="sdMasaPks" class="form-control" placeholder="120" min="1" oninput="calculateTanggalSelesai()" required>
+                <span class="input-group-text bg-light text-muted fw-semibold">Hari</span>
+              </div>
+            </div>
+
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <label class="form-label fw-semibold small">Mulai</label>
+                <input type="date" id="sdMulai" class="form-control" onchange="calculateTanggalSelesai()" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-semibold small">Selesai (Otomatis)</label>
+                <input type="date" id="sdSelesai" class="form-control bg-light" readonly required>
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label fw-semibold small">Pagu Anggaran (Rp)</label>
+              <input type="number" id="sdPagu" class="form-control" placeholder="Contoh: 50000000" min="0" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">Role</label>
+              <select id="sdRole" class="form-select">
+                <option value="SEKOLAH">SEKOLAH</option>
+                <option value="DINAS">DINAS</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-ultra w-100 rounded-3 py-2">Simpan Data SD</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFIKASI -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="toastMessage"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwtLU0t_yRti46VCjSCXzPFpEi_ufebnlDLBFkTVy-tjax-n0KgwLJfj9D6LqfmmbGA/exec";
+    // MASUKKAN URL DEPLOYMENT APPS SCRIPT ANDA DI SINI
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtLU0t_yRti46VCjSCXzPFpEi_ufebnlDLBFkTVy-tjax-n0KgwLJfj9D6LqfmmbGA/exec";
 
-    async function login() {
-      const npsn = document.getElementById("npsn").value;
-      const pass = document.getElementById("password").value;
-      const res = await fetch(`${API_URL}?action=login&npsn=${npsn}&password=${pass}`);
-      const data = await res.json();
+    let modalSdObj;
+    let toastObj;
 
-      if (data.status === "success") {
-        localStorage.setItem("session", JSON.stringify(data.data));
-        render();
-      } else {
-        alert(data.message);
-      }
+    document.addEventListener("DOMContentLoaded", function () {
+      modalSdObj = new bootstrap.Modal(document.getElementById('modalSd'));
+      toastObj = new bootstrap.Toast(document.getElementById('liveToast'));
+      checkSession();
+    });
+
+    function toggleLoading(show) {
+      document.getElementById("loadingOverlay").classList.toggle("d-none", !show);
     }
 
-    function render() {
-      const sess = localStorage.getItem("session");
-      if (sess) {
-        document.getElementById("loginBox").classList.add("hidden");
-        document.getElementById("dashboardBox").classList.remove("hidden");
-        loadData();
+    function showToast(message, isSuccess = true) {
+      const toastEl = document.getElementById("liveToast");
+      document.getElementById("toastMessage").textContent = message;
+      toastEl.className = `toast align-items-center text-white border-0 ${isSuccess ? 'bg-success' : 'bg-danger'}`;
+      toastObj.show();
+    }
+
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      input.type = input.type === "password" ? "text" : "password";
+      icon.classList.toggle("fa-eye");
+      icon.classList.toggle("fa-eye-slash");
+    }
+
+    document.getElementById("formLogin").onsubmit = async function(e) {
+      e.preventDefault();
+      const npsn = document.getElementById("loginNpsn").value.trim();
+      const pass = document.getElementById("loginPass").value;
+
+      toggleLoading(true);
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=login&npsn=${encodeURIComponent(npsn)}&password=${encodeURIComponent(pass)}`);
+        const r = await res.json();
+
+        if (r.status === "success") {
+          localStorage.setItem("userSession", JSON.stringify(r.data));
+          showToast("Login berhasil!", true);
+          checkSession();
+        } else {
+          showToast(r.message || "NPSN atau Password salah", false);
+        }
+      } catch (err) {
+        showToast("Gagal melakukan login. Periksa otorisasi deployment Apps Script.", false);
+      } finally {
+        toggleLoading(false);
+      }
+    };
+
+    function checkSession() {
+      const sessionData = localStorage.getItem("userSession");
+      if (sessionData) {
+        const user = JSON.parse(sessionData);
+        document.getElementById("loginSection").classList.add("d-none");
+        document.getElementById("dashboardSection").classList.remove("d-none");
+        
+        document.getElementById("userNameLabel").textContent = user.sekolah || user.npsn;
+        document.getElementById("userRoleBadge").textContent = user.role || "USER";
+
+        loadMasterSd();
       } else {
-        document.getElementById("loginBox").classList.remove("hidden");
-        document.getElementById("dashboardBox").classList.add("hidden");
+        document.getElementById("loginSection").classList.remove("d-none");
+        document.getElementById("dashboardSection").classList.add("d-none");
       }
     }
 
     function logout() {
-      localStorage.removeItem("session");
-      render();
+      localStorage.removeItem("userSession");
+      checkSession();
+      showToast("Berhasil logout", true);
     }
 
-    async function loadData() {
-      const res = await fetch(`${API_URL}?action=getMasterSd&_t=${Date.now()}`);
-      const data = await res.json();
-      const tbody = document.getElementById("tableBody");
-      tbody.innerHTML = "";
+    function calculateTanggalSelesai() {
+      const tglMulaiVal = document.getElementById("sdMulai").value;
+      const masaPksVal = parseInt(document.getElementById("sdMasaPks").value, 10);
 
-      if (data.status === "success") {
-        data.data.forEach(item => {
-          tbody.innerHTML += `
-            <tr>
-              <td>${item.npsn}</td>
-              <td>${item.sekolah}</td>
-              <td>${item.kecamatan}</td>
-              <td>Rp ${Number(item.pagu).toLocaleString('id-ID')}</td>
-              <td>
-                <button onclick="del('${item.npsn}')" class="btn-danger" style="width: auto; padding: 4px 8px;">Hapus</button>
-              </td>
-            </tr>
-          `;
-        });
+      if (tglMulaiVal && !isNaN(masaPksVal) && masaPksVal > 0) {
+        const tglMulai = new Date(tglMulaiVal);
+        tglMulai.setDate(tglMulai.getDate() + masaPksVal);
+        document.getElementById("sdSelesai").value = tglMulai.toISOString().split('T')[0];
+      } else {
+        document.getElementById("sdSelesai").value = "";
       }
     }
 
-    async function saveSd(e) {
+    async function loadMasterSd() {
+      toggleLoading(true);
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getMasterSd&_t=${Date.now()}`);
+        const result = await res.json();
+        const tbody = document.getElementById("masterSdTableBody");
+        tbody.innerHTML = "";
+
+        if (result.status === "success" && Array.isArray(result.data)) {
+          if (result.data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada data SD.</td></tr>`;
+          } else {
+            result.data.forEach(sd => {
+              const pagu = Number(sd.pagu || 0);
+              tbody.innerHTML += `<tr>
+                <td><span class="badge bg-light text-dark font-monospace">${sd.npsn}</span></td>
+                <td><strong>${sd.sekolah}</strong></td>
+                <td>${sd.kecamatan}</td>
+                <td>${sd.masaPks}</td>
+                <td>${sd.mulai}</td>
+                <td>${sd.selesai}</td>
+                <td class="text-end fw-bold text-success font-monospace">Rp ${pagu.toLocaleString('id-ID')}</td>
+                <td><span class="badge ${sd.role === 'DINAS' ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary'} fw-bold">${sd.role}</span></td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-light me-1" title="Edit" onclick="openModalSd('edit', '${sd.npsn}', '${sd.password}', '${sd.sekolah}', '${sd.kecamatan}', '${sd.masaPks}', '${sd.mulai}', '${sd.selesai}', '${sd.pagu}', '${sd.role}')">
+                    <i class="fa-solid fa-pen text-warning"></i>
+                  </button>
+                  <button class="btn btn-sm btn-light" title="Hapus" onclick="deleteSd('${sd.npsn}')">
+                    <i class="fa-solid fa-trash text-danger"></i>
+                  </button>
+                </td>
+              </tr>`;
+            });
+          }
+        } else {
+          showToast(result.message || "Gagal memuat data Master SD", false);
+        }
+      } catch(e) { 
+        showToast("Gagal memuat SD. Periksa URL Apps Script.", false); 
+      } finally { 
+        toggleLoading(false); 
+      }
+    }
+
+    function openModalSd(subAction, npsn="", pass="", sekolah="", kec="", masaPks="", mulai="", selesai="", pagu="0", role="SEKOLAH") {
+      document.getElementById("sdSubAction").value = subAction;
+      document.getElementById("sdNpsn").value = npsn;
+      document.getElementById("sdNpsn").readOnly = (subAction === 'edit');
+      document.getElementById("sdPass").value = pass;
+      document.getElementById("sdNama").value = sekolah;
+      document.getElementById("sdKecamatan").value = kec;
+      
+      const numMasaPks = parseInt(masaPks, 10);
+      document.getElementById("sdMasaPks").value = isNaN(numMasaPks) ? "" : numMasaPks;
+      document.getElementById("sdMulai").value = mulai;
+      document.getElementById("sdSelesai").value = selesai;
+      document.getElementById("sdPagu").value = pagu;
+      document.getElementById("sdRole").value = role;
+
+      document.getElementById("modalSdTitle").textContent = (subAction === 'edit') ? "Edit Data SD" : "Tambah SD Baru";
+      modalSdObj.show();
+    }
+
+    document.getElementById("formSd").onsubmit = async function(e) {
       e.preventDefault();
+      
+      const masaPksVal = document.getElementById("sdMasaPks").value;
       const payload = {
-        action: "manageMasterSd",
-        subAction: document.getElementById("subAction").value,
-        npsn: document.getElementById("sdNpsn").value,
+        action: "manageMasterSd", 
+        subAction: document.getElementById("sdSubAction").value,
+        npsn: document.getElementById("sdNpsn").value.trim(), 
         password: document.getElementById("sdPass").value,
-        sekolah: document.getElementById("sdNama").value,
+        sekolah: document.getElementById("sdNama").value, 
         kecamatan: document.getElementById("sdKecamatan").value,
-        masaPks: document.getElementById("sdMasaPks").value + " Hari",
+        masaPks: masaPksVal ? `${masaPksVal} Hari` : "-", 
         mulai: document.getElementById("sdMulai").value,
-        selesai: document.getElementById("sdSelesai").value,
-        pagu: document.getElementById("sdPagu").value,
-        role: document.getElementById("sdRole").value,
+        selesai: document.getElementById("sdSelesai").value, 
+        pagu: document.getElementById("sdPagu").value || 0,
+        role: document.getElementById("sdRole").value, 
         _t: Date.now()
       };
 
-      const params = new URLSearchParams(payload).toString();
-      const res = await fetch(`${API_URL}?${params}`);
-      const data = await res.json();
-      alert(data.message);
-      loadData();
-    }
+      toggleLoading(true); 
+      modalSdObj.hide();
 
-    async function del(npsn) {
-      if (!confirm("Hapus data ini?")) return;
-      const res = await fetch(`${API_URL}?action=manageMasterSd&subAction=delete&npsn=${npsn}&_t=${Date.now()}`);
-      const data = await res.json();
-      alert(data.message);
-      loadData();
-    }
+      try {
+        const queryParams = new URLSearchParams(payload).toString();
+        const res = await fetch(`${SCRIPT_URL}?${queryParams}`);
+        const r = await res.json();
+        
+        if (r.status === "success") {
+          showToast(r.message, true); 
+          loadMasterSd();
+        } else {
+          showToast(r.message || "Gagal memperbarui data", false);
+        }
+      } catch(err) { 
+        showToast("Terjadi kesalahan koneksi ke server", false); 
+      } finally { 
+        toggleLoading(false); 
+      }
+    };
 
-    render();
+    async function deleteSd(npsn) {
+      if (!confirm(`Apakah Anda yakin ingin menghapus data SD dengan NPSN ${npsn}?`)) return;
+
+      toggleLoading(true);
+      try {
+        const payload = { action: "manageMasterSd", subAction: "delete", npsn: npsn, _t: Date.now() };
+        const queryParams = new URLSearchParams(payload).toString();
+        const res = await fetch(`${SCRIPT_URL}?${queryParams}`);
+        const r = await res.json();
+
+        if (r.status === "success") {
+          showToast(r.message, true);
+          loadMasterSd();
+        } else {
+          showToast(r.message || "Gagal menghapus data", false);
+        }
+      } catch(err) {
+        showToast("Gagal koneksi server saat menghapus data", false);
+      } finally {
+        toggleLoading(false);
+      }
+    }
   </script>
 </body>
 </html>
