@@ -197,25 +197,23 @@
         </div>
       </div>
 
-      <!-- [DINAS] SUB MENU 3: REKAP DATABASE DINAS -->
+      <!-- [DINAS] SUB MENU 3: REKAP DATABASE DINAS (TERKELOMPOK PER NPSN) -->
       <div class="tab-pane fade role-dinas-pane" id="tab-rekap-dinas">
         <div class="card shadow-sm border-0">
-          <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <span><i class="fa-solid fa-table me-2 text-primary"></i>Rekap Real-Time Seluruh Sekolah</span>
-            <input type="text" id="searchInput" class="form-control form-control-sm" style="width: 220px;" placeholder="Cari sekolah / pekerjaan..." onkeyup="filterTableDinas()">
+          <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-table me-2 text-primary"></i>Rekap Real-Time Seluruh Sekolah (Per NPSN)</span>
+            <input type="text" id="searchInput" class="form-control form-control-sm w-auto" placeholder="Cari sekolah / kecamatan..." onkeyup="filterTableDinas()">
           </div>
           <div class="card-body p-0">
             <div class="table-responsive">
               <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                   <tr>
-                    <th>ID Input</th>
                     <th>NPSN</th>
                     <th>Nama SD</th>
                     <th>Kecamatan</th>
-                    <th>Menu Pekerjaan</th>
-                    <th class="text-end">Nilai (Rp)</th>
-                    <th class="text-center">Volume</th>
+                    <th class="text-end">Total Realisasi Pekerjaan (Rp)</th>
+                    <th class="text-center">Total Volume Ruang</th>
                   </tr>
                 </thead>
                 <tbody id="rekapDinasTableBody"></tbody>
@@ -428,6 +426,7 @@
         const result = await res.json();
         const tbody = document.getElementById("masterSdTableBody");
         tbody.innerHTML = "";
+
         if (result.status === "success") {
           if (result.data.length === 0) {
             tbody.innerHTML = `<tr><td colspan="8" class="text-center py-3 text-muted">Belum ada data sekolah.</td></tr>`;
@@ -597,19 +596,35 @@
       tbody.innerHTML = "";
       
       if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-3 text-muted">Belum ada data progres yang tersimpan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-3 text-muted">Belum ada data progres tersimpan.</td></tr>`;
         return;
       }
 
-      data.forEach(r => {
+      // Mengelompokkan data berdasarkan NPSN
+      const groupedData = data.reduce((acc, curr) => {
+        const key = String(curr.npsn).trim();
+        if (!acc[key]) {
+          acc[key] = {
+            npsn: curr.npsn,
+            namaSd: curr.namaSd,
+            kecamatan: curr.kecamatan,
+            totalNilai: 0,
+            totalVolume: 0
+          };
+        }
+        acc[key].totalNilai += Number(curr.nilai || 0);
+        acc[key].totalVolume += Number(curr.volumeRuang || 0);
+        return acc;
+      }, {});
+
+      // Menampilkan data yang sudah dikelompokkan
+      Object.values(groupedData).forEach(r => {
         tbody.innerHTML += `<tr>
-          <td><span class="badge bg-secondary font-monospace">${r.idInput || '-'}</span></td>
-          <td>${r.npsn || '-'}</td>
+          <td><span class="badge bg-secondary font-monospace">${r.npsn || '-'}</span></td>
           <td><strong>${r.namaSd || '-'}</strong></td>
           <td>${r.kecamatan || '-'}</td>
-          <td>${r.namaMenu || '-'}</td>
-          <td class="text-end fw-bold text-success">Rp ${Number(r.nilai || 0).toLocaleString('id-ID')}</td>
-          <td class="text-center">${r.volumeRuang || 0}</td>
+          <td class="text-end fw-bold text-success font-monospace">Rp ${r.totalNilai.toLocaleString('id-ID')}</td>
+          <td class="text-center">${r.totalVolume}</td>
         </tr>`;
       });
     }
@@ -618,7 +633,6 @@
       const q = document.getElementById("searchInput").value.toLowerCase();
       const filtered = rawDinasData.filter(i => 
         (i.namaSd && i.namaSd.toLowerCase().includes(q)) || 
-        (i.namaMenu && i.namaMenu.toLowerCase().includes(q)) || 
         (i.npsn && i.npsn.toString().includes(q)) ||
         (i.kecamatan && i.kecamatan.toLowerCase().includes(q))
       );
