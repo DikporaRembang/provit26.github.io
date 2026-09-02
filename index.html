@@ -5,70 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistem Master Data SD & PKS</title>
   
-  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   
   <style>
-    body {
-      background-color: #f4f6f9;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    .btn-ultra {
-      background: linear-gradient(135deg, #0d6efd, #0d47a1);
-      color: #fff;
-      border: none;
-      font-weight: 600;
-    }
-    .btn-ultra:hover {
-      background: linear-gradient(135deg, #0b5ed7, #0a3880);
-      color: #fff;
-    }
-    .card-login {
-      max-width: 400px;
-      margin: 80px auto;
-      border: none;
-      border-radius: 1rem;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    }
-    .password-wrapper {
-      position: relative;
-    }
-    .password-toggle-btn {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: #6c757d;
-      cursor: pointer;
-    }
-    /* Loading Overlay */
-    #loadingOverlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255, 255, 255, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
+    body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .btn-ultra { background: linear-gradient(135deg, #0d6efd, #0d47a1); color: #fff; border: none; font-weight: 600; }
+    .btn-ultra:hover { background: linear-gradient(135deg, #0b5ed7, #0a3880); color: #fff; }
+    .card-login { max-width: 400px; margin: 80px auto; border: none; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+    .password-wrapper { position: relative; }
+    .password-toggle-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #6c757d; cursor: pointer; }
+    #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.7); display: flex; justify-content: center; align-items: center; z-index: 9999; }
   </style>
 </head>
 <body>
 
-  <!-- Loading Spinner -->
   <div id="loadingOverlay" class="d-none">
     <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- 1. HALAMAN LOGIN                           -->
-  <!-- ========================================== -->
+  <!-- LOGIN -->
   <div id="loginSection" class="container">
     <div class="card card-login p-4 bg-white">
       <div class="text-center mb-4">
@@ -97,11 +55,8 @@
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- 2. DASHBOARD / DASHBOARD MASTER SD         -->
-  <!-- ========================================== -->
+  <!-- DASHBOARD MASTER SD -->
   <div id="dashboardSection" class="container py-4 d-none">
-    <!-- Navbar / User Info Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm">
       <div class="d-flex align-items-center">
         <i class="fa-solid fa-school text-primary fa-2x me-3"></i>
@@ -121,7 +76,6 @@
       </div>
     </div>
 
-    <!-- Tabel Master SD -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
@@ -138,17 +92,13 @@
               <th class="text-center">Aksi</th>
             </tr>
           </thead>
-          <tbody id="masterSdTableBody">
-            <!-- Data dimasukkan oleh JS -->
-          </tbody>
+          <tbody id="masterSdTableBody"></tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- 3. MODAL FORM DATA SD                      -->
-  <!-- ========================================== -->
+  <!-- MODAL FORM SD -->
   <div class="modal fade" id="modalSd" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 rounded-4 shadow-lg">
@@ -224,7 +174,7 @@
     </div>
   </div>
 
-  <!-- Notification Toast Container -->
+  <!-- TOAST -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="d-flex">
@@ -234,13 +184,9 @@
     </div>
   </div>
 
-  <!-- Bootstrap 5 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // ==========================================
-    // PASTEKAN URL WEB APP APPS SCRIPT ANDA DI SINI
-    // ==========================================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtLU0t_yRti46VCjSCXzPFpEi_ufebnlDLBFkTVy-tjax-n0KgwLJfj9D6LqfmmbGA/exec";
 
     let modalSdObj;
@@ -249,40 +195,28 @@
     document.addEventListener("DOMContentLoaded", function () {
       modalSdObj = new bootstrap.Modal(document.getElementById('modalSd'));
       toastObj = new bootstrap.Toast(document.getElementById('liveToast'));
-      
-      // Cek apakah user sudah login sebelumnya
       checkSession();
     });
 
     function toggleLoading(show) {
-      const overlay = document.getElementById("loadingOverlay");
-      if (show) overlay.classList.remove("d-none");
-      else overlay.classList.add("d-none");
+      document.getElementById("loadingOverlay").classList.toggle("d-none", !show);
     }
 
     function showToast(message, isSuccess = true) {
       const toastEl = document.getElementById("liveToast");
-      const toastMsg = document.getElementById("toastMessage");
+      document.getElementById("toastMessage").textContent = message;
       toastEl.className = `toast align-items-center text-white border-0 ${isSuccess ? 'bg-success' : 'bg-danger'}`;
-      toastMsg.textContent = message;
       toastObj.show();
     }
 
     function togglePasswordVisibility(inputId, iconId) {
       const input = document.getElementById(inputId);
       const icon = document.getElementById(iconId);
-      if (input.type === "password") {
-        input.type = "text";
-        icon.classList.replace("fa-eye", "fa-eye-slash");
-      } else {
-        input.type = "password";
-        icon.classList.replace("fa-eye-slash", "fa-eye");
-      }
+      input.type = input.type === "password" ? "text" : "password";
+      icon.classList.toggle("fa-eye");
+      icon.classList.toggle("fa-eye-slash");
     }
 
-    // ==========================================
-    // LOGIKA LOGIN & SESSION
-    // ==========================================
     document.getElementById("formLogin").onsubmit = async function(e) {
       e.preventDefault();
       const npsn = document.getElementById("loginNpsn").value.trim();
@@ -294,7 +228,6 @@
         const r = await res.json();
 
         if (r.status === "success") {
-          // Simpan session ke localStorage
           localStorage.setItem("userSession", JSON.stringify(r.data));
           showToast("Login berhasil!", true);
           checkSession();
@@ -302,7 +235,7 @@
           showToast(r.message || "NPSN atau Password salah", false);
         }
       } catch (err) {
-        showToast("Gagal melakukan login. Periksa koneksi internet.", false);
+        showToast("Gagal melakukan login. Periksa otorisasi deployment Apps Script.", false);
       } finally {
         toggleLoading(false);
       }
@@ -331,9 +264,6 @@
       showToast("Berhasil logout", true);
     }
 
-    // ==========================================
-    // LOGIKA MASTER SD (READ, ADD, EDIT, DELETE)
-    // ==========================================
     function calculateTanggalSelesai() {
       const tglMulaiVal = document.getElementById("sdMulai").value;
       const masaPksVal = parseInt(document.getElementById("sdMasaPks").value, 10);
@@ -341,12 +271,7 @@
       if (tglMulaiVal && !isNaN(masaPksVal) && masaPksVal > 0) {
         const tglMulai = new Date(tglMulaiVal);
         tglMulai.setDate(tglMulai.getDate() + masaPksVal);
-
-        const y = tglMulai.getFullYear();
-        const m = String(tglMulai.getMonth() + 1).padStart(2, '0');
-        const d = String(tglMulai.getDate()).padStart(2, '0');
-
-        document.getElementById("sdSelesai").value = `${y}-${m}-${d}`;
+        document.getElementById("sdSelesai").value = tglMulai.toISOString().split('T')[0];
       } else {
         document.getElementById("sdSelesai").value = "";
       }
@@ -365,33 +290,21 @@
             tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada data SD.</td></tr>`;
           } else {
             result.data.forEach(sd => {
-              const npsn = sd.npsn || '-';
-              const pass = sd.password || '';
-              const sekolah = sd.sekolah || '-';
-              const kecamatan = sd.kecamatan || '-';
-              const masaPks = sd.masaPks || '-';
-              const mulai = sd.mulai || '-';
-              const selesai = sd.selesai || '-';
               const pagu = Number(sd.pagu || 0);
-              const role = sd.role || 'SEKOLAH';
-
-              const cleanSekolah = sekolah.replace(/'/g, "\\'");
-              const cleanKecamatan = kecamatan.replace(/'/g, "\\'");
-
               tbody.innerHTML += `<tr>
-                <td><span class="badge bg-light text-dark font-monospace">${npsn}</span></td>
-                <td><strong>${sekolah}</strong></td>
-                <td>${kecamatan}</td>
-                <td>${masaPks}</td>
-                <td>${mulai}</td>
-                <td>${selesai}</td>
+                <td><span class="badge bg-light text-dark font-monospace">${sd.npsn}</span></td>
+                <td><strong>${sd.sekolah}</strong></td>
+                <td>${sd.kecamatan}</td>
+                <td>${sd.masaPks}</td>
+                <td>${sd.mulai}</td>
+                <td>${sd.selesai}</td>
                 <td class="text-end fw-bold text-success font-monospace">Rp ${pagu.toLocaleString('id-ID')}</td>
-                <td><span class="badge ${role === 'DINAS' ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary'} fw-bold">${role}</span></td>
+                <td><span class="badge ${sd.role === 'DINAS' ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary'} fw-bold">${sd.role}</span></td>
                 <td class="text-center">
-                  <button class="btn btn-sm btn-light me-1" title="Edit" onclick="openModalSd('edit', '${npsn}', '${pass}', '${cleanSekolah}', '${cleanKecamatan}', '${masaPks}', '${mulai}', '${selesai}', '${pagu}', '${role}')">
+                  <button class="btn btn-sm btn-light me-1" title="Edit" onclick="openModalSd('edit', '${sd.npsn}', '${sd.password}', '${sd.sekolah}', '${sd.kecamatan}', '${sd.masaPks}', '${sd.mulai}', '${sd.selesai}', '${sd.pagu}', '${sd.role}')">
                     <i class="fa-solid fa-pen text-warning"></i>
                   </button>
-                  <button class="btn btn-sm btn-light" title="Hapus" onclick="deleteSd('${npsn}')">
+                  <button class="btn btn-sm btn-light" title="Hapus" onclick="deleteSd('${sd.npsn}')">
                     <i class="fa-solid fa-trash text-danger"></i>
                   </button>
                 </td>
@@ -416,20 +329,14 @@
       document.getElementById("sdNama").value = sekolah;
       document.getElementById("sdKecamatan").value = kec;
       
-      const numMasaPks = masaPks ? parseInt(masaPks, 10) : "";
+      const numMasaPks = parseInt(masaPks, 10);
       document.getElementById("sdMasaPks").value = isNaN(numMasaPks) ? "" : numMasaPks;
-      
       document.getElementById("sdMulai").value = mulai;
       document.getElementById("sdSelesai").value = selesai;
       document.getElementById("sdPagu").value = pagu;
       document.getElementById("sdRole").value = role;
 
       document.getElementById("modalSdTitle").textContent = (subAction === 'edit') ? "Edit Data SD" : "Tambah SD Baru";
-
-      if(mulai && numMasaPks) {
-        calculateTanggalSelesai();
-      }
-
       modalSdObj.show();
     }
 
@@ -437,14 +344,10 @@
       e.preventDefault();
       
       const masaPksVal = document.getElementById("sdMasaPks").value;
-      const npsnVal = document.getElementById("sdNpsn").value.trim();
-
-      if (!npsnVal) return showToast("NPSN tidak boleh kosong!", false);
-
       const payload = {
         action: "manageMasterSd", 
         subAction: document.getElementById("sdSubAction").value,
-        npsn: npsnVal, 
+        npsn: document.getElementById("sdNpsn").value.trim(), 
         password: document.getElementById("sdPass").value,
         sekolah: document.getElementById("sdNama").value, 
         kecamatan: document.getElementById("sdKecamatan").value,
@@ -482,12 +385,7 @@
 
       toggleLoading(true);
       try {
-        const payload = {
-          action: "manageMasterSd",
-          subAction: "delete",
-          npsn: npsn,
-          _t: Date.now()
-        };
+        const payload = { action: "manageMasterSd", subAction: "delete", npsn: npsn, _t: Date.now() };
         const queryParams = new URLSearchParams(payload).toString();
         const res = await fetch(`${SCRIPT_URL}?${queryParams}`);
         const r = await res.json();
