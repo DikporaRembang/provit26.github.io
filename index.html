@@ -3,17 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- TAG META ANTI-CACHE -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-
   <title>PROVIT26 - Sistem Informasi Progres</title>
   
-  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- FontAwesome Icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
   <style>
@@ -26,12 +19,10 @@
     .card { border-radius: 12px; }
     .table-responsive { max-height: 500px; }
     .toast-container { z-index: 1060; }
-    .nav-pills .nav-link.active { background-color: #0d6efd; }
   </style>
 </head>
 <body class="bg-light">
 
-  <!-- Loading Overlay -->
   <div id="loadingOverlay" class="loading-overlay d-none">
     <div class="text-center">
       <div class="spinner-border text-light mb-2" style="width: 3rem; height: 3rem;" role="status"></div>
@@ -39,12 +30,11 @@
     </div>
   </div>
 
-  <!-- Toast Notifikasi -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="appToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="appToast" class="toast align-items-center text-white bg-success border-0" role="alert">
       <div class="d-flex">
         <div class="toast-body" id="toastMessage">Pesan Notifikasi</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
       </div>
     </div>
   </div>
@@ -61,16 +51,16 @@
               <small class="text-muted">Sistem Progres Revitalisasi SD Rembang</small>
             </div>
             
-            <div id="loginAlert" class="alert alert-danger d-none" role="alert"></div>
+            <div id="loginAlert" class="alert alert-danger d-none"></div>
             
-            <form id="loginForm" onsubmit="processLogin(event)">
+            <form onsubmit="processLogin(event)">
               <div class="mb-3">
-                <label for="username" class="form-label fw-semibold"><i class="fa-solid fa-id-card me-1"></i> NPSN / Username</label>
-                <input type="text" class="form-control" id="username" placeholder="Masukkan NPSN / Username" required autocomplete="username">
+                <label class="form-label fw-semibold"><i class="fa-solid fa-id-card me-1"></i> NPSN / Username</label>
+                <input type="text" class="form-control" id="username" required>
               </div>
               <div class="mb-3">
-                <label for="password" class="form-label fw-semibold"><i class="fa-solid fa-lock me-1"></i> Password</label>
-                <input type="password" class="form-control" id="password" placeholder="Masukkan Password" required autocomplete="current-password">
+                <label class="form-label fw-semibold"><i class="fa-solid fa-lock me-1"></i> Password</label>
+                <input type="password" class="form-control" id="password" required>
               </div>
               <button type="submit" class="btn btn-primary w-100 py-2 fw-bold"><i class="fa-solid fa-right-to-bracket me-1"></i> Masuk Aplikasi</button>
             </form>
@@ -83,7 +73,6 @@
   <!-- SECTION DASHBOARD -->
   <div id="dashboardSection" class="container py-4 d-none">
     
-    <!-- Header Dashboard -->
     <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded shadow-sm">
       <div class="d-flex align-items-center">
         <i class="fa-solid fa-building-columns text-primary fa-2x me-3"></i>
@@ -95,54 +84,43 @@
       <button class="btn btn-outline-danger btn-sm fw-semibold" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-1"></i> Keluar</button>
     </div>
 
-    <!-- Navigasi Tab (Khusus Sekolah / Admin) -->
+    <!-- TAB DYNAMIC ACCESS -->
     <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm" id="mainTabs" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active fw-bold" id="tab-progres-tab" data-bs-toggle="pill" data-bs-target="#tab-progres" type="button" role="tab"><i class="fa-solid fa-pen-to-square me-2"></i>Input Progres</button>
+      <!-- Tampilan Role SEKOLAH -->
+      <li class="nav-item role-sekolah d-none">
+        <button class="nav-link active fw-bold" id="t-progres" data-bs-toggle="pill" data-bs-target="#tab-progres"><i class="fa-solid fa-pen-to-square me-2"></i>Input Progres</button>
       </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link fw-bold" id="tab-master-tab" data-bs-toggle="pill" data-bs-target="#tab-master" type="button" role="tab"><i class="fa-solid fa-school me-2"></i>Master Data SD</button>
+      <li class="nav-item role-sekolah d-none">
+        <button class="nav-link fw-bold" id="t-rekap-sekolah" data-bs-toggle="pill" data-bs-target="#tab-rekap-sekolah" onclick="loadRekapSekolah()"><i class="fa-solid fa-clock-rotate-left me-2"></i>Rekap Laporan Saya</button>
       </li>
-      <li class="nav-item d-none" id="adminTableTab" role="presentation">
-        <button class="nav-link fw-bold" id="tab-table-tab" data-bs-toggle="pill" data-bs-target="#tab-table" type="button" role="tab"><i class="fa-solid fa-table me-2"></i>Rekap Database</button>
+
+      <!-- Tampilan Role DINAS -->
+      <li class="nav-item role-dinas d-none">
+        <button class="nav-link active fw-bold" id="t-master-sd" data-bs-toggle="pill" data-bs-target="#tab-master-sd" onclick="loadMasterSd()"><i class="fa-solid fa-school me-2"></i>Master Data SD</button>
+      </li>
+      <li class="nav-item role-dinas d-none">
+        <button class="nav-link fw-bold" id="t-menu-pekerjaan" data-bs-toggle="pill" data-bs-target="#tab-menu-pekerjaan" onclick="loadMasterMenu()"><i class="fa-solid fa-list-check me-2"></i>Menu Pekerjaan</button>
+      </li>
+      <li class="nav-item role-dinas d-none">
+        <button class="nav-link fw-bold" id="t-rekap-dinas" data-bs-toggle="pill" data-bs-target="#tab-rekap-dinas" onclick="loadRekapDinas()"><i class="fa-solid fa-table me-2"></i>Rekap Database</button>
       </li>
     </ul>
 
-    <div class="tab-content" id="mainTabsContent">
+    <div class="tab-content">
       
-      <!-- TAB 1: FORM INPUT PROGRES -->
-      <div class="tab-pane fade show active" id="tab-progres" role="tabpanel">
+      <!-- [SEKOLAH] TAB 1: FORM INPUT PROGRES -->
+      <div class="tab-pane fade show active role-sekolah-pane" id="tab-progres">
         <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-white fw-bold py-3"><i class="fa-solid fa-file-circle-plus me-2 text-primary"></i>Form Progres Pekerjaan Sekolah</div>
+          <div class="card-header bg-white fw-bold py-3"><i class="fa-solid fa-file-circle-plus me-2 text-primary"></i>Form Progres Pekerjaan</div>
           <div class="card-body">
             <form id="progresForm">
               <div class="row g-3">
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Nama SD</label>
-                  <input type="text" id="namaSd" class="form-control" readonly>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Kecamatan</label>
-                  <input type="text" id="kecamatan" class="form-control" readonly>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Nama Tim</label>
-                  <input type="text" id="namaTim" class="form-control" readonly>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label fw-semibold">Pilih Menu Pekerjaan</label>
-                  <select id="namaMenu" class="form-select" required></select>
-                </div>
-                <div class="col-md-3">
-                  <label class="form-label fw-semibold">Nilai Pekerjaan (Rp)</label>
-                  <input type="number" id="nilai" class="form-control" placeholder="0" min="0" required>
-                </div>
-                <div class="col-md-3">
-                  <label class="form-label fw-semibold">Volume Ruang</label>
-                  <input type="number" id="volumeRuang" class="form-control" placeholder="0" min="0" required>
-                </div>
-                
-                <!-- OPSI TOMBOL UNTUK USER SEKOLAH -->
+                <div class="col-md-4"><label class="form-label fw-semibold">Nama SD</label><input type="text" id="namaSd" class="form-control" readonly></div>
+                <div class="col-md-4"><label class="form-label fw-semibold">Kecamatan</label><input type="text" id="kecamatan" class="form-control" readonly></div>
+                <div class="col-md-4"><label class="form-label fw-semibold">Nama Tim</label><input type="text" id="namaTim" class="form-control" readonly></div>
+                <div class="col-md-6"><label class="form-label fw-semibold">Pilih Menu Pekerjaan</label><select id="namaMenu" class="form-select" required></select></div>
+                <div class="col-md-3"><label class="form-label fw-semibold">Nilai Pekerjaan (Rp)</label><input type="number" id="nilai" class="form-control" placeholder="0" min="0" required></div>
+                <div class="col-md-3"><label class="form-label fw-semibold">Volume Ruang</label><input type="number" id="volumeRuang" class="form-control" placeholder="0" min="0" required></div>
                 <div class="col-12 text-end pt-3 border-top">
                   <button type="button" class="btn btn-secondary me-2 fw-semibold" onclick="resetFormProgres()"><i class="fa-solid fa-xmark me-1"></i> Batal</button>
                   <button type="button" class="btn btn-primary me-2 fw-bold" onclick="handleProgresSubmit(false)"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Data</button>
@@ -154,73 +132,77 @@
         </div>
       </div>
 
-      <!-- TAB 2: FORM MASTER DATA SD -->
-      <div class="tab-pane fade" id="tab-master" role="tabpanel">
+      <!-- [SEKOLAH] TAB 2: REKAP USER SEKOLAH -->
+      <div class="tab-pane fade role-sekolah-pane" id="tab-rekap-sekolah">
         <div class="card shadow-sm border-0">
-          <div class="card-header bg-white fw-bold py-3"><i class="fa-solid fa-gears me-2 text-primary"></i>Update Master Data Sekolah</div>
-          <div class="card-body">
-            <form id="masterSdForm" onsubmit="submitMasterSd(event)">
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">NPSN</label>
-                  <input type="text" id="masterNpsn" class="form-control bg-light" readonly>
-                </div>
-                <div class="col-md-8">
-                  <label class="form-label fw-semibold">Nama Sekolah</label>
-                  <input type="text" id="masterSekolah" class="form-control" required>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Kecamatan</label>
-                  <input type="text" id="masterKecamatan" class="form-control" placeholder="Masukkan nama kecamatan" required>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Nama Tim Pembangun/Penanggung Jawab</label>
-                  <input type="text" id="masterNamaTim" class="form-control" placeholder="Nama Ketua Tim" required>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Email Sekolah</label>
-                  <input type="email" id="masterEmail" class="form-control" placeholder="alamat@email.com">
-                </div>
-                <div class="col-12 text-end pt-3 border-top">
-                  <button type="button" class="btn btn-secondary me-2 fw-semibold" onclick="resetMasterSd()"><i class="fa-solid fa-rotate-left me-1"></i> Batalkan</button>
-                  <button type="submit" class="btn btn-warning text-white fw-bold"><i class="fa-solid fa-pen-to-square me-1"></i> Update & Simpan Data SD</button>
-                </div>
-              </div>
-            </form>
+          <div class="card-header bg-white fw-bold py-3"><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i>Riwayat Input Progres Sekolah Ini</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr><th>ID Input</th><th>Menu Pekerjaan</th><th class="text-end">Nilai (Rp)</th><th class="text-center">Volume</th></tr>
+                </thead>
+                <tbody id="rekapSekolahTableBody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- TAB 3: TABEL DATABASE (KHUSUS DINAS/ADMIN) -->
-      <div class="tab-pane fade" id="tab-table" role="tabpanel">
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <span><i class="fa-solid fa-table me-2 text-primary"></i>Tabel Progres Real-Time Semua Sekolah</span>
-            <div class="d-flex gap-2">
-              <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Cari data..." onkeyup="filterTable()">
-              <button class="btn btn-sm btn-outline-secondary text-nowrap" onclick="loadProgresTable()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
-            </div>
+      <!-- [DINAS] SUB MENU 1: MASTER DATA SD -->
+      <div class="tab-pane fade role-dinas-pane" id="tab-master-sd">
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-school me-2 text-primary"></i>Kelola Master Data Sekolah</span>
+            <button class="btn btn-sm btn-primary" onclick="openModalSd('add')"><i class="fa-solid fa-plus me-1"></i>Tambah SD Baru</button>
           </div>
           <div class="card-body p-0">
             <div class="table-responsive">
               <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
-                  <tr>
-                    <th>ID Input</th>
-                    <th>NPSN</th>
-                    <th>Nama SD</th>
-                    <th>Kecamatan</th>
-                    <th>Menu Pekerjaan</th>
-                    <th class="text-end">Nilai (Rp)</th>
-                    <th class="text-center">Volume</th>
-                    <th>Nama Tim</th>
-                  </tr>
+                  <tr><th>NPSN</th><th>Nama Sekolah</th><th>Kecamatan</th><th>Tim Pembangun</th><th>Role</th><th>Aksi</th></tr>
                 </thead>
-                <tbody id="progresTableBody">
-                  <tr>
-                    <td colspan="8" class="text-center text-muted py-4">Memuat data...</td>
-                  </tr>
-                </tbody>
+                <tbody id="masterSdTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- [DINAS] SUB MENU 2: MENU PEKERJAAN -->
+      <div class="tab-pane fade role-dinas-pane" id="tab-menu-pekerjaan">
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-list-check me-2 text-primary"></i>Kelola Menu Pekerjaan</span>
+            <button class="btn btn-sm btn-primary" onclick="openModalMenu('add')"><i class="fa-solid fa-plus me-1"></i>Tambah Menu Baru</button>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr><th>ID Menu</th><th>Nama Menu Pekerjaan</th><th class="text-center">Aksi</th></tr>
+                </thead>
+                <tbody id="masterMenuTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- [DINAS] SUB MENU 3: REKAP DATABASE DINAS -->
+      <div class="tab-pane fade role-dinas-pane" id="tab-rekap-dinas">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span><i class="fa-solid fa-table me-2 text-primary"></i>Rekap Real-Time Seluruh Sekolah</span>
+            <input type="text" id="searchInput" class="form-control form-control-sm style-width-200" placeholder="Cari data..." onkeyup="filterTableDinas()">
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr><th>ID Input</th><th>NPSN</th><th>Nama SD</th><th>Kecamatan</th><th>Menu Pekerjaan</th><th class="text-end">Nilai (Rp)</th><th class="text-center">Volume</th><th>Nama Tim</th></tr>
+                </thead>
+                <tbody id="rekapDinasTableBody"></tbody>
               </table>
             </div>
           </div>
@@ -230,292 +212,340 @@
     </div>
   </div>
 
-  <!-- Bootstrap JS Bundle -->
+  <!-- MODAL MASTER SD -->
+  <div class="modal fade" id="modalSd" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title" id="modalSdTitle">Form Data SD</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <form id="formSd">
+            <input type="hidden" id="sdSubAction">
+            <div class="mb-2"><label class="form-label">NPSN</label><input type="text" id="sdNpsn" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label">Password</label><input type="text" id="sdPass" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label">Nama Sekolah</label><input type="text" id="sdNama" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label">Kecamatan</label><input type="text" id="sdKecamatan" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label">Nama Tim</label><input type="text" id="sdTim" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label">Email</label><input type="email" id="sdEmail" class="form-control"></div>
+            <div class="mb-2"><label class="form-label">Role</label>
+              <select id="sdRole" class="form-select"><option value="SEKOLAH">SEKOLAH</option><option value="DINAS">DINAS</option></select>
+            </div>
+            <div class="text-end mt-3"><button type="submit" class="btn btn-primary">Simpan</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MENU -->
+  <div class="modal fade" id="modalMenu" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title" id="modalMenuTitle">Form Menu Pekerjaan</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <form id="formMenu">
+            <input type="hidden" id="menuSubAction">
+            <input type="hidden" id="menuId">
+            <div class="mb-3"><label class="form-label">Nama Menu Pekerjaan</label><input type="text" id="menuNama" class="form-control" required></div>
+            <div class="text-end"><button type="submit" class="btn btn-primary">Simpan Menu</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  
   <script>
-    // GANTI SESUAI URL APPS SCRIPT BERAKHIRAN /exec
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzNx2gdKRNxoW2zHdAwXVqWKDAICu2Ntld6UcoMPyXND-rtyzB5kdYoS-sKg0JWaSCv/exec"; 
     
     let currentUser = null;
-    let rawTableData = [];
+    let rawDinasData = [];
+    let modalSdObj, modalMenuObj;
 
     document.addEventListener("DOMContentLoaded", function() {
+      modalSdObj = new bootstrap.Modal(document.getElementById('modalSd'));
+      modalMenuObj = new bootstrap.Modal(document.getElementById('modalMenu'));
+      
       const savedUser = localStorage.getItem("provit_user");
       if (savedUser) {
         try {
           currentUser = JSON.parse(savedUser);
           showDashboard(currentUser);
-        } catch(e) {
-          localStorage.removeItem("provit_user");
-        }
+        } catch(e) { localStorage.removeItem("provit_user"); }
       }
     });
 
-    function toggleLoading(show) {
-      document.getElementById("loadingOverlay").classList.toggle("d-none", !show);
-    }
-
+    function toggleLoading(show) { document.getElementById("loadingOverlay").classList.toggle("d-none", !show); }
     function showToast(message, isSuccess = true) {
       const toastEl = document.getElementById('appToast');
-      const toastMsg = document.getElementById('toastMessage');
-      toastMsg.textContent = message;
+      document.getElementById('toastMessage').textContent = message;
       toastEl.className = `toast align-items-center text-white border-0 ${isSuccess ? 'bg-success' : 'bg-danger'}`;
-      const toast = new bootstrap.Toast(toastEl);
-      toast.show();
-    }
-
-    function showAlert(msg) {
-      const alertBox = document.getElementById("loginAlert");
-      alertBox.textContent = msg;
-      alertBox.classList.remove("d-none");
+      new bootstrap.Toast(toastEl).show();
     }
 
     async function processLogin(e) {
       e.preventDefault();
       const u = document.getElementById("username").value.trim();
       const p = document.getElementById("password").value.trim();
-      document.getElementById("loginAlert").classList.add("d-none");
-
       toggleLoading(true);
       try {
-        const cacheBuster = new Date().getTime();
-        const url = `${SCRIPT_URL}?action=login&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}&_t=${cacheBuster}`;
-        
-        const res = await fetch(url, { redirect: "follow", cache: "no-store" });
+        const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}&_t=${Date.now()}`);
         const result = await res.json();
-
-        console.log("Hasil Respons Server:", result); // Untuk me-log hasil respons
-
         if (result.status === "success" && result.user) {
           currentUser = result.user;
-          currentUser.username = u; 
           localStorage.setItem("provit_user", JSON.stringify(currentUser));
-          showToast("Login Berhasil! Selamat datang.");
+          showToast("Login Berhasil!");
           showDashboard(currentUser);
         } else {
-          // Menampilkan pesan error asli dari backend Google Sheets
-          showAlert(result.message || "NPSN atau password Anda salah.");
+          document.getElementById("loginAlert").textContent = result.message || "Login gagal";
+          document.getElementById("loginAlert").classList.remove("d-none");
         }
-      } catch (err) {
-        console.error("Login Error:", err);
-        showAlert("Login gagal: " + err.message);
-      } finally {
-        toggleLoading(false);
-      }
+      } catch (err) { showToast("Gagal terhubung ke server", false); } 
+      finally { toggleLoading(false); }
     }
 
     function showDashboard(user) {
       document.getElementById("loginSection").classList.add("d-none");
       document.getElementById("dashboardSection").classList.remove("d-none");
-      
-      document.getElementById("userDisplayName").textContent = user.sekolah || "Dinas Pendidikan";
-      document.getElementById("userRoleBadge").textContent = user.role || "SEKOLAH";
+      document.getElementById("userDisplayName").textContent = user.sekolah || "Pengguna";
+      document.getElementById("userRoleBadge").textContent = user.role;
 
-      // Isi Data Form Progres
-      document.getElementById("namaSd").value = user.sekolah || "";
-      document.getElementById("kecamatan").value = user.kecamatan || "Kab. Rembang";
-      document.getElementById("namaTim").value = user.namaTim || "HARYANTO";
+      // Render Hak Akses Navigasi Tab
+      document.querySelectorAll('.role-sekolah, .role-dinas').forEach(el => el.classList.add('d-none'));
+      document.querySelectorAll('.role-sekolah-pane, .role-dinas-pane').forEach(el => el.classList.remove('show', 'active'));
 
-      // Isi Data Master Form SD
-      resetMasterSd();
-
-      // Atur Tampilan Menu Berdasarkan Role
       if (user.role === "DINAS") {
-        document.getElementById("adminTableTab").classList.remove("d-none");
-        loadProgresTable();
+        document.querySelectorAll('.role-dinas').forEach(el => el.classList.remove('d-none'));
+        document.getElementById("tab-master-sd").classList.add('show', 'active');
+        document.getElementById("t-master-sd").classList.add('active');
+        loadMasterSd();
       } else {
-        document.getElementById("adminTableTab").classList.add("d-none");
+        document.querySelectorAll('.role-sekolah').forEach(el => el.classList.remove('d-none'));
+        document.getElementById("tab-progres").classList.add('show', 'active');
+        document.getElementById("t-progres").classList.add('active');
+        
+        document.getElementById("namaSd").value = user.sekolah;
+        document.getElementById("kecamatan").value = user.kecamatan;
+        document.getElementById("namaTim").value = user.namaTim;
+        populateMenuDropdown();
       }
-
-      loadMasterMenu();
     }
 
-    function loadMasterMenu() {
-      const menuData = [
-        { id: "M01", nama: "Pembangunan ruang kelas baru" }, { id: "M02", nama: "Pembangunan perpustakaan" },
-        { id: "M03", nama: "Pembangunan kamar mandi" }, { id: "M04", nama: "Pembangunan ruang administrasi" },
-        { id: "M05", nama: "Pembangunan ruang UKS" }, { id: "M06", nama: "Pembangunan ruang laboratorium" },
-        { id: "M07", nama: "Pembangunan rumah dinas" }, { id: "M08", nama: "Rehab ruang kelas" },
-        { id: "M09", nama: "Rehab perpustakaan" }, { id: "M10", nama: "Rehab kamar mandi" },
-        { id: "M11", nama: "Rehab ruang administrasi" }, { id: "M12", nama: "Rehab ruang laboratorium" },
-        { id: "M13", nama: "Rehab rumah dinas" }, { id: "M14", nama: "Penataan lingkungan sekolah" },
-        { id: "M15", nama: "Perabot (meubelair)" }, { id: "M16", nama: "Perencanaan" },
-        { id: "M17", nama: "Pengawasan" }, { id: "M18", nama: "Pengelolaan" }
-      ];
-
-      const selectMenu = document.getElementById("namaMenu");
-      selectMenu.innerHTML = '<option value="">-- Pilih Menu Pekerjaan --</option>';
-      menuData.forEach(item => {
-        const option = document.createElement("option");
-        option.value = item.nama;
-        option.textContent = `${item.id} - ${item.nama}`;
-        selectMenu.appendChild(option);
-      });
+    // --- LOGIK MENU PEKERJAAN DROPDOWN FOR SEKOLAH ---
+    async function populateMenuDropdown() {
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getMenu&_t=${Date.now()}`);
+        const result = await res.json();
+        const select = document.getElementById("namaMenu");
+        select.innerHTML = '<option value="">-- Pilih Menu Pekerjaan --</option>';
+        if (result.status === "success") {
+          result.data.forEach(m => {
+            select.innerHTML += `<option value="${m.namaMenu}">${m.idMenu} - ${m.namaMenu}</option>`;
+          });
+        }
+      } catch (err) { console.error(err); }
     }
 
-    // FUNGSI INPUT PROGRES: OPSI SIMPAN DAN LANJUT ISI DATA / BATAL
-    function resetFormProgres() {
-      document.getElementById("namaMenu").value = "";
-      document.getElementById("nilai").value = "";
-      document.getElementById("volumeRuang").value = "";
-      showToast("Form berhasil direset.", true);
-    }
-
-    async function handleProgresSubmit(continueInput = false) {
-      const namaMenu = document.getElementById("namaMenu").value;
-      const nilai = document.getElementById("nilai").value;
-      const volumeRuang = document.getElementById("volumeRuang").value;
-
-      if (!namaMenu || !nilai || !volumeRuang) {
-        showToast("Harap lengkapi semua kolom form progres!", false);
-        return;
-      }
-
+    async function handleProgresSubmit(continueInput) {
       const payload = {
-        action: "insertProgres",
-        npsn: currentUser.username,
+        action: "insertProgres", npsn: currentUser.username,
         namaSd: document.getElementById("namaSd").value,
         kecamatan: document.getElementById("kecamatan").value,
-        namaMenu: namaMenu,
-        nilai: nilai,
-        volumeRuang: volumeRuang,
+        namaMenu: document.getElementById("namaMenu").value,
+        nilai: document.getElementById("nilai").value,
+        volumeRuang: document.getElementById("volumeRuang").value,
         namaTim: document.getElementById("namaTim").value,
-        _t: new Date().getTime()
+        _t: Date.now()
       };
-
+      if(!payload.namaMenu || !payload.nilai || !payload.volumeRuang) return showToast("Lengkapi form!", false);
+      
       toggleLoading(true);
       try {
-        const queryParams = new URLSearchParams(payload);
-        const res = await fetch(`${SCRIPT_URL}?${queryParams.toString()}`, { redirect: "follow", cache: "no-store" });
+        const res = await fetch(`${SCRIPT_URL}?${new URLSearchParams(payload)}`);
         const result = await res.json();
-
-        if (result.status === "success") {
-          showToast("Data progres berhasil tersimpan!");
+        if(result.status === "success") {
+          showToast("Data tersimpan!");
           document.getElementById("nilai").value = "";
           document.getElementById("volumeRuang").value = "";
-          
-          if (continueInput) {
-            document.getElementById("namaMenu").focus();
-          } else {
-            document.getElementById("namaMenu").value = "";
-          }
-        } else {
-          showToast("Gagal menyimpan: " + result.message, false);
+          if(!continueInput) document.getElementById("namaMenu").value = "";
         }
-      } catch (err) {
-        console.error("Submit Error:", err);
-        showToast("Error jaringan saat mengirim data.", false);
-      } finally {
-        toggleLoading(false);
-      }
+      } catch(err) { showToast("Gagal menyimpan data", false); }
+      finally { toggleLoading(false); }
     }
 
-    // FUNGSI MASTER DATA SD
-    function resetMasterSd() {
-      if (currentUser) {
-        document.getElementById("masterNpsn").value = currentUser.username || "";
-        document.getElementById("masterSekolah").value = currentUser.sekolah || "";
-        document.getElementById("masterKecamatan").value = currentUser.kecamatan || "";
-        document.getElementById("masterNamaTim").value = currentUser.namaTim || "";
-        document.getElementById("masterEmail").value = currentUser.email || "";
-      }
-    }
-
-    async function submitMasterSd(e) {
-      e.preventDefault();
-      
-      const payload = {
-        action: "updateMasterSd",
-        npsn: currentUser.username,
-        sekolah: document.getElementById("masterSekolah").value,
-        kecamatan: document.getElementById("masterKecamatan").value,
-        namaTim: document.getElementById("masterNamaTim").value,
-        email: document.getElementById("masterEmail").value,
-        _t: new Date().getTime()
-      };
-
+    async function loadRekapSekolah() {
       toggleLoading(true);
       try {
-        const queryParams = new URLSearchParams(payload);
-        const res = await fetch(`${SCRIPT_URL}?${queryParams.toString()}`, { redirect: "follow", cache: "no-store" });
+        const res = await fetch(`${SCRIPT_URL}?action=readData&_t=${Date.now()}`);
         const result = await res.json();
-
+        const tbody = document.getElementById("rekapSekolahTableBody");
+        tbody.innerHTML = "";
         if (result.status === "success") {
-          showToast("Data Master SD berhasil diperbarui!");
-          // Update data di local session
-          currentUser.sekolah = payload.sekolah;
-          currentUser.kecamatan = payload.kecamatan;
-          currentUser.namaTim = payload.namaTim;
-          currentUser.email = payload.email;
-          localStorage.setItem("provit_user", JSON.stringify(currentUser));
-          
-          showDashboard(currentUser);
-        } else {
-          showToast("Gagal update Master SD: " + result.message, false);
+          const myData = result.data.filter(d => String(d.npsn) === String(currentUser.username));
+          myData.forEach(r => {
+            tbody.innerHTML += `<tr><td>${r.idInput}</td><td>${r.namaMenu}</td><td class="text-end">Rp ${Number(r.nilai).toLocaleString('id-ID')}</td><td class="text-center">${r.volumeRuang}</td></tr>`;
+          });
         }
-      } catch (err) {
-        console.error("Update Master SD Error:", err);
-        showToast("Error jaringan saat update Master SD.", false);
-      } finally {
-        toggleLoading(false);
-      }
+      } catch(e) { showToast("Gagal muat rekap", false); }
+      finally { toggleLoading(false); }
     }
 
-    // FUNGSI TABEL UNTUK ADMIN/DINAS
-    async function loadProgresTable() {
-      const tableBody = document.getElementById("progresTableBody");
+    // --- SUB MENU DINAS 1: MASTER SD ---
+    async function loadMasterSd() {
+      toggleLoading(true);
       try {
-        const cacheBuster = new Date().getTime();
-        const res = await fetch(`${SCRIPT_URL}?action=readData&_t=${cacheBuster}`, { redirect: "follow", cache: "no-store" });
+        const res = await fetch(`${SCRIPT_URL}?action=getMasterSd&_t=${Date.now()}`);
         const result = await res.json();
-
-        if (result.status === "success" && result.data) {
-          rawTableData = result.data;
-          renderTable(rawTableData);
-        } else {
-          tableBody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">${result.message || "Belum ada data progres."}</td></tr>`;
+        const tbody = document.getElementById("masterSdTableBody");
+        tbody.innerHTML = "";
+        if (result.status === "success") {
+          result.data.forEach(sd => {
+            tbody.innerHTML += `<tr>
+              <td>${sd.npsn}</td><td>${sd.sekolah}</td><td>${sd.kecamatan}</td><td>${sd.namaTim}</td><td><span class="badge bg-secondary">${sd.role}</span></td>
+              <td>
+                <button class="btn btn-sm btn-warning me-1" onclick="openModalSd('edit', '${sd.npsn}', '${sd.password}', '${sd.sekolah}', '${sd.kecamatan}', '${sd.namaTim}', '${sd.email}', '${sd.role}')"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteSd('${sd.npsn}')"><i class="fa-solid fa-trash"></i></button>
+              </td>
+            </tr>`;
+          });
         }
-      } catch (err) {
-        console.error("Fetch Data Error:", err);
-        tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-danger py-4">Gagal memuat tabel database.</td></tr>';
-      }
+      } catch(e) { console.error(e); }
+      finally { toggleLoading(false); }
     }
 
-    function renderTable(data) {
-      const tableBody = document.getElementById("progresTableBody");
-      tableBody.innerHTML = "";
+    function openModalSd(subAction, npsn="", pass="", sekolah="", kec="", tim="", email="", role="SEKOLAH") {
+      document.getElementById("sdSubAction").value = subAction;
+      document.getElementById("sdNpsn").value = npsn;
+      document.getElementById("sdNpsn").readOnly = (subAction === 'edit');
+      document.getElementById("sdPass").value = pass;
+      document.getElementById("sdNama").value = sekolah;
+      document.getElementById("sdKecamatan").value = kec;
+      document.getElementById("sdTim").value = tim;
+      document.getElementById("sdEmail").value = email;
+      document.getElementById("sdRole").value = role;
+      modalSdObj.show();
+    }
 
-      if (data.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Tidak ada data progres ditemukan.</td></tr>';
-        return;
-      }
+    document.getElementById("formSd").onsubmit = async function(e) {
+      e.preventDefault();
+      const payload = {
+        action: "manageMasterSd", subAction: document.getElementById("sdSubAction").value,
+        npsn: document.getElementById("sdNpsn").value, password: document.getElementById("sdPass").value,
+        sekolah: document.getElementById("sdNama").value, kecamatan: document.getElementById("sdKecamatan").value,
+        namaTim: document.getElementById("sdTim").value, email: document.getElementById("sdEmail").value,
+        role: document.getElementById("sdRole").value, _t: Date.now()
+      };
+      toggleLoading(true); modalSdObj.hide();
+      try {
+        const res = await fetch(`${SCRIPT_URL}?${new URLSearchParams(payload)}`);
+        const r = await res.json();
+        showToast(r.message); loadMasterSd();
+      } catch(err) { showToast("Gagal memproses SD", false); }
+      finally { toggleLoading(false); }
+    };
 
-      data.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><span class="badge bg-secondary font-monospace">${row.idInput || '-'}</span></td>
-          <td>${row.npsn || '-'}</td>
-          <td><strong>${row.namaSd || '-'}</strong></td>
-          <td>${row.kecamatan || '-'}</td>
-          <td>${row.namaMenu || '-'}</td>
-          <td class="text-end fw-bold text-success">Rp ${Number(row.nilai || 0).toLocaleString('id-ID')}</td>
-          <td class="text-center"><span class="badge bg-info text-dark">${row.volumeRuang || 0}</span></td>
-          <td><small class="text-muted">${row.namaTim || '-'}</small></td>
-        `;
-        tableBody.appendChild(tr);
+    async function deleteSd(npsn) {
+      if(!confirm("Hapus SD ini?")) return;
+      toggleLoading(true);
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=manageMasterSd&subAction=delete&npsn=${npsn}&_t=${Date.now()}`);
+        const r = await res.json();
+        showToast(r.message); loadMasterSd();
+      } catch(e) { showToast("Gagal menghapus", false); }
+      finally { toggleLoading(false); }
+    }
+
+    // --- SUB MENU DINAS 2: MENU PEKERJAAN ---
+    async function loadMasterMenu() {
+      toggleLoading(true);
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getMenu&_t=${Date.now()}`);
+        const result = await res.json();
+        const tbody = document.getElementById("masterMenuTableBody");
+        tbody.innerHTML = "";
+        if (result.status === "success") {
+          result.data.forEach(m => {
+            tbody.innerHTML += `<tr>
+              <td>${m.idMenu}</td><td>${m.namaMenu}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-warning me-1" onclick="openModalMenu('edit', '${m.idMenu}', '${m.namaMenu}')"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteMenu('${m.idMenu}')"><i class="fa-solid fa-trash"></i></button>
+              </td>
+            </tr>`;
+          });
+        }
+      } catch(e) { console.error(e); }
+      finally { toggleLoading(false); }
+    }
+
+    function openModalMenu(subAction, idMenu="", namaMenu="") {
+      document.getElementById("menuSubAction").value = subAction;
+      document.getElementById("menuId").value = idMenu;
+      document.getElementById("menuNama").value = namaMenu;
+      modalMenuObj.show();
+    }
+
+    document.getElementById("formMenu").onsubmit = async function(e) {
+      e.preventDefault();
+      const payload = {
+        action: "manageMenu", subAction: document.getElementById("menuSubAction").value,
+        idMenu: document.getElementById("menuId").value, namaMenu: document.getElementById("menuNama").value,
+        _t: Date.now()
+      };
+      toggleLoading(true); modalMenuObj.hide();
+      try {
+        const res = await fetch(`${SCRIPT_URL}?${new URLSearchParams(payload)}`);
+        const r = await res.json();
+        showToast(r.message); loadMasterMenu();
+      } catch(err) { showToast("Gagal simpan menu", false); }
+      finally { toggleLoading(false); }
+    };
+
+    async function deleteMenu(idMenu) {
+      if(!confirm("Hapus menu ini?")) return;
+      toggleLoading(true);
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=manageMenu&subAction=delete&idMenu=${idMenu}&_t=${Date.now()}`);
+        const r = await res.json();
+        showToast(r.message); loadMasterMenu();
+      } catch(e) { showToast("Gagal menghapus", false); }
+      finally { toggleLoading(false); }
+    }
+
+    // --- SUB MENU DINAS 3: REKAP DATABASE DINAS ---
+    async function loadRekapDinas() {
+      toggleLoading(true);
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=readData&_t=${Date.now()}`);
+        const result = await res.json();
+        if (result.status === "success") {
+          rawDinasData = result.data;
+          renderDinasTable(rawDinasData);
+        }
+      } catch(e) { showToast("Gagal muat rekap", false); }
+      finally { toggleLoading(false); }
+    }
+
+    function renderDinasTable(data) {
+      const tbody = document.getElementById("rekapDinasTableBody");
+      tbody.innerHTML = "";
+      data.forEach(r => {
+        tbody.innerHTML += `<tr>
+          <td><span class="badge bg-secondary font-monospace">${r.idInput}</span></td>
+          <td>${r.npsn}</td><td><strong>${r.namaSd}</strong></td><td>${r.kecamatan}</td>
+          <td>${r.namaMenu}</td><td class="text-end fw-bold text-success">Rp ${Number(r.nilai).toLocaleString('id-ID')}</td>
+          <td class="text-center">${r.volumeRuang}</td><td><small class="text-muted">${r.namaTim}</small></td>
+        </tr>`;
       });
     }
 
-    function filterTable() {
-      const query = document.getElementById("searchInput").value.toLowerCase();
-      const filtered = rawTableData.filter(item => 
-        (item.namaSd && item.namaSd.toLowerCase().includes(query)) ||
-        (item.namaMenu && item.namaMenu.toLowerCase().includes(query)) ||
-        (item.npsn && item.npsn.toString().includes(query)) ||
-        (item.kecamatan && item.kecamatan.toLowerCase().includes(query))
+    function filterTableDinas() {
+      const q = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = rawDinasData.filter(i => 
+        (i.namaSd && i.namaSd.toLowerCase().includes(q)) || 
+        (i.namaMenu && i.namaMenu.toLowerCase().includes(q)) || 
+        (i.npsn && i.npsn.toString().includes(q))
       );
-      renderTable(filtered);
+      renderDinasTable(filtered);
     }
 
     function logout() {
@@ -524,9 +554,6 @@
         currentUser = null;
         document.getElementById("dashboardSection").classList.add("d-none");
         document.getElementById("loginSection").classList.remove("d-none");
-        document.getElementById("username").value = "";
-        document.getElementById("password").value = "";
-        showToast("Anda telah keluar.");
       }
     }
   </script>
