@@ -88,7 +88,7 @@
     <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm" id="mainTabs" role="tablist">
       <!-- Role SEKOLAH -->
       <li class="nav-item role-sekolah d-none">
-        <button class="nav-link active fw-bold" id="t-progres" data-bs-toggle="pill" data-bs-target="#tab-progres"><i class="fa-solid fa-pen-to-square me-2"></i>Input Progres</button>
+        <button class="nav-link fw-bold" id="t-progres" data-bs-toggle="pill" data-bs-target="#tab-progres"><i class="fa-solid fa-pen-to-square me-2"></i>Input Progres</button>
       </li>
       <li class="nav-item role-sekolah d-none">
         <button class="nav-link fw-bold" id="t-rekap-sekolah" data-bs-toggle="pill" data-bs-target="#tab-rekap-sekolah" onclick="loadRekapSekolah()"><i class="fa-solid fa-clock-rotate-left me-2"></i>Rekap Laporan Saya</button>
@@ -96,7 +96,7 @@
 
       <!-- Role DINAS -->
       <li class="nav-item role-dinas d-none">
-        <button class="nav-link active fw-bold" id="t-master-sd" data-bs-toggle="pill" data-bs-target="#tab-master-sd" onclick="loadMasterSd()"><i class="fa-solid fa-school me-2"></i>Master Data SD</button>
+        <button class="nav-link fw-bold" id="t-master-sd" data-bs-toggle="pill" data-bs-target="#tab-master-sd" onclick="loadMasterSd()"><i class="fa-solid fa-school me-2"></i>Master Data SD</button>
       </li>
       <li class="nav-item role-dinas d-none">
         <button class="nav-link fw-bold" id="t-menu-pekerjaan" data-bs-toggle="pill" data-bs-target="#tab-menu-pekerjaan" onclick="loadMasterMenu()"><i class="fa-solid fa-list-check me-2"></i>Menu Pekerjaan</button>
@@ -109,7 +109,7 @@
     <div class="tab-content">
       
       <!-- [SEKOLAH] TAB 1: FORM INPUT PROGRES -->
-      <div class="tab-pane fade show active role-sekolah-pane" id="tab-progres">
+      <div class="tab-pane fade role-sekolah-pane" id="tab-progres">
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-header bg-white fw-bold py-3"><i class="fa-solid fa-file-circle-plus me-2 text-primary"></i>Form Progres Pekerjaan</div>
           <div class="card-body">
@@ -148,7 +148,7 @@
         </div>
       </div>
 
-      <!-- [DINAS] SUB MENU 1: MASTER DATA SD (KOLOM BARU) -->
+      <!-- [DINAS] SUB MENU 1: MASTER DATA SD -->
       <div class="tab-pane fade role-dinas-pane" id="tab-master-sd">
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
@@ -202,13 +202,21 @@
         <div class="card shadow-sm border-0">
           <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <span><i class="fa-solid fa-table me-2 text-primary"></i>Rekap Real-Time Seluruh Sekolah</span>
-            <input type="text" id="searchInput" class="form-control form-control-sm" style="width: 200px;" placeholder="Cari data..." onkeyup="filterTableDinas()">
+            <input type="text" id="searchInput" class="form-control form-control-sm" style="width: 220px;" placeholder="Cari sekolah / pekerjaan..." onkeyup="filterTableDinas()">
           </div>
           <div class="card-body p-0">
             <div class="table-responsive">
               <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
-                  <tr><th>ID Input</th><th>NPSN</th><th>Nama SD</th><th>Kecamatan</th><th>Menu Pekerjaan</th><th class="text-end">Nilai (Rp)</th><th class="text-center">Volume</th></tr>
+                  <tr>
+                    <th>ID Input</th>
+                    <th>NPSN</th>
+                    <th>Nama SD</th>
+                    <th>Kecamatan</th>
+                    <th>Menu Pekerjaan</th>
+                    <th class="text-end">Nilai (Rp)</th>
+                    <th class="text-center">Volume</th>
+                  </tr>
                 </thead>
                 <tbody id="rekapDinasTableBody"></tbody>
               </table>
@@ -232,7 +240,7 @@
             <div class="mb-2"><label class="form-label fw-semibold">Password</label><input type="text" id="sdPass" class="form-control" required></div>
             <div class="mb-2"><label class="form-label fw-semibold">Nama SD</label><input type="text" id="sdNama" class="form-control" required></div>
             <div class="mb-2"><label class="form-label fw-semibold">Kecamatan</label><input type="text" id="sdKecamatan" class="form-control" required></div>
-            <div class="mb-2"><label class="form-label fw-semibold">Masa PKS (Hari)</label><input type="text" id="sdMasaPks" class="form-control" placeholder="Contoh: 120 Hari" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold">Masa PKS</label><input type="text" id="sdMasaPks" class="form-control" placeholder="Contoh: 120 Hari" required></div>
             <div class="row g-2 mb-2">
               <div class="col-6"><label class="form-label fw-semibold">Mulai</label><input type="date" id="sdMulai" class="form-control" required></div>
               <div class="col-6"><label class="form-label fw-semibold">Selesai</label><input type="date" id="sdSelesai" class="form-control" required></div>
@@ -286,6 +294,7 @@
     });
 
     function toggleLoading(show) { document.getElementById("loadingOverlay").classList.toggle("d-none", !show); }
+    
     function showToast(message, isSuccess = true) {
       const toastEl = document.getElementById('appToast');
       document.getElementById('toastMessage').textContent = message;
@@ -298,6 +307,8 @@
       const u = document.getElementById("username").value.trim();
       const p = document.getElementById("password").value.trim();
       toggleLoading(true);
+      document.getElementById("loginAlert").classList.add("d-none");
+      
       try {
         const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}&_t=${Date.now()}`);
         const result = await res.json();
@@ -325,13 +336,15 @@
 
       if (user.role === "DINAS") {
         document.querySelectorAll('.role-dinas').forEach(el => el.classList.remove('d-none'));
-        document.getElementById("tab-master-sd").classList.add('show', 'active');
+        
         document.getElementById("t-master-sd").classList.add('active');
+        document.getElementById("tab-master-sd").classList.add('show', 'active');
         loadMasterSd();
       } else {
         document.querySelectorAll('.role-sekolah').forEach(el => el.classList.remove('d-none'));
-        document.getElementById("tab-progres").classList.add('show', 'active');
+        
         document.getElementById("t-progres").classList.add('active');
+        document.getElementById("tab-progres").classList.add('show', 'active');
         
         document.getElementById("namaSd").value = user.sekolah;
         document.getElementById("kecamatan").value = user.kecamatan;
@@ -353,9 +366,16 @@
       } catch (err) { console.error(err); }
     }
 
+    function resetFormProgres() {
+      document.getElementById("namaMenu").value = "";
+      document.getElementById("nilai").value = "";
+      document.getElementById("volumeRuang").value = "";
+    }
+
     async function handleProgresSubmit(continueInput) {
       const payload = {
-        action: "insertProgres", npsn: currentUser.username,
+        action: "insertProgres",
+        npsn: currentUser.username,
         namaSd: document.getElementById("namaSd").value,
         kecamatan: document.getElementById("kecamatan").value,
         namaMenu: document.getElementById("namaMenu").value,
@@ -363,14 +383,14 @@
         volumeRuang: document.getElementById("volumeRuang").value,
         _t: Date.now()
       };
-      if(!payload.namaMenu || !payload.nilai || !payload.volumeRuang) return showToast("Lengkapi form!", false);
+      if(!payload.namaMenu || !payload.nilai || !payload.volumeRuang) return showToast("Lengkapi semua field!", false);
       
       toggleLoading(true);
       try {
         const res = await fetch(`${SCRIPT_URL}?${new URLSearchParams(payload)}`);
         const result = await res.json();
         if(result.status === "success") {
-          showToast("Data tersimpan!");
+          showToast("Data progres berhasil disimpan!");
           document.getElementById("nilai").value = "";
           document.getElementById("volumeRuang").value = "";
           if(!continueInput) document.getElementById("namaMenu").value = "";
@@ -388,15 +408,19 @@
         tbody.innerHTML = "";
         if (result.status === "success") {
           const myData = result.data.filter(d => String(d.npsn) === String(currentUser.username));
-          myData.forEach(r => {
-            tbody.innerHTML += `<tr><td>${r.idInput}</td><td>${r.namaMenu}</td><td class="text-end">Rp ${Number(r.nilai).toLocaleString('id-ID')}</td><td class="text-center">${r.volumeRuang}</td></tr>`;
-          });
+          if(myData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-3 text-muted">Belum ada data progres tersimpan.</td></tr>`;
+          } else {
+            myData.forEach(r => {
+              tbody.innerHTML += `<tr><td>${r.idInput}</td><td>${r.namaMenu}</td><td class="text-end fw-bold">Rp ${Number(r.nilai).toLocaleString('id-ID')}</td><td class="text-center">${r.volumeRuang}</td></tr>`;
+            });
+          }
         }
-      } catch(e) { showToast("Gagal muat rekap", false); }
+      } catch(e) { showToast("Gagal memuat rekap", false); }
       finally { toggleLoading(false); }
     }
 
-    // --- MASTER SD (KOLOM BARU) ---
+    // --- DINAS: MASTER DATA SD ---
     async function loadMasterSd() {
       toggleLoading(true);
       try {
@@ -405,23 +429,27 @@
         const tbody = document.getElementById("masterSdTableBody");
         tbody.innerHTML = "";
         if (result.status === "success") {
-          result.data.forEach(sd => {
-            tbody.innerHTML += `<tr>
-              <td>${sd.npsn}</td>
-              <td>${sd.sekolah}</td>
-              <td>${sd.kecamatan}</td>
-              <td>${sd.masaPks}</td>
-              <td>${sd.mulai}</td>
-              <td>${sd.selesai}</td>
-              <td><span class="badge bg-secondary">${sd.role}</span></td>
-              <td>
-                <button class="btn btn-sm btn-warning me-1" onclick="openModalSd('edit', '${sd.npsn}', '${sd.password}', '${sd.sekolah}', '${sd.kecamatan}', '${sd.masaPks}', '${sd.mulai}', '${sd.selesai}', '${sd.role}')"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn btn-sm btn-danger" onclick="deleteSd('${sd.npsn}')"><i class="fa-solid fa-trash"></i></button>
-              </td>
-            </tr>`;
-          });
+          if (result.data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-3 text-muted">Belum ada data sekolah.</td></tr>`;
+          } else {
+            result.data.forEach(sd => {
+              tbody.innerHTML += `<tr>
+                <td>${sd.npsn}</td>
+                <td><strong>${sd.sekolah}</strong></td>
+                <td>${sd.kecamatan}</td>
+                <td>${sd.masaPks}</td>
+                <td>${sd.mulai}</td>
+                <td>${sd.selesai}</td>
+                <td><span class="badge ${sd.role === 'DINAS' ? 'bg-danger' : 'bg-secondary'}">${sd.role}</span></td>
+                <td>
+                  <button class="btn btn-sm btn-warning me-1" onclick="openModalSd('edit', '${sd.npsn}', '${sd.password}', '${sd.sekolah}', '${sd.kecamatan}', '${sd.masaPks}', '${sd.mulai}', '${sd.selesai}', '${sd.role}')"><i class="fa-solid fa-pen"></i></button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteSd('${sd.npsn}')"><i class="fa-solid fa-trash"></i></button>
+                </td>
+              </tr>`;
+            });
+          }
         }
-      } catch(e) { console.error(e); }
+      } catch(e) { showToast("Gagal memuat data SD", false); }
       finally { toggleLoading(false); }
     }
 
@@ -442,34 +470,42 @@
     document.getElementById("formSd").onsubmit = async function(e) {
       e.preventDefault();
       const payload = {
-        action: "manageMasterSd", subAction: document.getElementById("sdSubAction").value,
-        npsn: document.getElementById("sdNpsn").value, password: document.getElementById("sdPass").value,
-        sekolah: document.getElementById("sdNama").value, kecamatan: document.getElementById("sdKecamatan").value,
-        masaPks: document.getElementById("sdMasaPks").value, mulai: document.getElementById("sdMulai").value,
-        selesai: document.getElementById("sdSelesai").value, role: document.getElementById("sdRole").value, 
+        action: "manageMasterSd", 
+        subAction: document.getElementById("sdSubAction").value,
+        npsn: document.getElementById("sdNpsn").value, 
+        password: document.getElementById("sdPass").value,
+        sekolah: document.getElementById("sdNama").value, 
+        kecamatan: document.getElementById("sdKecamatan").value,
+        masaPks: document.getElementById("sdMasaPks").value, 
+        mulai: document.getElementById("sdMulai").value,
+        selesai: document.getElementById("sdSelesai").value, 
+        role: document.getElementById("sdRole").value, 
         _t: Date.now()
       };
-      toggleLoading(true); modalSdObj.hide();
+      toggleLoading(true); 
+      modalSdObj.hide();
       try {
         const res = await fetch(`${SCRIPT_URL}?${new URLSearchParams(payload)}`);
         const r = await res.json();
-        showToast(r.message); loadMasterSd();
-      } catch(err) { showToast("Gagal memproses SD", false); }
+        showToast(r.message); 
+        loadMasterSd();
+      } catch(err) { showToast("Gagal menyimpan data SD", false); }
       finally { toggleLoading(false); }
     };
 
     async function deleteSd(npsn) {
-      if(!confirm("Hapus SD ini?")) return;
+      if(!confirm("Yakin ingin menghapus data SD ini?")) return;
       toggleLoading(true);
       try {
         const res = await fetch(`${SCRIPT_URL}?action=manageMasterSd&subAction=delete&npsn=${npsn}&_t=${Date.now()}`);
         const r = await res.json();
-        showToast(r.message); loadMasterSd();
-      } catch(e) { showToast("Gagal menghapus", false); }
+        showToast(r.message); 
+        loadMasterSd();
+      } catch(e) { showToast("Gagal menghapus SD", false); }
       finally { toggleLoading(false); }
     }
 
-    // --- MENU PEKERJAAN ---
+    // --- DINAS: MENU PEKERJAAN ---
     async function loadMasterMenu() {
       toggleLoading(true);
       try {
@@ -478,17 +514,22 @@
         const tbody = document.getElementById("masterMenuTableBody");
         tbody.innerHTML = "";
         if (result.status === "success") {
-          result.data.forEach(m => {
-            tbody.innerHTML += `<tr>
-              <td>${m.idMenu}</td><td>${m.namaMenu}</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-warning me-1" onclick="openModalMenu('edit', '${m.idMenu}', '${m.namaMenu}')"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn btn-sm btn-danger" onclick="deleteMenu('${m.idMenu}')"><i class="fa-solid fa-trash"></i></button>
-              </td>
-            </tr>`;
-          });
+          if(result.data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="text-center py-3 text-muted">Belum ada menu pekerjaan.</td></tr>`;
+          } else {
+            result.data.forEach(m => {
+              tbody.innerHTML += `<tr>
+                <td>${m.idMenu}</td>
+                <td>${m.namaMenu}</td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-warning me-1" onclick="openModalMenu('edit', '${m.idMenu}', '${m.namaMenu}')"><i class="fa-solid fa-pen"></i></button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteMenu('${m.idMenu}')"><i class="fa-solid fa-trash"></i></button>
+                </td>
+              </tr>`;
+            });
+          }
         }
-      } catch(e) { console.error(e); }
+      } catch(e) { showToast("Gagal memuat menu pekerjaan", false); }
       finally { toggleLoading(false); }
     }
 
@@ -502,31 +543,36 @@
     document.getElementById("formMenu").onsubmit = async function(e) {
       e.preventDefault();
       const payload = {
-        action: "manageMenu", subAction: document.getElementById("menuSubAction").value,
-        idMenu: document.getElementById("menuId").value, namaMenu: document.getElementById("menuNama").value,
+        action: "manageMenu", 
+        subAction: document.getElementById("menuSubAction").value,
+        idMenu: document.getElementById("menuId").value, 
+        namaMenu: document.getElementById("menuNama").value,
         _t: Date.now()
       };
-      toggleLoading(true); modalMenuObj.hide();
+      toggleLoading(true); 
+      modalMenuObj.hide();
       try {
         const res = await fetch(`${SCRIPT_URL}?${new URLSearchParams(payload)}`);
         const r = await res.json();
-        showToast(r.message); loadMasterMenu();
-      } catch(err) { showToast("Gagal simpan menu", false); }
+        showToast(r.message); 
+        loadMasterMenu();
+      } catch(err) { showToast("Gagal menyimpan menu", false); }
       finally { toggleLoading(false); }
     };
 
     async function deleteMenu(idMenu) {
-      if(!confirm("Hapus menu ini?")) return;
+      if(!confirm("Yakin ingin menghapus menu pekerjaan ini?")) return;
       toggleLoading(true);
       try {
         const res = await fetch(`${SCRIPT_URL}?action=manageMenu&subAction=delete&idMenu=${idMenu}&_t=${Date.now()}`);
         const r = await res.json();
-        showToast(r.message); loadMasterMenu();
-      } catch(e) { showToast("Gagal menghapus", false); }
+        showToast(r.message); 
+        loadMasterMenu();
+      } catch(e) { showToast("Gagal menghapus menu", false); }
       finally { toggleLoading(false); }
     }
 
-    // --- REKAP DATABASE DINAS ---
+    // --- DINAS: REKAP DATABASE PEKERJAAN ---
     async function loadRekapDinas() {
       toggleLoading(true);
       try {
@@ -535,20 +581,35 @@
         if (result.status === "success") {
           rawDinasData = result.data;
           renderDinasTable(rawDinasData);
+        } else {
+          showToast(result.message || "Gagal mengambil data", false);
         }
-      } catch(e) { showToast("Gagal muat rekap", false); }
-      finally { toggleLoading(false); }
+      } catch(e) { 
+        showToast("Gagal muat rekap database", false); 
+      } finally { 
+        toggleLoading(false); 
+      }
     }
 
     function renderDinasTable(data) {
       const tbody = document.getElementById("rekapDinasTableBody");
+      if (!tbody) return;
       tbody.innerHTML = "";
+      
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-3 text-muted">Belum ada data progres yang tersimpan.</td></tr>`;
+        return;
+      }
+
       data.forEach(r => {
         tbody.innerHTML += `<tr>
-          <td><span class="badge bg-secondary font-monospace">${r.idInput}</span></td>
-          <td>${r.npsn}</td><td><strong>${r.namaSd}</strong></td><td>${r.kecamatan}</td>
-          <td>${r.namaMenu}</td><td class="text-end fw-bold text-success">Rp ${Number(r.nilai).toLocaleString('id-ID')}</td>
-          <td class="text-center">${r.volumeRuang}</td>
+          <td><span class="badge bg-secondary font-monospace">${r.idInput || '-'}</span></td>
+          <td>${r.npsn || '-'}</td>
+          <td><strong>${r.namaSd || '-'}</strong></td>
+          <td>${r.kecamatan || '-'}</td>
+          <td>${r.namaMenu || '-'}</td>
+          <td class="text-end fw-bold text-success">Rp ${Number(r.nilai || 0).toLocaleString('id-ID')}</td>
+          <td class="text-center">${r.volumeRuang || 0}</td>
         </tr>`;
       });
     }
@@ -558,7 +619,8 @@
       const filtered = rawDinasData.filter(i => 
         (i.namaSd && i.namaSd.toLowerCase().includes(q)) || 
         (i.namaMenu && i.namaMenu.toLowerCase().includes(q)) || 
-        (i.npsn && i.npsn.toString().includes(q))
+        (i.npsn && i.npsn.toString().includes(q)) ||
+        (i.kecamatan && i.kecamatan.toLowerCase().includes(q))
       );
       renderDinasTable(filtered);
     }
