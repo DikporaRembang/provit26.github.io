@@ -3,29 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aplikasi Pelaporan Sekolah & Dinas</title>
+  <title>Aplikasi Pelaporan Progres Kegiatan SD</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+      .no-print { display: none !important; }
+    }
+  </style>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans">
+<body class="bg-sky-50 min-h-screen font-sans text-slate-800">
 
   <!-- HALAMAN LOGIN -->
   <div id="loginPage" class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100">
-      <h2 class="text-2xl font-bold text-slate-800 mb-2 text-center">Login Aplikasi</h2>
-      <p class="text-sm text-slate-500 mb-6 text-center">Silakan masuk menggunakan NPSN atau akun Dinas</p>
-      
-      <div id="loginAlert" class="hidden mb-4 p-3 text-sm rounded-lg bg-red-50 text-red-700"></div>
+    <div class="bg-white/90 backdrop-blur-md p-8 rounded-3xl shadow-xl w-full max-w-md border border-sky-100">
+      <div class="text-center mb-6">
+        <div class="bg-sky-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-md font-bold text-xl">SD</div>
+        <h2 class="text-2xl font-extrabold text-slate-900">Sistem Pelaporan</h2>
+        <p class="text-sm text-slate-500 mt-1">Silakan masuk menggunakan akun Dinas / Sekolah</p>
+      </div>
 
-      <form onsubmit="handleLogin(event)">
-        <div class="mb-4">
-          <label class="block text-sm font-semibold text-slate-700 mb-1">NPSN / Username</label>
-          <input type="text" id="loginNpsn" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+      <div id="loginAlert" class="hidden mb-4 p-3 text-sm rounded-xl bg-red-50 text-red-700 border border-red-200"></div>
+
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">NPSN / Username</label>
+          <input type="text" id="loginNpsn" required class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition">
         </div>
-        <div class="mb-6">
-          <label class="block text-sm font-semibold text-slate-700 mb-1">Password</label>
-          <input type="password" id="loginPassword" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Password</label>
+          <input type="password" id="loginPassword" required class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition">
         </div>
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition">Masuk</button>
+        <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-sky-600/30 transition">Masuk Aplikasi</button>
       </form>
     </div>
   </div>
@@ -33,75 +44,125 @@
   <!-- DASHBOARD UTAMA -->
   <div id="dashboardPage" class="hidden min-h-screen flex flex-col">
     <!-- Navbar -->
-    <header class="bg-indigo-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
-      <div>
-        <h1 class="text-lg font-bold" id="userTitle">Dashboard</h1>
-        <p class="text-xs text-indigo-200" id="userSubtitle">-</p>
+    <header class="bg-sky-700 text-white shadow-md px-6 py-4 flex justify-between items-center no-print">
+      <div class="flex items-center space-x-3">
+        <div class="bg-sky-800 p-2 rounded-xl font-bold text-sm">PROV-26</div>
+        <div>
+          <h1 class="text-base font-bold" id="userTitle">-</h1>
+          <p class="text-xs text-sky-200" id="userSubtitle">-</p>
+        </div>
       </div>
-      <button onclick="logout()" class="bg-indigo-700 hover:bg-indigo-800 text-xs px-3 py-2 rounded-lg transition font-medium">Keluar</button>
+      <button onclick="logout()" class="bg-sky-800 hover:bg-sky-900 text-xs font-semibold px-4 py-2 rounded-xl transition shadow">Keluar</button>
     </header>
 
-    <!-- Konten Dinamis berdasarkan Role -->
-    <main class="flex-1 p-6 max-w-6xl mx-auto w-full">
+    <!-- Navigasi Tab Menu -->
+    <nav class="bg-white border-b border-sky-100 px-6 py-3 shadow-xs flex space-x-3 overflow-x-auto no-print" id="navTabs">
+      <!-- Dihasilkan dinamis berdasarkan Role -->
+    </nav>
+
+    <!-- Konten Utama -->
+    <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
       
-      <!-- TAMPILAN SEKOLAH (INPUT DATA) -->
-      <div id="panelSekolah" class="hidden bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <h3 class="text-xl font-bold text-slate-800 mb-4">Input Data Laporan Kegiatan</h3>
-        <div id="formAlert" class="hidden mb-4 p-3 text-sm rounded-lg"></div>
+      <!-- TAB 1: LAPORKAN PROGRES (USER SEKOLAH) -->
+      <div id="tabLaporkan" class="tab-content hidden max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
+        <h3 class="text-xl font-bold text-slate-900 mb-1">Laporkan Progres Kegiatan</h3>
+        <p class="text-sm text-slate-500 mb-6">Input realisasi pelaksanaan fisik/non-fisik satuan pendidikan.</p>
+        
+        <div id="formAlert" class="hidden mb-4 p-3 text-sm rounded-xl"></div>
 
         <form onsubmit="submitLaporan(event)" class="space-y-4">
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1">Pilih Jenis Menu Kegiatan</label>
-            <select id="dataMenu" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Pilih Menu Kegiatan</label>
+            <select id="dataMenu" required class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
               <option value="">Memuat menu...</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1">Nilai Anggaran (Rp)</label>
-            <input type="number" id="dataNilai" required placeholder="Contoh: 15000000" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nilai Anggaran (Rp)</label>
+            <input type="number" id="dataNilai" required placeholder="Contoh: 25000000" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
           </div>
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1">Volume Ruang / Satuan</label>
-            <input type="number" id="dataVolume" required placeholder="Contoh: 2" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Volume Ruang / Satuan</label>
+            <input type="number" id="dataVolume" required placeholder="Contoh: 1" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
           </div>
-          <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2.5 rounded-lg transition">Simpan Laporan</button>
+          <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl shadow-md transition">Kirim Laporan Progres</button>
         </form>
       </div>
 
-      <!-- TAMPILAN DINAS (REKAPITULASI & MASTER) -->
-      <div id="panelDinas" class="hidden space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-            <h3 class="text-lg font-bold text-slate-800 mb-2">Kelola Master Sekolah</h3>
-            <p class="text-sm text-slate-500 mb-4">Tambah atau ubah data akun sekolah dan penugasan tim.</p>
-            <a href="#" onclick="alert('Buka menu Kelola Master SD langsung via Spreadsheet')" class="text-indigo-600 text-sm font-semibold hover:underline">Buka Data Master SD &rarr;</a>
+      <!-- TAB 2: LIHAT PROGRES & CETAK -->
+      <div id="tabLihatProgres" class="tab-content hidden space-y-6">
+        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100 no-print">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Rekapitulasi Progres Kegiatan</h3>
+            <p class="text-sm text-slate-500">Data terkelompok berdasarkan rekam database sekolah.</p>
           </div>
-          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-            <h3 class="text-lg font-bold text-slate-800 mb-2">Rekapitulasi Database</h3>
-            <p class="text-sm text-slate-500 mb-4">Lihat seluruh data laporan masuk dari sekolah-sekolah.</p>
-            <button onclick="loadDatabaseDinas()" class="bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">Muat Tabel Database</button>
-          </div>
+          <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition flex items-center space-x-2">
+            <span>Cetak / Print Laporan</span>
+          </button>
         </div>
 
-        <!-- Tabel Database -->
-        <div id="dinasDatabaseContainer" class="hidden bg-white p-6 rounded-2xl shadow-sm border border-slate-100 overflow-x-auto">
-          <h3 class="text-lg font-bold text-slate-800 mb-4">Tabel Hasil Database Laporan</h3>
-          <table class="w-full text-left border-collapse text-sm">
-            <thead>
-              <tr class="bg-slate-100 text-slate-700 border-b">
-                <th class="p-3">ID</th>
-                <th class="p-3">NPSN</th>
-                <th class="p-3">Nama SD</th>
-                <th class="p-3">Kecamatan</th>
-                <th class="p-3">Nama Menu</th>
-                <th class="p-3">Nilai</th>
-                <th class="p-3">Volume</th>
-                <th class="p-3">Tim</th>
-              </tr>
-            </thead>
-            <tbody id="tableDatabaseBody">
-              <!-- Data dimuat dinamis -->
-            </tbody>
+        <div id="printArea" class="bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
+          <div class="text-center mb-6 pb-4 border-b border-sky-100">
+            <h2 class="text-xl font-extrabold text-slate-900 uppercase">Laporan Progres Pelaksanaan Kegiatan SD</h2>
+            <p class="text-sm text-slate-600" id="printSubtitle">Rekapitulasi Data</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="bg-sky-100/70 text-sky-900 border-b border-sky-200">
+                  <th class="p-3">No</th>
+                  <th class="p-3">ID</th>
+                  <th class="p-3">NPSN</th>
+                  <th class="p-3">Nama Sekolah</th>
+                  <th class="p-3">Kecamatan</th>
+                  <th class="p-3">Nama Menu Kegiatan</th>
+                  <th class="p-3">Nilai (Rp)</th>
+                  <th class="p-3">Volume</th>
+                </tr>
+              </thead>
+              <tbody id="tableProgresBody">
+                <!-- Data dimuat dinamis -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: KELOLA PENGGUNA (DINAS) -->
+      <div id="tabUsers" class="tab-content hidden space-y-6">
+        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
+          <h3 class="text-lg font-bold text-slate-900">Manajemen Pengguna (USERS)</h3>
+          <button onclick="openModalCrud('USERS', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah Pengguna</button>
+        </div>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm" id="tableUsersGrid">
+            <!-- Dimuat dinamis -->
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: EDIT MENU (MASTER_MENU) -->
+      <div id="tabMasterMenu" class="tab-content hidden space-y-6">
+        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
+          <h3 class="text-lg font-bold text-slate-900">Kelola Master Menu Kegiatan</h3>
+          <button onclick="openModalCrud('Master_Menu', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah Menu</button>
+        </div>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm" id="tableMenuGrid">
+            <!-- Dimuat dinamis -->
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 5: EDIT SD (MASTER_SD) -->
+      <div id="tabMasterSd" class="tab-content hidden space-y-6">
+        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
+          <h3 class="text-lg font-bold text-slate-900">Kelola Master Data Sekolah (Master_SD)</h3>
+          <button onclick="openModalCrud('Master_SD', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah SD</button>
+        </div>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm" id="tableSdGrid">
+            <!-- Dimuat dinamis -->
           </table>
         </div>
       </div>
@@ -109,10 +170,29 @@
     </main>
   </div>
 
+  <!-- MODAL FORM CRUD -->
+  <div id="crudModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+    <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-lg border border-sky-100">
+      <h3 id="modalTitle" class="text-lg font-bold text-slate-900 mb-4">Form Data</h3>
+      <form id="crudForm" onsubmit="submitCrudForm(event)" class="space-y-4">
+        <div id="modalInputs" class="space-y-3">
+          <!-- Dinamis input kolom -->
+        </div>
+        <div class="flex space-x-3 pt-2">
+          <button type="submit" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl transition">Simpan</button>
+          <button type="button" onclick="closeModalCrud()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     // Ganti URL Web App Google Apps Script Anda di sini setelah Deploy
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzybUH2snWCMHVUm1CKdzy8aTCFQ1sYFJiNJyNobO3RiXpVrdJxBUxdlytWzZuPYg3_/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxW8ah1pYsZDGfokjuaZNIk8Hn2vBEsfs84zwtmLoDlS_qWvTYxXFu2P8jNoDbr2fsC/exec";
     let currentUser = null;
+    let currentActiveSheet = "";
+    let currentCrudAction = "";
+    let sheetHeaders = {};
 
     async function handleLogin(e) {
       e.preventDefault();
@@ -142,14 +222,48 @@
       document.getElementById("dashboardPage").classList.remove("hidden");
       
       document.getElementById("userTitle").innerText = currentUser.sekolah;
-      document.getElementById("userSubtitle").innerText = `Role: ${currentUser.role} | Kecamatan: ${currentUser.kecamatan || '-'}`;
+      document.getElementById("userSubtitle").innerText = `Role: ${currentUser.role} | Wilayah: ${currentUser.kecamatan || '-'}`;
+
+      buildNavigation();
+    }
+
+    function buildNavigation() {
+      const nav = document.getElementById("navTabs");
+      nav.innerHTML = "";
 
       if (currentUser.role === "DINAS") {
-        document.getElementById("panelDinas").classList.remove("hidden");
+        nav.innerHTML += `
+          <button onclick="switchTab('tabUsers')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Kelola Pengguna</button>
+          <button onclick="switchTab('tabMasterMenu')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Edit Menu</button>
+          <button onclick="switchTab('tabMasterSd')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Edit SD</button>
+          <button onclick="switchTab('tabLihatProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Lihat Progres & Print</button>
+        `;
+        switchTab('tabUsers');
       } else {
-        document.getElementById("panelSekolah").classList.remove("hidden");
+        nav.innerHTML += `
+          <button onclick="switchTab('tabLaporkan')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Laporkan Progres</button>
+          <button onclick="switchTab('tabLihatProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Lihat Progres</button>
+        `;
+        switchTab('tabLaporkan');
         loadDropdownMenu();
       }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.remove("bg-sky-600", "text-white");
+        btn.classList.add("bg-sky-100", "text-sky-800");
+      });
+
+      document.getElementById(tabId).classList.remove("hidden");
+      event.target.classList.remove("bg-sky-100", "text-sky-800");
+      event.target.classList.add("bg-sky-600", "text-white");
+
+      if (tabId === 'tabLihatProgres') loadProgresData();
+      if (tabId === 'tabUsers') loadSheetGrid('USERS', 'tableUsersGrid');
+      if (tabId === 'tabMasterMenu') loadSheetGrid('Master_Menu', 'tableMenuGrid');
+      if (tabId === 'tabMasterSd') loadSheetGrid('Master_SD', 'tableSdGrid');
     }
 
     async function loadDropdownMenu() {
@@ -157,9 +271,11 @@
       const json = await res.json();
       const select = document.getElementById("dataMenu");
       if (json.status === "success") {
-        select.innerHTML = '<option value="">-- Pilih Menu Kegiatan --</option>';
+        select.innerHTML = '<option value="">-- Pilih Jenis Menu Kegiatan --</option>';
         json.data.forEach(m => {
-          select.innerHTML += `<option value="${m.namaMenu}">${m.idMenu} - ${m.namaMenu}</option>`;
+          const menuName = m["Nama Menu"] || m["Nama Menu"] || Object.values(m)[1];
+          const menuId = m["ID Menu"] || Object.values(m)[0];
+          select.innerHTML += `<option value="${menuName}">${menuId} - ${menuName}</option>`;
         });
       }
     }
@@ -178,41 +294,146 @@
         const json = await res.json();
         alertBox.innerText = json.message;
         alertBox.classList.remove("hidden", "bg-red-50", "text-red-700");
-        alertBox.classList.add("bg-green-50", "text-green-700");
+        alertBox.classList.add("bg-emerald-50", "text-emerald-700");
         if(json.status === "success") {
           document.getElementById("dataNilai").value = "";
           document.getElementById("dataVolume").value = "";
         }
       } catch (err) {
-        alertBox.innerText = "Gagal menyimpan laporan.";
-        alertBox.classList.remove("hidden", "bg-green-50", "text-green-700");
+        alertBox.innerText = "Gagal mengirim laporan.";
+        alertBox.classList.remove("hidden");
         alertBox.classList.add("bg-red-50", "text-red-700");
       }
     }
 
-    async function loadDatabaseDinas() {
+    async function loadProgresData() {
       const res = await fetch(`${SCRIPT_URL}?action=getDatabase`);
       const json = await res.json();
-      const tbody = document.getElementById("tableDatabaseBody");
-      document.getElementById("dinasDatabaseContainer").classList.remove("hidden");
+      const tbody = document.getElementById("tableProgresBody");
+      const subtitle = document.getElementById("printSubtitle");
       
       tbody.innerHTML = "";
       if (json.status === "success" && json.data.length > 0) {
-        json.data.forEach(row => {
+        let filtered = json.data;
+        if (currentUser.role === "SEKOLAH") {
+          filtered = json.data.filter(row => String(row.npsn).trim() === String(currentUser.npsn).trim());
+          subtitle.innerText = `Rekapitulasi Data untuk Sekolah: ${currentUser.sekolah} (NPSN: ${currentUser.npsn})`;
+        } else {
+          subtitle.innerText = `Rekapitulasi Seluruh Data Progres Sekolah Kabupaten Rembang`;
+        }
+
+        if(filtered.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">Belum ada data progres tercatat.</td></tr>`;
+          return;
+        }
+
+        filtered.forEach((row, idx) => {
           tbody.innerHTML += `
-            <tr class="border-b hover:bg-slate-50">
+            <tr class="border-b border-sky-100 hover:bg-sky-50/50">
+              <td class="p-3">${idx + 1}</td>
               <td class="p-3">${row.idInput}</td>
               <td class="p-3">${row.npsn}</td>
-              <td class="p-3">${row.namaSd}</td>
+              <td class="p-3 font-semibold">${row.namaSd}</td>
               <td class="p-3">${row.kecamatan}</td>
               <td class="p-3">${row.namaMenu}</td>
-              <td class="p-3">Rp ${row.nilai.toLocaleString('id-ID')}</td>
+              <td class="p-3">Rp ${Number(row.nilai).toLocaleString('id-ID')}</td>
               <td class="p-3">${row.volume}</td>
-              <td class="p-3">${row.namaTim}</td>
             </tr>`;
         });
       } else {
         tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">Belum ada data laporan.</td></tr>`;
+      }
+    }
+
+    async function loadSheetGrid(sheetName, tableId) {
+      currentActiveSheet = sheetName;
+      const res = await fetch(`${SCRIPT_URL}?action=get${sheetName === 'Master_Menu' ? 'MasterMenu' : sheetName === 'Master_SD' ? 'MasterSd' : 'Users'}`);
+      const json = await res.json();
+      const table = document.getElementById(tableId);
+      
+      if (json.status === "success") {
+        sheetHeaders[sheetName] = json.headers || Object.keys(json.data[0] || {});
+        let html = `<thead><tr class="bg-sky-100/70 text-sky-900 border-b border-sky-200">`;
+        sheetHeaders[sheetName].forEach(h => html += `<th class="p-3">${h}</th>`);
+        html += `<th class="p-3 text-center">Aksi</th></tr></thead><tbody>`;
+
+        if (json.data.length === 0) {
+          html += `<tr><td colspan="10" class="p-4 text-center text-slate-400">Tidak ada data.</td></tr>`;
+        } else {
+          json.data.forEach((row, idx) => {
+            html += `<tr class="border-b border-sky-100 hover:bg-sky-50/50">`;
+            sheetHeaders[sheetName].forEach(h => html += `<td class="p-3">${row[h] || ''}</td>`);
+            html += `<td class="p-3 text-center space-x-2">
+              <button onclick='openModalCrud("${sheetName}", "edit", ${JSON.stringify(row)})' class="text-sky-600 hover:underline font-semibold text-xs">Edit</button>
+              <button onclick='deleteData("${sheetName}", "${row[sheetHeaders[sheetName][0]]}")' class="text-red-500 hover:underline font-semibold text-xs">Hapus</button>
+            </td></tr>`;
+          });
+        }
+        html += `</tbody>`;
+        table.innerHTML = html;
+      }
+    }
+
+    function openModalCrud(sheetName, action, data = null) {
+      currentActiveSheet = sheetName;
+      currentCrudAction = action;
+      document.getElementById("crudModal").classList.remove("hidden");
+      document.getElementById("modalTitle").innerText = action === 'add' ? `Tambah Data ${sheetName}` : `Edit Data ${sheetName}`;
+      
+      const container = document.getElementById("modalInputs");
+      container.innerHTML = "";
+      const headers = sheetHeaders[sheetName] || ["Col1", "Col2"];
+
+      headers.forEach((h, i) => {
+        const val = data ? (data[h] || "") : "";
+        container.innerHTML += `
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">${h}</label>
+            <input type="text" id="modalField${i}" value="${val}" ${i === 0 && action === 'edit' ? 'readonly' : ''} class="w-full px-4 py-2 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
+          </div>
+        `;
+      });
+    }
+
+    function closeModalCrud() {
+      document.getElementById("crudModal").classList.add("hidden");
+    }
+
+    async function submitCrudForm(e) {
+      e.preventDefault();
+      const headers = sheetHeaders[currentActiveSheet];
+      let params = `action=manage${currentActiveSheet === 'Master_Menu' ? 'MasterMenu' : currentActiveSheet === 'Master_SD' ? 'MasterSd' : 'Users'}&subAction=${currentCrudAction}&pk=${document.getElementById("modalField0").value}`;
+      
+      headers.forEach((h, i) => {
+        const val = document.getElementById(`modalField${i}`).value;
+        params += `&col${i}=${encodeURIComponent(val)}`;
+      });
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?${params}`);
+        const json = await res.json();
+        alert(json.message);
+        if (json.status === "success") {
+          closeModalCrud();
+          if (currentActiveSheet === 'USERS') loadSheetGrid('USERS', 'tableUsersGrid');
+          if (currentActiveSheet === 'Master_Menu') loadSheetGrid('Master_Menu', 'tableMenuGrid');
+          if (currentActiveSheet === 'Master_SD') loadSheetGrid('Master_SD', 'tableSdGrid');
+        }
+      } catch (err) {
+        alert("Terjadi kesalahan sistem.");
+      }
+    }
+
+    async function deleteData(sheetName, pk) {
+      if (!confirm("Apakah Anda yakin ingin menghapus data ini?")) return;
+      const actionName = sheetName === 'Master_Menu' ? 'MasterMenu' : sheetName === 'Master_SD' ? 'MasterSd' : 'Users';
+      const res = await fetch(`${SCRIPT_URL}?action=manage${actionName}&subAction=delete&pk=${encodeURIComponent(pk)}`);
+      const json = await res.json();
+      alert(json.message);
+      if (json.status === "success") {
+        if (sheetName === 'USERS') loadSheetGrid('USERS', 'tableUsersGrid');
+        if (sheetName === 'Master_Menu') loadSheetGrid('Master_Menu', 'tableMenuGrid');
+        if (sheetName === 'Master_SD') loadSheetGrid('Master_SD', 'tableSdGrid');
       }
     }
 
