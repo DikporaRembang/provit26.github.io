@@ -146,7 +146,7 @@
         </form>
       </div>
 
-      <!-- TAB: PREVIEW & CETAK DATABASE -->
+      <!-- TAB: PREVIEW & CETAK DATABASE (DINAS & SEKOLAH) -->
       <div id="tabDatabase" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100 no-print">
           <div>
@@ -200,7 +200,7 @@
         </div>
       </div>
 
-      <!-- TAB: KELOLA PENGGUNA (USERS) -->
+      <!-- TAB: KELOLA PENGGUNA (USERS) - DINAS (TAMBAH, EDIT, HAPUS) -->
       <div id="tabUsers" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
           <h3 class="text-lg font-bold text-slate-900">Manajemen Pengguna (USERS)</h3>
@@ -211,7 +211,7 @@
         </div>
       </div>
 
-      <!-- TAB: MASTER MENU (MASTER_MENU) -->
+      <!-- TAB: MASTER MENU (MASTER_MENU) - DINAS (TAMBAH, EDIT, HAPUS) -->
       <div id="tabMasterMenu" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
           <h3 class="text-lg font-bold text-slate-900">Kelola Master Menu Kegiatan</h3>
@@ -222,7 +222,7 @@
         </div>
       </div>
 
-      <!-- TAB: MASTER SD (MASTER_SD) -->
+      <!-- TAB: MASTER SD (MASTER_SD) - DINAS (TAMBAH, EDIT, HAPUS) -->
       <div id="tabMasterSd" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
           <h3 class="text-lg font-bold text-slate-900">Kelola Master Data Sekolah (Master_SD)</h3>
@@ -372,10 +372,11 @@
       nav.innerHTML = "";
 
       if (currentUser.role === "DINAS") {
+        // 5 Sub Menu Dinas: users, Master_Menu, Master_SD, Database, progres
         nav.innerHTML = `
-          <button onclick="switchTab('tabUsers')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Kelola Pengguna</button>
-          <button onclick="switchTab('tabMasterMenu')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Master Menu</button>
-          <button onclick="switchTab('tabMasterSd')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Master SD</button>
+          <button onclick="switchTab('tabUsers')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Users</button>
+          <button onclick="switchTab('tabMasterMenu')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Master_Menu</button>
+          <button onclick="switchTab('tabMasterSd')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Master_SD</button>
           <button onclick="switchTab('tabDatabase')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Database (Cetak)</button>
           <button onclick="switchTab('tabLihatProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Progres (Cetak)</button>
         `;
@@ -384,6 +385,7 @@
         nav.innerHTML = `
           <button onclick="switchTab('tabLaporkan')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Isi Menu Kegiatan</button>
           <button onclick="switchTab('tabInputProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Input Progres Pekerjaan</button>
+          <button onclick="switchTab('tabDatabase')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Database</button>
           <button onclick="switchTab('tabLihatProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Lihat Rekap</button>
         `;
         switchTab('tabLaporkan');
@@ -468,10 +470,15 @@
         headers.forEach(h => html += `<th class="p-3">${h}</th>`);
         html += `</tr></thead><tbody>`;
 
-        if (json.data.length === 0) {
+        let filteredData = json.data;
+        if (currentUser.role === "SEKOLAH") {
+          filteredData = json.data.filter(row => String(row.NPSN).trim() === String(currentUser.npsn).trim());
+        }
+
+        if (filteredData.length === 0) {
           html += `<tr><td colspan="10" class="p-4 text-center text-slate-400">Tidak ada data database.</td></tr>`;
         } else {
-          json.data.forEach(row => {
+          filteredData.forEach(row => {
             html += `<tr class="border-b border-sky-100 hover:bg-sky-50/50">`;
             headers.forEach(h => {
               let val = row[h] || '';
