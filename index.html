@@ -66,59 +66,56 @@
     <!-- Konten Utama -->
     <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
       
-      <!-- TAB 1: USERS (Hanya Dinas) -->
+      <!-- TAB 1: USERS (Dinas: Full CRUD) -->
       <div id="tabUsers" class="tab-content hidden space-y-6">
-        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
+        <div id="headerUsersContainer" class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
           <div>
             <h3 class="text-lg font-bold text-slate-900">Manajemen Pengguna (Users)</h3>
             <p class="text-sm text-slate-500">Kelola data akun login sekolah dan dinas.</p>
           </div>
-          <button onclick="openModalCrud('USERS', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah User</button>
+          <div id="actionAddUsers"></div>
         </div>
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
           <table class="w-full text-left border-collapse text-sm" id="tableUsersGrid"></table>
         </div>
       </div>
 
-      <!-- TAB 2: MASTER_MENU (Hanya Dinas) -->
+      <!-- TAB 2: MASTER_MENU (Dinas: Full CRUD) -->
       <div id="tabMasterMenu" class="tab-content hidden space-y-6">
-        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
+        <div id="headerMenuContainer" class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
           <div>
             <h3 class="text-lg font-bold text-slate-900">Master Menu Kegiatan</h3>
             <p class="text-sm text-slate-500">Kelola master referensi jenis kegiatan.</p>
           </div>
-          <button onclick="openModalCrud('Master_Menu', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah Menu</button>
+          <div id="actionAddMenu"></div>
         </div>
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
           <table class="w-full text-left border-collapse text-sm" id="tableMenuGrid"></table>
         </div>
       </div>
 
-      <!-- TAB 3: MASTER_SD (Hanya Dinas) -->
+      <!-- TAB 3: MASTER_SD (Dinas: Full CRUD) -->
       <div id="tabMasterSd" class="tab-content hidden space-y-6">
-        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
+        <div id="headerSdContainer" class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
           <div>
             <h3 class="text-lg font-bold text-slate-900">Master Data Sekolah (Master_SD)</h3>
             <p class="text-sm text-slate-500">Kelola master referensi data satuan pendidikan.</p>
           </div>
-          <button onclick="openModalCrud('Master_SD', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah SD</button>
+          <div id="actionAddSd"></div>
         </div>
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
           <table class="w-full text-left border-collapse text-sm" id="tableSdGrid"></table>
         </div>
       </div>
 
-      <!-- TAB 4: DATABASE (Dinas & Sekolah: Input, View, & Cetak Miliknya Sendiri) -->
+      <!-- TAB 4: DATABASE (Dinas: Edit & Hapus | Sekolah: Input, View, & Cetak) -->
       <div id="tabDatabase" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100 no-print">
           <div>
             <h3 class="text-lg font-bold text-slate-900">Database Input Kegiatan Sekolah</h3>
-            <p class="text-sm text-slate-500">Input data kegiatan dan cetak laporan.</p>
+            <p class="text-sm text-slate-500">Kelola, monitor, dan cetak laporan kegiatan.</p>
           </div>
-          <div class="space-x-2">
-            <button onclick="openDatabaseModal()" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Input Kegiatan</button>
-            <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">Cetak Laporan</button>
-          </div>
+          <div class="space-x-2" id="databaseActionButtons"></div>
         </div>
 
         <div class="print-area bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
@@ -132,17 +129,14 @@
         </div>
       </div>
 
-      <!-- TAB 5: PROGRES (Dinas & Sekolah: Input, View, & Cetak Rekapitulasi Miliknya Sendiri) -->
+      <!-- TAB 5: PROGRES (Dinas: Edit & Hapus | Sekolah: Input, View, & Cetak Rekap) -->
       <div id="tabProgres" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100 no-print">
           <div>
             <h3 class="text-lg font-bold text-slate-900">Progres & Rekapitulasi Penyerapan Anggaran</h3>
-            <p class="text-sm text-slate-500">Input realisasi progres, preview rekapitulasi, & cetak laporan.</p>
+            <p class="text-sm text-slate-500">Kelola realisasi progres dan rekapitulasi anggaran.</p>
           </div>
-          <div class="space-x-2">
-            <button onclick="openProgresModal()" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Input Progres</button>
-            <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">Cetak / Print Progres</button>
-          </div>
+          <div class="space-x-2" id="progresActionButtons"></div>
         </div>
 
         <div class="print-area bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
@@ -160,6 +154,7 @@
                   <th class="p-3">PAGU (Rp)</th>
                   <th class="p-3">Realisasi Anggaran (Rp)</th>
                   <th class="p-3">Persentase Penyerapan</th>
+                  <th class="p-3 text-center dinas-col-rekap hidden">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tableRekapBody"></tbody>
@@ -171,18 +166,13 @@
     </main>
   </div>
 
-  <!-- MODAL FORM CRUD UTAMA (Dinas) -->
+  <!-- MODAL FORM CRUD UTAMA -->
   <div id="crudModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
     <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-lg border border-sky-100">
       <h3 id="modalTitle" class="text-lg font-bold text-slate-900 mb-4">Form Data</h3>
       <form id="crudForm" onsubmit="event.preventDefault();" class="space-y-4">
         <div id="modalInputs" class="space-y-3"></div>
-        <div class="grid grid-cols-2 gap-2 pt-3">
-          <button type="button" onclick="executeCrudSubmit('save')" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">Simpan</button>
-          <button type="button" onclick="executeCrudSubmit('saveAndNew')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">Simpan & Tambah Baru</button>
-          <button type="button" onclick="closeModalCrud()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold py-2.5 rounded-xl transition text-sm">Tidak Jadi</button>
-          <button type="button" onclick="executeCrudSubmit('finish')" class="bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl transition text-sm">Selesai</button>
-        </div>
+        <div class="grid grid-cols-2 gap-2 pt-3" id="crudModalButtons"></div>
       </form>
     </div>
   </div>
@@ -190,8 +180,9 @@
   <!-- MODAL INPUT DATABASE SEKOLAH -->
   <div id="databaseModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
     <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-lg border border-sky-100">
-      <h3 class="text-lg font-bold text-slate-900 mb-4">Input Data Kegiatan Sekolah</h3>
+      <h3 class="text-lg font-bold text-slate-900 mb-4" id="dbModalTitle">Input Data Kegiatan Sekolah</h3>
       <form id="databaseForm" onsubmit="submitSchoolDatabase(event);" class="space-y-3">
+        <input type="hidden" id="dbEditRowId">
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Menu Kegiatan</label>
           <input type="text" id="dbNamaMenu" required class="w-full px-4 py-2 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none text-sm">
@@ -211,7 +202,7 @@
         
         <div class="grid grid-cols-2 gap-2 pt-3">
           <button type="submit" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">Simpan</button>
-          <button type="button" onclick="closeDatabaseModal()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold py-2.5 rounded-xl transition text-sm">Tidak Jadi / Selesai</button>
+          <button type="button" onclick="closeDatabaseModal()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold py-2.5 rounded-xl transition text-sm">Batal</button>
         </div>
       </form>
     </div>
@@ -220,8 +211,9 @@
   <!-- MODAL INPUT PROGRES SEKOLAH -->
   <div id="progresModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
     <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-lg border border-sky-100">
-      <h3 class="text-lg font-bold text-slate-900 mb-4">Input Realisasi Progres Pekerjaan</h3>
+      <h3 class="text-lg font-bold text-slate-900 mb-4" id="progModalTitle">Input Realisasi Progres Pekerjaan</h3>
       <form id="progresForm" onsubmit="submitSchoolProgres(event);" class="space-y-3">
+        <input type="hidden" id="progEditIndex">
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase mb-1">ID Input / Kegiatan Database</label>
           <input type="text" id="progIdInput" placeholder="Contoh: DB-001" required class="w-full px-4 py-2 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none text-sm">
@@ -237,14 +229,14 @@
         
         <div class="grid grid-cols-2 gap-2 pt-3">
           <button type="submit" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">Simpan</button>
-          <button type="button" onclick="closeProgresModal()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold py-2.5 rounded-xl transition text-sm">Tidak Jadi / Selesai</button>
+          <button type="button" onclick="closeProgresModal()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold py-2.5 rounded-xl transition text-sm">Batal</button>
         </div>
       </form>
     </div>
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDhhZxYqACYQagH8bafbiGVQuIsLgpcg0F31qvSJmdIShrbMRcCfpGgZH-spd2TxcV/exec";
+    const SCRIPT_URL = "GANTI_DENGAN_URL_DEPLOY_BARU_ANDA";
     let currentUser = null;
     let currentActiveSheet = "";
     let currentCrudAction = "";
@@ -309,6 +301,7 @@
       nav.innerHTML = "";
 
       if (currentUser.role === "DINAS") {
+        // Dinas bisa akses semua sub-menu: USERS, Master_Menu, Master_SD, Database, Progres
         nav.innerHTML = `
           <button onclick="switchTab('tabUsers')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Users</button>
           <button onclick="switchTab('tabMasterMenu')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Master_Menu</button>
@@ -316,13 +309,29 @@
           <button onclick="switchTab('tabDatabase')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Database</button>
           <button onclick="switchTab('tabProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Progres</button>
         `;
+        document.getElementById("actionAddUsers").innerHTML = `<button onclick="openModalCrud('USERS', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah User</button>`;
+        document.getElementById("actionAddMenu").innerHTML = `<button onclick="openModalCrud('Master_Menu', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah Menu</button>`;
+        document.getElementById("actionAddSd").innerHTML = `<button onclick="openModalCrud('Master_SD', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah SD</button>`;
+        
+        document.getElementById("databaseActionButtons").innerHTML = `<button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">Cetak Laporan</button>`;
+        document.getElementById("progresActionButtons").innerHTML = `<button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">Cetak / Print Progres</button>`;
+
         switchTab('tabUsers');
       } else {
-        // Sekolah: Akses Database & Progres (Input, Lihat, & Cetak data miliknya)
+        // Sekolah: Hanya Database & Progres
         nav.innerHTML = `
           <button onclick="switchTab('tabDatabase')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Database</button>
           <button onclick="switchTab('tabProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Progres</button>
         `;
+        document.getElementById("databaseActionButtons").innerHTML = `
+          <button onclick="openDatabaseModal()" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Input Kegiatan</button>
+          <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">Cetak Laporan</button>
+        `;
+        document.getElementById("progresActionButtons").innerHTML = `
+          <button onclick="openProgresModal()" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Input Progres</button>
+          <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">Cetak / Print Progres</button>
+        `;
+
         switchTab('tabDatabase');
       }
     }
@@ -357,6 +366,9 @@
         const headers = json.headers || Object.keys(json.data[0] || {});
         let html = `<thead><tr class="bg-sky-100/70 text-sky-900 border-b border-sky-200">`;
         headers.forEach(h => html += `<th class="p-3">${h}</th>`);
+        if (currentUser.role === "DINAS") {
+          html += `<th class="p-3 text-center">Aksi (Edit/Hapus)</th>`;
+        }
         html += `</tr></thead><tbody>`;
 
         let filteredData = json.data;
@@ -364,7 +376,7 @@
           filteredData = json.data.filter(row => String(row.NPSN).trim() === String(currentUser.npsn).trim());
           sub.innerText = `Laporan Data Input Kegiatan Sekolah: ${currentUser.sekolah}`;
         } else {
-          sub.innerText = `Laporan Data Input Kegiatan Seluruh Sekolah`;
+          sub.innerText = `Laporan Data Input Kegiatan Seluruh Sekolah (Dinas: Edit/Hapus)`;
         }
 
         if (filteredData.length === 0) {
@@ -377,6 +389,14 @@
               if (h.toLowerCase().includes('nilai')) val = Number(val).toLocaleString('id-ID');
               html += `<td class="p-3">${val}</td>`;
             });
+
+            // Dinas hanya bisa edit & hapus di database
+            if (currentUser.role === "DINAS") {
+              html += `<td class="p-3 text-center space-x-2">
+                <button onclick='openEditDatabaseModal(${JSON.stringify(row)})' class="text-sky-600 hover:underline font-semibold text-xs">Edit</button>
+                <button onclick='deleteDatabaseRow("${row.ID_INPUT || row[headers[0]]}")' class="text-red-500 hover:underline font-semibold text-xs">Hapus</button>
+              </td>`;
+            }
             html += `</tr>`;
           });
         }
@@ -386,6 +406,19 @@
     }
 
     function openDatabaseModal() {
+      document.getElementById("dbModalTitle").innerText = "Input Data Kegiatan Sekolah";
+      document.getElementById("databaseForm").reset();
+      document.getElementById("dbEditRowId").value = "";
+      document.getElementById("databaseModal").classList.remove("hidden");
+    }
+
+    function openEditDatabaseModal(row) {
+      document.getElementById("dbModalTitle").innerText = "Edit Data Kegiatan Sekolah (Dinas)";
+      document.getElementById("dbEditRowId").value = row.ID_INPUT || row[Object.keys(row)[0]];
+      document.getElementById("dbNamaMenu").value = row["NAMA MENU"] || "";
+      document.getElementById("dbNilai").value = row["NILAI"] || "";
+      document.getElementById("dbVolume").value = row["Volume Ruang"] || "";
+      document.getElementById("dbNamaTim").value = row["NAMA TIM"] || "";
       document.getElementById("databaseModal").classList.remove("hidden");
     }
 
@@ -396,12 +429,19 @@
 
     async function submitSchoolDatabase(e) {
       e.preventDefault();
+      const editId = document.getElementById("dbEditRowId").value;
       const namaMenu = document.getElementById("dbNamaMenu").value;
       const nilai = document.getElementById("dbNilai").value;
       const volume = document.getElementById("dbVolume").value;
       const namaTim = document.getElementById("dbNamaTim").value;
 
-      const url = `${SCRIPT_URL}?action=saveDatabase&npsn=${encodeURIComponent(currentUser.npsn)}&sekolah=${encodeURIComponent(currentUser.sekolah)}&kecamatan=${encodeURIComponent(currentUser.kecamatan)}&namaMenu=${encodeURIComponent(namaMenu)}&nilai=${encodeURIComponent(nilai)}&volume=${encodeURIComponent(volume)}&namaTim=${encodeURIComponent(namaTim)}`;
+      let url = "";
+      if (editId && currentUser.role === "DINAS") {
+        // Edit via manageData for database sheet
+        url = `${SCRIPT_URL}?action=manageData&sheetName=Database&subAction=edit&pk=${encodeURIComponent(editId)}&col0=${encodeURIComponent(editId)}&col1=${encodeURIComponent(currentUser.npsn)}&col2=${encodeURIComponent(currentUser.sekolah)}&col3=${encodeURIComponent(currentUser.kecamatan)}&col4=${encodeURIComponent(namaMenu)}&col5=${encodeURIComponent(nilai)}&col6=${encodeURIComponent(volume)}&col7=${encodeURIComponent(namaTim)}`;
+      } else {
+        url = `${SCRIPT_URL}?action=saveDatabase&npsn=${encodeURIComponent(currentUser.npsn)}&sekolah=${encodeURIComponent(currentUser.sekolah)}&kecamatan=${encodeURIComponent(currentUser.kecamatan)}&namaMenu=${encodeURIComponent(namaMenu)}&nilai=${encodeURIComponent(nilai)}&volume=${encodeURIComponent(volume)}&namaTim=${encodeURIComponent(namaTim)}`;
+      }
 
       try {
         const res = await fetch(url);
@@ -412,11 +452,35 @@
           loadDatabasePreview();
         }
       } catch (err) {
-        alert("Gagal menyimpan data kegiatan.");
+        alert("Gagal memproses data kegiatan.");
+      }
+    }
+
+    async function deleteDatabaseRow(pkVal) {
+      if (!confirm(`Apakah Anda yakin ingin menghapus data kegiatan ID: ${pkVal}?`)) return;
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=manageData&sheetName=Database&subAction=delete&pk=${encodeURIComponent(pkVal)}`);
+        const json = await res.json();
+        alert(json.message);
+        if (json.status === "success") loadDatabasePreview();
+      } catch (err) {
+        alert("Gagal menghapus data.");
       }
     }
 
     function openProgresModal() {
+      document.getElementById("progModalTitle").innerText = "Input Realisasi Progres Pekerjaan";
+      document.getElementById("progresForm").reset();
+      document.getElementById("progEditIndex").value = "";
+      document.getElementById("progresModal").classList.remove("hidden");
+    }
+
+    function openEditProgresModal(row) {
+      document.getElementById("progModalTitle").innerText = "Edit Realisasi Progres (Dinas)";
+      document.getElementById("progEditIndex").value = row.ID_INPUT;
+      document.getElementById("progIdInput").value = row.ID_INPUT || "";
+      document.getElementById("progRealisasi").value = row.totalRealisasi || "";
+      document.getElementById("progKeterangan").value = "Update Dinas";
       document.getElementById("progresModal").classList.remove("hidden");
     }
 
@@ -452,6 +516,12 @@
       const tbody = document.getElementById("tableRekapBody");
       const subtitle = document.getElementById("printSubtitle");
       
+      // Toggle visibility kolom aksi rekap untuk Dinas
+      document.querySelectorAll(".dinas-col-rekap").forEach(el => {
+        if (currentUser.role === "DINAS") el.classList.remove("hidden");
+        else el.classList.add("hidden");
+      });
+
       tbody.innerHTML = "";
       if (json.status === "success" && json.data.length > 0) {
         let filtered = json.data;
@@ -459,27 +529,47 @@
           filtered = json.data.filter(row => String(row.npsn).trim() === String(currentUser.npsn).trim());
           subtitle.innerText = `Rekapitulasi Penyerapan Sekolah: ${currentUser.sekolah} (NPSN: ${currentUser.npsn})`;
         } else {
-          subtitle.innerText = `Rekapitulasi Penyerapan Anggaran Seluruh Sekolah Kabupaten`;
+          subtitle.innerText = `Rekapitulasi Penyerapan Anggaran Seluruh Sekolah Kabupaten (Dinas: Edit/Hapus)`;
         }
 
         if(filtered.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada data rekapitulasi.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">Belum ada data rekapitulasi.</td></tr>`;
           return;
         }
 
         filtered.forEach((row, idx) => {
-          tbody.innerHTML += `
+          let trHtml = `
             <tr class="border-b border-sky-100 hover:bg-sky-50/50">
               <td class="p-3">${idx + 1}</td>
               <td class="p-3 font-medium">${row.npsn}</td>
               <td class="p-3 font-semibold text-sky-700">${row.sekolah}</td>
               <td class="p-3">${row.paguFormatted}</td>
               <td class="p-3 font-semibold">${row.totalRealisasiFormatted}</td>
-              <td class="p-3 font-bold text-emerald-600">${row.persentase}%</td>
-            </tr>`;
+              <td class="p-3 font-bold text-emerald-600">${row.persentase}%</td>`;
+          
+          if (currentUser.role === "DINAS") {
+            trHtml += `<td class="p-3 text-center space-x-2">
+              <button onclick='openEditProgresModal(${JSON.stringify(row)})' class="text-sky-600 hover:underline font-semibold text-xs">Edit</button>
+              <button onclick='deleteProgresRow("${row.npsn}")' class="text-red-500 hover:underline font-semibold text-xs">Hapus</button>
+            </td>`;
+          }
+          trHtml += `</tr>`;
+          tbody.innerHTML += trHtml;
         });
       } else {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada data rekapitulasi penyerapan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">Belum ada data rekapitulasi penyerapan.</td></tr>`;
+      }
+    }
+
+    async function deleteProgresRow(npsnVal) {
+      if (!confirm(`Apakah Anda yakin ingin menghapus catatan progres untuk NPSN: ${npsnVal}?`)) return;
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=manageData&sheetName=Progres&subAction=delete&pk=${encodeURIComponent(npsnVal)}`);
+        const json = await res.json();
+        alert(json.message);
+        if (json.status === "success") loadRekapProgres();
+      } catch (err) {
+        alert("Gagal menghapus progres.");
       }
     }
 
@@ -496,7 +586,7 @@
         sheetHeaders[sheetName].forEach(h => html += `<th class="p-3">${h}</th>`);
         
         if (currentUser.role === "DINAS") {
-          html += `<th class="p-3 text-center">Aksi</th>`;
+          html += `<th class="p-3 text-center">Aksi (Full CRUD)</th>`;
         }
         html += `</tr></thead><tbody>`;
 
@@ -514,7 +604,7 @@
               html += `<td class="p-3 text-center space-x-2">
                 <button onclick='openModalCrud("${sheetName}", "edit", ${JSON.stringify(row)})' class="text-sky-600 hover:underline font-semibold text-xs">Edit</button>
                 <button onclick='deleteData("${sheetName}", "${row[sheetHeaders[sheetName][0]]}")' class="text-red-500 hover:underline font-semibold text-xs">Hapus</button>
-                </td>`;
+              </td>`;
             }
             html += `</tr>`;
           });
@@ -531,6 +621,7 @@
       const modal = document.getElementById("crudModal");
       const title = document.getElementById("modalTitle");
       const container = document.getElementById("modalInputs");
+      const buttonContainer = document.getElementById("crudModalButtons");
       
       modal.classList.remove("hidden");
       container.innerHTML = "";
@@ -546,6 +637,11 @@
               <input type="text" name="col${idx}" required class="w-full px-4 py-2 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none text-sm">
             </div>`;
         });
+        buttonContainer.innerHTML = `
+          <button type="button" onclick="executeCrudSubmit('save')" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">Simpan</button>
+          <button type="button" onclick="executeCrudSubmit('saveAndNew')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">Simpan & Tambah</button>
+          <button type="button" onclick="closeModalCrud()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold py-2.5 rounded-xl transition text-sm col-span-2">Batal</button>
+        `;
       } else {
         title.innerText = `Edit Data ${sheetName}`;
         headers.forEach((h, idx) => {
@@ -557,6 +653,10 @@
               <input type="text" name="col${idx}" value="${val}" ${isPk}>
             </div>`;
         });
+        buttonContainer.innerHTML = `
+          <button type="button" onclick="executeCrudSubmit('save')" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow col-span-1">Simpan Perubahan</button>
+          <button type="button" onclick="closeModalCrud()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold py-2.5 rounded-xl transition text-sm col-span-1">Batal</button>
+        `;
       }
     }
 
@@ -606,8 +706,6 @@
               if(idx === 0) input.readOnly = false;
               input.className = "w-full px-4 py-2 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none text-sm";
             });
-          } else if (mode === 'finish') {
-            closeModalCrud();
           }
         }
       } catch (err) {
