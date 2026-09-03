@@ -48,7 +48,7 @@
 
   <!-- DASHBOARD UTAMA -->
   <div id="dashboardPage" class="hidden min-h-screen flex flex-col">
-    <!-- Navbar -->
+    <!-- Navbar Atas -->
     <header class="bg-sky-700 text-white shadow-md px-6 py-4 flex justify-between items-center no-print">
       <div class="flex items-center space-x-3">
         <div class="bg-sky-800 p-2 rounded-xl font-bold text-sm">PROV-26</div>
@@ -66,91 +66,53 @@
     <!-- Konten Utama -->
     <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
       
-      <!-- TAB: ISI MENU KEGIATAN (SEKOLAH) -->
-      <div id="tabLaporkan" class="tab-content hidden max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
-        <h3 class="text-xl font-bold text-slate-900 mb-1">Isi Menu Kegiatan</h3>
-        <p class="text-sm text-slate-500 mb-6">Daftarkan rencana kegiatan fisik/non-fisik satuan pendidikan.</p>
-        
-        <div id="formAlert" class="hidden mb-4 p-3 text-sm rounded-xl"></div>
-
-        <form onsubmit="submitLaporan(event)" class="space-y-4">
+      <!-- TAB 1: USERS -->
+      <div id="tabUsers" class="tab-content hidden space-y-6">
+        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Pilih Menu Kegiatan</label>
-            <select id="dataMenu" required class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
-              <option value="">Memuat menu...</option>
-            </select>
+            <h3 class="text-lg font-bold text-slate-900">Manajemen Pengguna (Users)</h3>
+            <p class="text-sm text-slate-500">Kelola data akun login sekolah dan dinas.</p>
           </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nilai Anggaran (Rp)</label>
-            <input type="number" id="dataNilai" required placeholder="Contoh: 25000000" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Volume Ruang / Satuan</label>
-            <input type="number" id="dataVolume" required placeholder="Contoh: 1" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
-          </div>
-          <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl shadow-md transition">Simpan Menu Kegiatan</button>
-        </form>
-      </div>
-
-      <!-- TAB: INPUT PROGRES PEKERJAAN (SEKOLAH) -->
-      <div id="tabInputProgres" class="tab-content hidden max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
-        <h3 class="text-xl font-bold text-slate-900 mb-1">Input Progres Pekerjaan</h3>
-        <p class="text-sm text-slate-500 mb-6">Pilih kegiatan dan laporkan capaian progres mingguan.</p>
-        
-        <div id="sdInfoBox" class="mb-6 p-4 bg-sky-50 border border-sky-200 rounded-2xl text-xs space-y-1">
-          <h4 class="font-bold text-sky-900 text-sm mb-2">Informasi Kontrak Sekolah</h4>
-          <div id="sdInfoContent">Memuat informasi sekolah...</div>
+          <button id="btnUsersAdd" onclick="openModalCrud('USERS', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah User</button>
         </div>
-
-        <div id="progresFormAlert" class="hidden mb-4 p-3 text-sm rounded-xl"></div>
-
-        <form onsubmit="submitProgres(event)" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Pilih Kegiatan (ID Database)</label>
-            <select id="selectDbInput" required onchange="onDatabaseSelectChange()" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
-              <option value="">Memuat data database...</option>
-            </select>
-          </div>
-          <div id="dbDetailInfo" class="text-xs text-slate-500 bg-sky-50 p-3 rounded-xl hidden"></div>
-          
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Rentang Tanggal Mingguan (Otomatis)</label>
-            <select id="selectMingguKe" onchange="generateWeeklyRange()" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
-              <option value="">-- Pilih Minggu Ke- --</option>
-            </select>
-            <input type="text" id="progRentangMinggu" readonly placeholder="Rentang tanggal mingguan otomatis..." class="mt-2 w-full px-4 py-2.5 bg-slate-100 border border-sky-200 rounded-xl text-slate-600 font-medium text-xs">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Target Pekerjaan (%)</label>
-            <div class="relative">
-              <input type="number" id="progTarget" min="0" max="100" step="0.1" required placeholder="Contoh: 50" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none pr-8">
-              <span class="absolute right-3 top-2.5 text-slate-400 font-bold">%</span>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Capaian Fisik (%)</label>
-            <div class="relative">
-              <input type="number" id="progCapaian" min="0" max="100" step="0.1" required placeholder="Contoh: 45" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none pr-8">
-              <span class="absolute right-3 top-2.5 text-slate-400 font-bold">%</span>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Realisasi Anggaran (Rp)</label>
-            <input type="number" id="progRealAnggaran" required placeholder="Contoh: 12500000" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
-          </div>
-
-          <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl shadow-md transition">Simpan Progres</button>
-        </form>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm" id="tableUsersGrid"></table>
+        </div>
       </div>
 
-      <!-- TAB: PREVIEW & CETAK DATABASE (DINAS & SEKOLAH) -->
+      <!-- TAB 2: MASTER_MENU -->
+      <div id="tabMasterMenu" class="tab-content hidden space-y-6">
+        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Master Menu Kegiatan</h3>
+            <p class="text-sm text-slate-500">Kelola master referensi jenis kegiatan.</p>
+          </div>
+          <button id="btnMasterMenuAdd" onclick="openModalCrud('Master_Menu', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah Menu</button>
+        </div>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm" id="tableMenuGrid"></table>
+        </div>
+      </div>
+
+      <!-- TAB 3: MASTER_SD -->
+      <div id="tabMasterSd" class="tab-content hidden space-y-6">
+        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Master Data Sekolah (Master_SD)</h3>
+            <p class="text-sm text-slate-500">Kelola master referensi data satuan pendidikan.</p>
+          </div>
+          <button id="btnMasterSdAdd" onclick="openModalCrud('Master_SD', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah SD</button>
+        </div>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm" id="tableSdGrid"></table>
+        </div>
+      </div>
+
+      <!-- TAB 4: DATABASE -->
       <div id="tabDatabase" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100 no-print">
           <div>
-            <h3 class="text-lg font-bold text-slate-900">Database Kegiatan Sekolah</h3>
+            <h3 class="text-lg font-bold text-slate-900">Database Input Kegiatan Sekolah</h3>
             <p class="text-sm text-slate-500">Preview keseluruhan data Database & Cetak Laporan.</p>
           </div>
           <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">Cetak / Print Database</button>
@@ -159,7 +121,7 @@
         <div class="print-area bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
           <div class="text-center mb-6 pb-4 border-b border-sky-100">
             <h2 class="text-xl font-extrabold text-slate-900 uppercase">Daftar Database Menu Kegiatan Sekolah</h2>
-            <p class="text-sm text-slate-600">Laporan Data Input Kegiatan Dinas & Sekolah</p>
+            <p class="text-sm text-slate-600">Laporan Data Input Kegiatan</p>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-sm" id="tableDatabaseGrid"></table>
@@ -167,19 +129,19 @@
         </div>
       </div>
 
-      <!-- TAB: PREVIEW & CETAK PROGRES -->
-      <div id="tabLihatProgres" class="tab-content hidden space-y-6">
+      <!-- TAB 5: PROGRES -->
+      <div id="tabProgres" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100 no-print">
           <div>
-            <h3 class="text-lg font-bold text-slate-900">Rekapitulasi Penyerapan Anggaran & Progres</h3>
-            <p class="text-sm text-slate-500">Preview rekapitulasi progres dan cetak laporan.</p>
+            <h3 class="text-lg font-bold text-slate-900">Progres & Rekapitulasi Penyerapan Anggaran</h3>
+            <p class="text-sm text-slate-500">Preview rekapitulasi progres pekerjaan sekolah & cetak laporan.</p>
           </div>
-          <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">Cetak / Print Laporan</button>
+          <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">Cetak / Print Progres</button>
         </div>
 
         <div class="print-area bg-white p-8 rounded-3xl shadow-sm border border-sky-100">
           <div class="text-center mb-6 pb-4 border-b border-sky-100">
-            <h2 class="text-xl font-extrabold text-slate-900 uppercase">Rekapitulasi Penyerapan Anggaran Kegiatan SD</h2>
+            <h2 class="text-xl font-extrabold text-slate-900 uppercase">Rekapitulasi Penyerapan Anggaran & Progres SD</h2>
             <p class="text-sm text-slate-600" id="printSubtitle">Data Pagu & Realisasi Anggaran</p>
           </div>
           <div class="overflow-x-auto">
@@ -200,51 +162,22 @@
         </div>
       </div>
 
-      <!-- TAB: KELOLA PENGGUNA (USERS) - DINAS (TAMBAH, EDIT, HAPUS) -->
-      <div id="tabUsers" class="tab-content hidden space-y-6">
-        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
-          <h3 class="text-lg font-bold text-slate-900">Manajemen Pengguna (USERS)</h3>
-          <button onclick="openModalCrud('USERS', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah Pengguna</button>
-        </div>
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
-          <table class="w-full text-left border-collapse text-sm" id="tableUsersGrid"></table>
-        </div>
-      </div>
-
-      <!-- TAB: MASTER MENU (MASTER_MENU) - DINAS (TAMBAH, EDIT, HAPUS) -->
-      <div id="tabMasterMenu" class="tab-content hidden space-y-6">
-        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
-          <h3 class="text-lg font-bold text-slate-900">Kelola Master Menu Kegiatan</h3>
-          <button onclick="openModalCrud('Master_Menu', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah Menu</button>
-        </div>
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
-          <table class="w-full text-left border-collapse text-sm" id="tableMenuGrid"></table>
-        </div>
-      </div>
-
-      <!-- TAB: MASTER SD (MASTER_SD) - DINAS (TAMBAH, EDIT, HAPUS) -->
-      <div id="tabMasterSd" class="tab-content hidden space-y-6">
-        <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
-          <h3 class="text-lg font-bold text-slate-900">Kelola Master Data Sekolah (Master_SD)</h3>
-          <button onclick="openModalCrud('Master_SD', 'add')" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">+ Tambah SD</button>
-        </div>
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-sky-100 overflow-x-auto">
-          <table class="w-full text-left border-collapse text-sm" id="tableSdGrid"></table>
-        </div>
-      </div>
-
     </main>
   </div>
 
-  <!-- MODAL FORM CRUD -->
+  <!-- MODAL FORM CRUD DENGAN TOMBOL LENGKAP -->
   <div id="crudModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
     <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-lg border border-sky-100">
       <h3 id="modalTitle" class="text-lg font-bold text-slate-900 mb-4">Form Data</h3>
-      <form id="crudForm" onsubmit="submitCrudForm(event)" class="space-y-4">
+      <form id="crudForm" onsubmit="event.preventDefault();" class="space-y-4">
         <div id="modalInputs" class="space-y-3"></div>
-        <div class="flex space-x-3 pt-2">
-          <button type="submit" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl transition">Simpan</button>
-          <button type="button" onclick="closeModalCrud()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition">Batal</button>
+        
+        <!-- Kumpulan Tombol Sesuai Permintaan -->
+        <div class="grid grid-cols-2 gap-2 pt-3">
+          <button type="button" onclick="executeCrudSubmit('save')" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">Simpan</button>
+          <button type="button" onclick="executeCrudSubmit('saveAndNew')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">Simpan & Tambah Baru</button>
+          <button type="button" onclick="closeModalCrud()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold py-2.5 rounded-xl transition text-sm">Tidak Jadi</button>
+          <button type="button" onclick="executeCrudSubmit('finish')" class="bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl transition text-sm">Selesai</button>
         </div>
       </form>
     </div>
@@ -256,8 +189,6 @@
     let currentActiveSheet = "";
     let currentCrudAction = "";
     let sheetHeaders = {};
-    let databaseListCache = [];
-    let existingProgresCache = [];
 
     window.addEventListener("DOMContentLoaded", () => {
       const savedUser = localStorage.getItem("currentUser");
@@ -311,60 +242,6 @@
       document.getElementById("userSubtitle").innerText = `Role: ${currentUser.role} | Wilayah: ${currentUser.kecamatan || '-'}`;
 
       buildNavigation();
-      if (currentUser.role === "SEKOLAH") {
-        renderSdInfoBox();
-        setupWeeklyDropdownOptions();
-      }
-    }
-
-    function renderSdInfoBox() {
-      const infoContent = document.getElementById("sdInfoContent");
-      infoContent.innerHTML = `
-        <div><strong>Masa PKS:</strong> ${currentUser.masaPks || '-'}</div>
-        <div><strong>Tanggal Mulai:</strong> ${currentUser.tanggalMulai || '-'}</div>
-        <div><strong>Tanggal Selesai:</strong> ${currentUser.tanggalSelesai || '-'}</div>
-        <div><strong>Pagu Anggaran:</strong> ${currentUser.paguFormatted || 'Rp 0'}</div>
-      `;
-    }
-
-    function setupWeeklyDropdownOptions() {
-      const selectMinggu = document.getElementById("selectMingguKe");
-      selectMinggu.innerHTML = '<option value="">-- Pilih Minggu Ke- --</option>';
-      for (let i = 1; i <= 24; i++) {
-        selectMinggu.innerHTML += `<option value="${i}">Minggu Ke-${i}</option>`;
-      }
-    }
-
-    function generateWeeklyRange() {
-      const mingguKe = parseInt(document.getElementById("selectMingguKe").value);
-      const inputRentang = document.getElementById("progRentangMinggu");
-      
-      if (!mingguKe || !currentUser.rawMulai) {
-        inputRentang.value = "";
-        return;
-      }
-
-      const baseDate = new Date(currentUser.rawMulai);
-      if (isNaN(baseDate.getTime())) {
-        inputRentang.value = "Format tanggal mulai kontrak tidak valid.";
-        return;
-      }
-
-      const startOfWeek = new Date(baseDate);
-      startOfWeek.setDate(baseDate.getDate() + (mingguKe - 1) * 7);
-
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(startOfWeek.getDate() + 6);
-
-      inputRentang.value = `${formatDateStringIndo(startOfWeek)} s.d ${formatDateStringIndo(endOfWeek)}`;
-    }
-
-    function formatDateStringIndo(dateObj) {
-      const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-      const day = String(dateObj.getDate()).padStart(2, '0');
-      const month = months[dateObj.getMonth()];
-      const year = dateObj.getFullYear();
-      return `${day} ${month} ${year}`;
     }
 
     function buildNavigation() {
@@ -372,25 +249,20 @@
       nav.innerHTML = "";
 
       if (currentUser.role === "DINAS") {
-        // 5 Sub Menu Dinas: users, Master_Menu, Master_SD, Database, progres
         nav.innerHTML = `
           <button onclick="switchTab('tabUsers')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Users</button>
           <button onclick="switchTab('tabMasterMenu')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Master_Menu</button>
           <button onclick="switchTab('tabMasterSd')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Master_SD</button>
-          <button onclick="switchTab('tabDatabase')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Database (Cetak)</button>
-          <button onclick="switchTab('tabLihatProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Progres (Cetak)</button>
+          <button onclick="switchTab('tabDatabase')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Database</button>
+          <button onclick="switchTab('tabProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Progres</button>
         `;
         switchTab('tabUsers');
       } else {
         nav.innerHTML = `
-          <button onclick="switchTab('tabLaporkan')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Isi Menu Kegiatan</button>
-          <button onclick="switchTab('tabInputProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Input Progres Pekerjaan</button>
-          <button onclick="switchTab('tabDatabase')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Database</button>
-          <button onclick="switchTab('tabLihatProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Lihat Rekap</button>
+          <button onclick="switchTab('tabDatabase')" class="tab-btn px-4 py-2 bg-sky-600 text-white rounded-xl font-semibold text-sm transition">Database</button>
+          <button onclick="switchTab('tabProgres')" class="tab-btn px-4 py-2 bg-sky-100 text-sky-800 rounded-xl font-semibold text-sm transition">Lihat Progres</button>
         `;
-        switchTab('tabLaporkan');
-        loadDropdownMenu();
-        loadDatabaseDropdownForProgres();
+        switchTab('tabDatabase');
       }
     }
 
@@ -407,57 +279,11 @@
         event.target.classList.add("bg-sky-600", "text-white");
       }
 
-      if (tabId === 'tabLihatProgres') loadRekapProgres();
+      if (tabId === 'tabProgres') loadRekapProgres();
       if (tabId === 'tabDatabase') loadDatabasePreview();
-      if (tabId === 'tabInputProgres') { loadDatabaseDropdownForProgres(); loadAllProgresData(); }
-      if (tabId === 'tabLaporkan') loadDropdownMenu();
       if (tabId === 'tabUsers') loadSheetGrid('USERS', 'tableUsersGrid');
       if (tabId === 'tabMasterMenu') loadSheetGrid('Master_Menu', 'tableMenuGrid');
       if (tabId === 'tabMasterSd') loadSheetGrid('Master_SD', 'tableSdGrid');
-    }
-
-    async function loadDropdownMenu() {
-      const res = await fetch(`${SCRIPT_URL}?action=getMasterMenu`);
-      const json = await res.json();
-      const select = document.getElementById("dataMenu");
-      if (json.status === "success") {
-        select.innerHTML = '<option value="">-- Pilih Jenis Menu Kegiatan --</option>';
-        json.data.forEach(m => {
-          const keys = Object.keys(m);
-          const menuId = m[keys[0]] || "";
-          let menuName = "";
-          for (let key of keys) {
-            if (key.toLowerCase().includes("nama") || key.toLowerCase().includes("menu")) {
-              if (m[key] && m[key] !== menuId) {
-                menuName = m[key];
-                break;
-              }
-            }
-          }
-          if (!menuName && keys.length > 1) menuName = m[keys[1]] || "";
-          if (menuName) {
-            select.innerHTML += `<option value="${menuName}">${menuId} - ${menuName}</option>`;
-          }
-        });
-      }
-    }
-
-    async function loadDatabaseDropdownForProgres() {
-      const res = await fetch(`${SCRIPT_URL}?action=getDatabase`);
-      const json = await res.json();
-      const select = document.getElementById("selectDbInput");
-      if (json.status === "success") {
-        databaseListCache = json.data;
-        let filtered = databaseListCache;
-        if (currentUser.role === "SEKOLAH") {
-          filtered = databaseListCache.filter(item => String(item.NPSN).trim() === String(currentUser.npsn).trim());
-        }
-        
-        select.innerHTML = '<option value="">-- Pilih ID Database Kegiatan --</option>';
-        filtered.forEach(item => {
-          select.innerHTML += `<option value="${item.ID_INPUT}">${item.ID_INPUT} - ${item['NAMA MENU']} (Nilai: Rp ${Number(item.NILAI).toLocaleString('id-ID')})</option>`;
-        });
-      }
     }
 
     async function loadDatabasePreview() {
@@ -482,9 +308,7 @@
             html += `<tr class="border-b border-sky-100 hover:bg-sky-50/50">`;
             headers.forEach(h => {
               let val = row[h] || '';
-              if (h.toLowerCase().includes('nilai')) {
-                val = Number(val).toLocaleString('id-ID');
-              }
+              if (h.toLowerCase().includes('nilai')) val = Number(val).toLocaleString('id-ID');
               html += `<td class="p-3">${val}</td>`;
             });
             html += `</tr>`;
@@ -492,122 +316,6 @@
         }
         html += `</tbody>`;
         table.innerHTML = html;
-      }
-    }
-
-    async function loadAllProgresData() {
-      const res = await fetch(`${SCRIPT_URL}?action=getProgres`);
-      const json = await res.json();
-      if (json.status === "success") {
-        existingProgresCache = json.data;
-      }
-    }
-
-    function onDatabaseSelectChange() {
-      const selectedId = document.getElementById("selectDbInput").value;
-      const infoBox = document.getElementById("dbDetailInfo");
-      if (!selectedId) {
-        infoBox.classList.add("hidden");
-        return;
-      }
-      const found = databaseListCache.find(x => x.ID_INPUT === selectedId);
-      if (found) {
-        const prevProgres = existingProgresCache.filter(p => p.idInput === selectedId);
-        let maxTarget = 0;
-        let maxCapaian = 0;
-        prevProgres.forEach(p => {
-          let tVal = parseFloat(String(p.target).replace('%','')) || 0;
-          let cVal = parseFloat(String(p.capaianFisik).replace('%','')) || 0;
-          if (tVal > maxTarget) maxTarget = tVal;
-          if (cVal > maxCapaian) maxCapaian = cVal;
-        });
-
-        infoBox.innerHTML = `<strong>Kegiatan:</strong> ${found['NAMA MENU']}<br><strong>Nilai Anggaran:</strong> Rp ${Number(found.NILAI).toLocaleString('id-ID')}<br><strong>Volume:</strong> ${found['Volume Ruang']}<br><span class="text-sky-700 font-semibold">Catatan: Target & Capaian sebelumnya minimal: Target ${maxTarget}%, Capaian Fisik ${maxCapaian}%</span>`;
-        infoBox.classList.remove("hidden");
-      }
-    }
-
-    async function submitLaporan(event) {
-      event.preventDefault();
-      const alertBox = document.getElementById("formAlert");
-      const menu = document.getElementById("dataMenu").value;
-      const nilai = document.getElementById("dataNilai").value;
-      const volume = document.getElementById("dataVolume").value;
-
-      const url = `${SCRIPT_URL}?action=saveDatabase&npsn=${encodeURIComponent(currentUser.npsn)}&sekolah=${encodeURIComponent(currentUser.sekolah)}&kecamatan=${encodeURIComponent(currentUser.kecamatan)}&namaMenu=${encodeURIComponent(menu)}&nilai=${encodeURIComponent(nilai)}&volume=${encodeURIComponent(volume)}&namaTim=${encodeURIComponent(currentUser.tim)}`;
-
-      try {
-        const res = await fetch(url);
-        const json = await res.json();
-        alertBox.innerText = json.message;
-        alertBox.classList.remove("hidden", "bg-red-50", "text-red-700");
-        alertBox.classList.add("bg-emerald-50", "text-emerald-700");
-        
-        if(json.status === "success") {
-          document.getElementById("dataNilai").value = "";
-          document.getElementById("dataVolume").value = "";
-          document.getElementById("dataMenu").value = "";
-          loadDatabaseDropdownForProgres();
-
-          setTimeout(() => {
-            const lanjut = confirm("Menu kegiatan berhasil disimpan!\n\nKlik 'OK' untuk Tambah Data lagi, atau 'Cancel' untuk Selesai.");
-            if (!lanjut) switchTab('tabLihatProgres');
-          }, 200);
-        }
-      } catch (err) {
-        alertBox.innerText = "Gagal mengirim laporan database.";
-        alertBox.classList.remove("hidden");
-        alertBox.classList.add("bg-red-50", "text-red-700");
-      }
-    }
-
-    async function submitProgres(event) {
-      event.preventDefault();
-      const alertBox = document.getElementById("progresFormAlert");
-      const idInput = document.getElementById("selectDbInput").value;
-      const rentangMinggu = document.getElementById("progRentangMinggu").value;
-      const targetVal = document.getElementById("progTarget").value;
-      const capaianVal = document.getElementById("progCapaian").value;
-      
-      const target = targetVal + "%";
-      const capaianFisik = capaianVal + "%";
-      const realAnggaran = document.getElementById("progRealAnggaran").value;
-
-      if (!rentangMinggu) {
-        alertBox.innerText = "Silakan pilih minggu ke- terlebih dahulu.";
-        alertBox.classList.remove("hidden", "bg-emerald-50", "text-emerald-700");
-        alertBox.classList.add("bg-red-50", "text-red-700");
-        return;
-      }
-
-      const url = `${SCRIPT_URL}?action=saveProgres&idInput=${encodeURIComponent(idInput)}&npsn=${encodeURIComponent(currentUser.npsn)}&namaSd=${encodeURIComponent(currentUser.sekolah)}&rentangMinggu=${encodeURIComponent(rentangMinggu)}&target=${encodeURIComponent(target)}&capaianFisik=${encodeURIComponent(capaianFisik)}&realAnggaran=${encodeURIComponent(realAnggaran)}`;
-
-      try {
-        const res = await fetch(url);
-        const json = await res.json();
-        alertBox.innerText = json.message;
-        alertBox.classList.remove("hidden", "bg-red-50", "text-red-700");
-        alertBox.classList.add("bg-emerald-50", "text-emerald-700");
-        
-        if(json.status === "success") {
-          document.getElementById("progTarget").value = "";
-          document.getElementById("progCapaian").value = "";
-          document.getElementById("progRealAnggaran").value = "";
-          document.getElementById("progRentangMinggu").value = "";
-          document.getElementById("selectMingguKe").value = "";
-          document.getElementById("selectDbInput").value = "";
-          document.getElementById("dbDetailInfo").classList.add("hidden");
-          loadAllProgresData();
-
-          setTimeout(() => {
-            const lanjut = confirm("Progres pekerjaan berhasil disimpan!\n\nKlik 'OK' untuk Tambah Data lagi, atau 'Cancel' untuk Selesai.");
-            if (!lanjut) switchTab('tabLihatProgres');
-          }, 200);
-        }
-      } catch (err) {
-        alertBox.innerText = "Gagal menyimpan progres pekerjaan.";
-        alertBox.classList.remove("hidden");
-        alertBox.classList.add("bg-red-50", "text-red-700");
       }
     }
 
@@ -720,34 +428,61 @@
       document.getElementById("crudModal").classList.add("hidden");
     }
 
-    async function submitCrudForm(e) {
-      e.preventDefault();
-      const form = e.target;
-      const formData = new FormData(form);
-      let queryParams = `action=manageData&sheetName=${encodeURIComponent(currentActiveSheet)}&subAction=${encodeURIComponent(currentCrudAction)}`;
+    async function executeCrudSubmit(mode) {
+      const container = document.getElementById("modalInputs");
+      const inputs = container.querySelectorAll("input");
       
-      let pkVal = "";
-      let idx = 0;
-      for (let [key, value] of formData.entries()) {
-        if (idx === 0) pkVal = value;
-        queryParams += `&${key}=${encodeURIComponent(value)}`;
-        idx++;
+      // Validasi input kosong sederhana
+      for (let input of inputs) {
+        if (!input.value.trim()) {
+          alert("Semua kolom harus diisi!");
+          return;
+        }
       }
+
+      let queryParams = `action=manageData&sheetName=${encodeURIComponent(currentActiveSheet)}&subAction=${encodeURIComponent(currentCrudAction)}`;
+      let pkVal = "";
+      
+      inputs.forEach((input, idx) => {
+        if (idx === 0) pkVal = input.value;
+        queryParams += `&col${idx}=${encodeURIComponent(input.value)}`;
+      });
       queryParams += `&pk=${encodeURIComponent(pkVal)}`;
 
       try {
         const res = await fetch(`${SCRIPT_URL}?${queryParams}`);
         const json = await res.json();
         alert(json.message);
+
         if (json.status === "success") {
-          closeModalCrud();
-          if (currentActiveSheet === 'USERS') loadSheetGrid('USERS', 'tableUsersGrid');
-          if (currentActiveSheet === 'Master_Menu') loadSheetGrid('Master_Menu', 'tableMenuGrid');
-          if (currentActiveSheet === 'Master_SD') loadSheetGrid('Master_SD', 'tableSdGrid');
+          refreshCurrentGrid();
+
+          if (mode === 'save') {
+            // Tutup modal
+            closeModalCrud();
+          } else if (mode === 'saveAndNew') {
+            // Reset form input untuk tambah baru
+            currentCrudAction = 'add';
+            document.getElementById("modalTitle").innerText = `Tambah Data ${currentActiveSheet}`;
+            inputs.forEach((input, idx) => {
+              input.value = "";
+              if(idx === 0) input.readOnly = false;
+              input.className = "w-full px-4 py-2 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none text-sm";
+            });
+          } else if (mode === 'finish') {
+            // Selesai sama seperti tombol selesai / close
+            closeModalCrud();
+          }
         }
       } catch (err) {
-        alert("Gagal melakukan aksi pada data.");
+        alert("Gagal memproses data.");
       }
+    }
+
+    function refreshCurrentGrid() {
+      if (currentActiveSheet === 'USERS') loadSheetGrid('USERS', 'tableUsersGrid');
+      if (currentActiveSheet === 'Master_Menu') loadSheetGrid('Master_Menu', 'tableMenuGrid');
+      if (currentActiveSheet === 'Master_SD') loadSheetGrid('Master_SD', 'tableSdGrid');
     }
 
     async function deleteData(sheetName, pkValue) {
@@ -758,9 +493,7 @@
         const json = await res.json();
         alert(json.message);
         if (json.status === "success") {
-          if (sheetName === 'USERS') loadSheetGrid('USERS', 'tableUsersGrid');
-          if (sheetName === 'Master_Menu') loadSheetGrid('Master_Menu', 'tableMenuGrid');
-          if (sheetName === 'Master_SD') loadSheetGrid('Master_SD', 'tableSdGrid');
+          refreshCurrentGrid();
         }
       } catch (err) {
         alert("Gagal menghapus data.");
