@@ -97,9 +97,9 @@
         <h3 class="text-xl font-bold text-slate-900 mb-1">Input Progres Pekerjaan</h3>
         <p class="text-sm text-slate-500 mb-6">Pilih kegiatan dan laporkan capaian progres mingguan.</p>
         
-        <!-- Info Master_SD -->
+        <!-- Info Sekolah (dari USERS) -->
         <div id="sdInfoBox" class="mb-6 p-4 bg-sky-50 border border-sky-200 rounded-2xl text-xs space-y-1">
-          <h4 class="font-bold text-sky-900 text-sm mb-2">Informasi Kontrak Sekolah (Master_SD)</h4>
+          <h4 class="font-bold text-sky-900 text-sm mb-2">Informasi Kontrak Sekolah</h4>
           <div id="sdInfoContent">Memuat informasi sekolah...</div>
         </div>
 
@@ -152,7 +152,7 @@
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100 no-print">
           <div>
             <h3 class="text-lg font-bold text-slate-900">Rekapitulasi Penyerapan Anggaran & Progres</h3>
-            <p class="text-sm text-slate-500">Pembandingan PAGU (dari Master_SD), Realisasi Anggaran, dan Persentase.</p>
+            <p class="text-sm text-slate-500">Pembandingan PAGU (dari USERS), Realisasi Anggaran, dan Persentase.</p>
           </div>
           <button onclick="window.print()" class="bg-sky-700 hover:bg-sky-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition">Cetak / Print Laporan</button>
         </div>
@@ -180,7 +180,7 @@
         </div>
       </div>
 
-      <!-- TAB: KELOLA PENGGUNA (DINAS) -->
+      <!-- TAB: KELOLA PENGGUNA (USERS) -->
       <div id="tabUsers" class="tab-content hidden space-y-6">
         <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-sky-100">
           <h3 class="text-lg font-bold text-slate-900">Manajemen Pengguna (USERS)</h3>
@@ -231,7 +231,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwR5Lc0L4m3U8GSj7RXmbO_REB_rl-HlGavLBHD1OPVj0FovLFmz8lUx1Y-p563W01M/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbySnF0rXRm9K2pio0RdMly_Dl8eGGjkvwSWA3_HL-JjXZafpL2CeEG3JjVMjscowY9y/exec";
     let currentUser = null;
     let currentActiveSheet = "";
     let currentCrudAction = "";
@@ -426,12 +426,12 @@
         databaseListCache = json.data;
         let filtered = databaseListCache;
         if (currentUser.role === "SEKOLAH") {
-          filtered = databaseListCache.filter(item => String(item.npsn).trim() === String(currentUser.npsn).trim());
+          filtered = databaseListCache.filter(item => String(item.NPSN).trim() === String(currentUser.npsn).trim());
         }
         
         select.innerHTML = '<option value="">-- Pilih ID Database Kegiatan --</option>';
         filtered.forEach(item => {
-          select.innerHTML += `<option value="${item.idInput}">${item.idInput} - ${item.namaMenu} (Nilai: Rp ${Number(item.nilai).toLocaleString('id-ID')})</option>`;
+          select.innerHTML += `<option value="${item.ID_INPUT}">${item.ID_INPUT} - ${item['NAMA MENU']} (Nilai: Rp ${Number(item.NILAI).toLocaleString('id-ID')})</option>`;
         });
       }
     }
@@ -451,7 +451,7 @@
         infoBox.classList.add("hidden");
         return;
       }
-      const found = databaseListCache.find(x => x.idInput === selectedId);
+      const found = databaseListCache.find(x => x.ID_INPUT === selectedId);
       if (found) {
         const prevProgres = existingProgresCache.filter(p => p.idInput === selectedId);
         let maxTarget = 0;
@@ -463,7 +463,7 @@
           if (cVal > maxCapaian) maxCapaian = cVal;
         });
 
-        infoBox.innerHTML = `<strong>Kegiatan:</strong> ${found.namaMenu}<br><strong>Nilai Anggaran:</strong> Rp ${Number(found.nilai).toLocaleString('id-ID')}<br><strong>Volume:</strong> ${found.volume}<br><span class="text-sky-700 font-semibold">Catatan: Target & Capaian sebelumnya minimal: Target ${maxTarget}%, Capaian Fisik ${maxCapaian}%</span>`;
+        infoBox.innerHTML = `<strong>Kegiatan:</strong> ${found['NAMA MENU']}<br><strong>Nilai Anggaran:</strong> Rp ${Number(found.NILAI).toLocaleString('id-ID')}<br><strong>Volume:</strong> ${found['Volume Ruang']}<br><span class="text-sky-700 font-semibold">Catatan: Target & Capaian sebelumnya minimal: Target ${maxTarget}%, Capaian Fisik ${maxCapaian}%</span>`;
         infoBox.classList.remove("hidden");
       }
     }
@@ -475,7 +475,7 @@
       const nilai = document.getElementById("dataNilai").value;
       const volume = document.getElementById("dataVolume").value;
 
-      const url = `${SCRIPT_URL}?action=saveDatabase&npsn=${encodeURIComponent(currentUser.npsn)}&namaSd=${encodeURIComponent(currentUser.sekolah)}&kecamatan=${encodeURIComponent(currentUser.kecamatan)}&namaMenu=${encodeURIComponent(menu)}&nilai=${encodeURIComponent(nilai)}&volume=${encodeURIComponent(volume)}&namaTim=${encodeURIComponent(currentUser.tim)}`;
+      const url = `${SCRIPT_URL}?action=saveDatabase&npsn=${encodeURIComponent(currentUser.npsn)}&sekolah=${encodeURIComponent(currentUser.sekolah)}&kecamatan=${encodeURIComponent(currentUser.kecamatan)}&namaMenu=${encodeURIComponent(menu)}&nilai=${encodeURIComponent(nilai)}&volume=${encodeURIComponent(volume)}&namaTim=${encodeURIComponent(currentUser.tim)}`;
 
       try {
         const res = await fetch(url);
