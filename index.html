@@ -116,11 +116,9 @@
           
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Rentang Tanggal Mingguan (Otomatis)</label>
-            <div class="flex gap-2">
-              <select id="selectMingguKe" onchange="generateWeeklyRange()" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
-                <option value="">-- Pilih Minggu Ke- --</option>
-              </select>
-            </div>
+            <select id="selectMingguKe" onchange="generateWeeklyRange()" class="w-full px-4 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
+              <option value="">-- Pilih Minggu Ke- --</option>
+            </select>
             <input type="text" id="progRentangMinggu" readonly placeholder="Rentang tanggal mingguan otomatis..." class="mt-2 w-full px-4 py-2.5 bg-slate-100 border border-sky-200 rounded-xl text-slate-600 font-medium text-xs">
           </div>
 
@@ -233,7 +231,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2uqugTL3rOQ2oylfDEo_zLugEJOVoUYoSRhcWGG142tx0BM5WUQ6aR2Hjmz6kfR5i/exec";
+    const SCRIPT_URL = "GANTI_DENGAN_URL_DEPLOY_BARU_ANDA";
     let currentUser = null;
     let currentActiveSheet = "";
     let currentCrudAction = "";
@@ -332,7 +330,6 @@
         return;
       }
 
-      // Hitung awal minggu berdasarkan tanggal mulai (Minggu ke-1 dimulai dari tanggal Mulai)
       const startOfWeek = new Date(baseDate);
       startOfWeek.setDate(baseDate.getDate() + (mingguKe - 1) * 7);
 
@@ -513,7 +510,6 @@
       const targetVal = document.getElementById("progTarget").value;
       const capaianVal = document.getElementById("progCapaian").value;
       
-      // Target dan Capaian Fisik ditambah "%" di belakang angka
       const target = targetVal + "%";
       const capaianFisik = capaianVal + "%";
       const realAnggaran = document.getElementById("progRealAnggaran").value;
@@ -618,7 +614,7 @@
             html += `<td class="p-3 text-center space-x-2">
               <button onclick='openModalCrud("${sheetName}", "edit", ${JSON.stringify(row)})' class="text-sky-600 hover:underline font-semibold text-xs">Edit</button>
               <button onclick='deleteData("${sheetName}", "${row[sheetHeaders[sheetName][0]]}")' class="text-red-500 hover:underline font-semibold text-xs">Hapus</button>
-            </td></tr>`;
+              </td></tr>`;
           });
         }
         html += `</tbody>`;
@@ -626,25 +622,39 @@
       }
     }
 
-    function openModalCrud(sheetName, action, data = null) {
+    function openModalCrud(sheetName, action, rowData = null) {
       currentActiveSheet = sheetName;
       currentCrudAction = action;
-      document.getElementById("crudModal").classList.remove("hidden");
-      document.getElementById("modalTitle").innerText = action === 'add' ? `Tambah Data ${sheetName}` : `Edit Data ${sheetName}`;
-      
+      const modal = document.getElementById("crudModal");
+      const title = document.getElementById("modalTitle");
       const container = document.getElementById("modalInputs");
+      
+      modal.classList.remove("hidden");
       container.innerHTML = "";
-      const headers = sheetHeaders[sheetName] || ["Col1", "Col2"];
 
-      headers.forEach((h, i) => {
-        const val = data ? (data[h] || "") : "";
-        container.innerHTML += `
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">${h}</label>
-            <input type="text" id="modalField${i}" value="${val}" ${i === 0 && action === 'edit' ? 'readonly' : ''} class="w-full px-4 py-2 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none">
-          </div>
-        `;
-      });
+      const headers = sheetHeaders[sheetName] || [];
+      
+      if (action === 'add') {
+        title.innerText = `Tambah Data ${sheetName}`;
+        headers.forEach((h, idx) => {
+          container.innerHTML += `
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">${h}</label>
+              <input type="text" name="col${idx}" required class="w-full px-4 py-2 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none text-sm">
+            </div>`;
+        });
+      } else {
+        title.innerText = `Edit Data ${sheetName}`;
+        headers.forEach((h, idx) => {
+          const val = rowData ? (rowData[h] || '') : '';
+          const isPk = idx === 0 ? 'readonly class="w-full px-4 py-2 bg-slate-100 border border-sky-200 rounded-xl text-slate-500 text-sm"' : 'class="w-full px-4 py-2 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none text-sm"';
+          container.innerHTML += `
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">${h} ${idx === 0 ? '(Primary Key)' : ''}</label>
+              <input type="text" name="col${idx}" value="${val}" ${isPk}>
+            </div>`;
+        });
+      }
     }
 
     function closeModalCrud() {
@@ -653,17 +663,21 @@
 
     async function submitCrudForm(e) {
       e.preventDefault();
-      const headers = sheetHeaders[currentActiveSheet];
-      const actionName = currentActiveSheet === 'Master_Menu' ? 'MasterMenu' : currentActiveSheet === 'Master_SD' ? 'MasterSd' : 'Users';
-      let params = `action=manage${actionName}&subAction=${currentCrudAction}&pk=${document.getElementById("modalField0").value}`;
+      const form = e.target;
+      const formData = new FormData(form);
+      let queryParams = `action=manageData&sheetName=${encodeURIComponent(currentActiveSheet)}&subAction=${encodeURIComponent(currentCrudAction)}`;
       
-      headers.forEach((h, i) => {
-        const val = document.getElementById(`modalField${i}`).value;
-        params += `&col${i}=${encodeURIComponent(val)}`;
-      });
+      let pkVal = "";
+      let idx = 0;
+      for (let [key, value] of formData.entries()) {
+        if (idx === 0) pkVal = value;
+        queryParams += `&${key}=${encodeURIComponent(value)}`;
+        idx++;
+      }
+      queryParams += `&pk=${encodeURIComponent(pkVal)}`;
 
       try {
-        const res = await fetch(`${SCRIPT_URL}?${params}`);
+        const res = await fetch(`${SCRIPT_URL}?${queryParams}`);
         const json = await res.json();
         alert(json.message);
         if (json.status === "success") {
@@ -673,26 +687,35 @@
           if (currentActiveSheet === 'Master_SD') loadSheetGrid('Master_SD', 'tableSdGrid');
         }
       } catch (err) {
-        alert("Terjadi kesalahan sistem.");
+        alert("Gagal melakukan aksi pada data.");
       }
     }
 
-    async function deleteData(sheetName, pk) {
-      if (!confirm("Apakah Anda yakin ingin menghapus data ini?")) return;
-      const actionName = sheetName === 'Master_Menu' ? 'MasterMenu' : sheetName === 'Master_SD' ? 'MasterSd' : 'Users';
-      const res = await fetch(`${SCRIPT_URL}?action=manage${actionName}&subAction=delete&pk=${encodeURIComponent(pk)}`);
-      const json = await res.json();
-      alert(json.message);
-      if (json.status === "success") {
-        if (sheetName === 'USERS') loadSheetGrid('USERS', 'tableUsersGrid');
-        if (sheetName === 'Master_Menu') loadSheetGrid('Master_Menu', 'tableMenuGrid');
-        if (sheetName === 'Master_SD') loadSheetGrid('Master_SD', 'tableSdGrid');
+    async function deleteData(sheetName, pkValue) {
+      if (!confirm(`Apakah Anda yakin ingin menghapus data dengan kunci utama: ${pkValue}?`)) return;
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=manageData&sheetName=${encodeURIComponent(sheetName)}&subAction=delete&pk=${encodeURIComponent(pkValue)}`);
+        const json = await res.json();
+        alert(json.message);
+        if (json.status === "success") {
+          if (sheetName === 'USERS') loadSheetGrid('USERS', 'tableUsersGrid');
+          if (sheetName === 'Master_Menu') loadSheetGrid('Master_Menu', 'tableMenuGrid');
+          if (sheetName === 'Master_SD') loadSheetGrid('Master_SD', 'tableSdGrid');
+        }
+      } catch (err) {
+        alert("Gagal menghapus data.");
       }
     }
 
     function logout() {
       localStorage.removeItem("currentUser");
-      location.reload();
+      currentUser = null;
+      document.getElementById("dashboardPage").classList.add("hidden");
+      document.getElementById("loginPage").classList.remove("hidden");
+      document.getElementById("loginNpsn").value = "";
+      document.getElementById("loginPassword").value = "";
+      document.getElementById("loginAlert").classList.add("hidden");
     }
   </script>
 </body>
